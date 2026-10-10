@@ -1,11 +1,11 @@
 """
 RAG engine: assembles retrieved legal sources into a grounding context,
-calls Google Gemini (with Google Search grounding), and enforces the
-no-hallucination rules.
+calls Google Gemini, and enforces the no-hallucination system prompt.
 
-Answers are always in Arabic and follow the section format (see
-app/rag/answer_builder.py for the section headers). The model is told never to
-invent laws, articles, judgments, or citations.
+Answers are always in Arabic and MUST follow the 8-section format (see
+app/rag/answer_builder.py for the section headers). The model is explicitly
+forbidden from inventing laws, articles, judgments, or citations -- if the
+retrieved context is insufficient it must say so rather than guess.
 """
 import logging
 import time
@@ -31,6 +31,12 @@ NO_HALLUCINATION_SYSTEM_PROMPT = """\
    في القسم الأخير من الإجابة.
 6. أعد الإجابة بصيغة JSON حصراً حسب المخطط المطلوب في كل طلب.
 """
+
+
+# When Google rejects the search-grounded call (e.g. free-tier quota), skip search for a while
+# so users don't pay the extra latency on every question.
+_search_disabled_until = 0.0
+_SEARCH_COOLDOWN_SECONDS = 600
 
 
 class GeminiUnavailableError(Exception):
@@ -84,7 +90,7 @@ def call_gemini_with_retry(
         except genai_errors.APIError as exc:  # type: ignore[attr-defined]
             last_error = exc
             code = getattr(exc, "code", None)
-            if code in (429, 503) and attempts < 2:
+            if code in (429, 503) and attempts < 2 and not (use_search and code == 429):
                 logger.warning("Gemini APIError %s, retrying once after backoff...", code)
                 time.sleep(2)
                 continue
@@ -179,7 +185,7 @@ def generate_answer(
     """
     Produces the final answer. Primary path: Gemini with Google Search grounding plus
     any retrieved database sources, returned as Markdown in the 8-section format. If that call
-    fails for any reason, falls back to the strict JSON, context-only call.
+    is refused, retries without search (model knowledge only); as a last resort uses the strict JSON, context-only call.
     """
     context_block = build_context_block(context_results)
     analysis_block = f"\nتحليل أولي للسؤال: {analysis}\n" if analysis else ""
@@ -191,16 +197,25 @@ def generate_answer(
 {context_block}
 
 أجب الآن بالأقسام التسعة المطلوبة."""
-    web_sources: List[Dict[str, str]] = []
-    try:
-        text = call_gemini_with_retry(
-            contents=prompt,
-            system_instruction=HYBRID_SYSTEM_PROMPT,
-            response_mime_type="text/plain",
-            max_output_tokens=4096,
-            use_search=True,
-            sources_out=web_sources,
-        )
+    global _search_disabled_until
+    for use_search in (True, False):
+        if use_search and time.time() < _search_disabled_until:
+            continue
+        web_sources: List[Dict[str, str]] = []
+        try:
+            text = call_gemini_with_retry(
+                contents=prompt,
+                system_instruction=HYBRID_SYSTEM_PROMPT,
+                response_mime_type="text/plain",
+                max_output_tokens=4096,
+                use_search=use_search,
+                sources_out=web_sources,
+            )
+        except GeminiUnavailableError as exc:
+            logger.warning("Hybrid answer failed (search=%s): %s", use_search, exc)
+            if use_search:
+                _search_disabled_until = time.time() + _SEARCH_COOLDOWN_SECONDS
+            continue
         if text and text.strip():
             if web_sources:
                 seen, lines = set(), []
@@ -210,8 +225,6 @@ def generate_answer(
                         lines.append(f"- {src['title']}: {src['uri']}")
                 text = _insert_before_disclaimer(text, "\n".join(lines[:6]))
             return text
-    except GeminiUnavailableError as exc:
-        logger.warning("Hybrid (search-grounded) answer failed, using strict fallback: %s", exc)
 
     return _generate_strict_answer(question, context_block, analysis_block)
 
