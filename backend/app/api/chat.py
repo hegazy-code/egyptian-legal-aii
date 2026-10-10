@@ -1,44 +1,21 @@
 """POST /chat, GET /conversations, GET /conversations/{id}."""
-import secrets
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
 from app.database import get_db
 from app.models.users import User
-from app.repositories.user_repository import ConversationRepository, UserRepository
-from app.security.hashing import hash_password
+from app.repositories.user_repository import ConversationRepository
 from app.schemas.chat import ChatRequest, ChatResponse, CitationOut, ConversationListItem, ConversationRead
 from app.services.chat_service import ChatService
 
 router = APIRouter(tags=["chat"])
 
-_optional_bearer = HTTPBearer(auto_error=False)
-GUEST_EMAIL = "guest@legal-ai.local"
-
-
-def get_user_or_guest(
-    credentials: HTTPAuthorizationCredentials = Depends(_optional_bearer),
-    db: Session = Depends(get_db),
-) -> User:
-    """Logged-in users keep their own history; anonymous visitors share a guest account
-    (it has a random password, so nobody can log in as it)."""
-    if credentials is not None:
-        return get_current_user(credentials=credentials, db=db)
-    repo = UserRepository(db)
-    guest = repo.get_by_email(GUEST_EMAIL)
-    if guest is None:
-        guest = repo.create(
-            User(email=GUEST_EMAIL, hashed_password=hash_password(secrets.token_urlsafe(32)), full_name="Guest", role="guest")
-        )
-    return guest
-
 
 @router.post("/chat", response_model=ChatResponse)
-def chat(payload: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_user_or_guest)):
+def chat(payload: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     service = ChatService(db)
     conversation, assistant_message, search_results = service.ask(
         user_id=current_user.id, message=payload.message, conversation_id=payload.conversation_id
