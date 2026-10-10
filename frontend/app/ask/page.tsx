@@ -36,6 +36,9 @@ export default function AskPage() {
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           اكتب سؤالك بوضوح وبأكبر قدر من التفاصيل للحصول على إجابة أدق.
         </p>
+        <p className="mt-3 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-sm font-medium text-teal-900 dark:border-teal-900 dark:bg-teal-950 dark:text-teal-200">
+          مش معناه إنك عملتها يبقى إنت مذنب
+        </p>
       </div>
 
       {turns.length === 0 ? (
