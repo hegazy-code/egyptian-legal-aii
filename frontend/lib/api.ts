@@ -98,6 +98,101 @@ function toCitations(text: string, prefix: string): SourceCitation[] {
     .map((l, i) => ({ id: `${prefix}-${i}`, lawName: l, status: "current" as const }));
 }
 
+/** Normalise Arabic-Indic digits and strip markdown decoration from a line. */
+function cleanHeaderLine(line: string): string {
+  return line
+    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/^[\s>#*_`\-]+/, "")
+    .replace(/^\d+\s*[.)\-:]\s*/, "")
+    .replace(/^[\s*_`]+/, "");
+}
+
+/** Turn the backend's markdown answer into the 8-section structure the UI renders. */
+function parseAnswer(raw: string): LegalAnswer {
+  let markdown = raw.trim();
+  // Truncated/unparsed JSON wrapper from the model: {"answer_markdown": "...
+  const wrapped = markdown.match(/^\{\s*"answer_markdown"\s*:\s*"/);
+  if (wrapped) {
+    markdown = markdown.slice(wrapped[0].length).replace(/"\s*\}?\s*$/, "");
+  }
+  // Escaped newlines left over from JSON.
+  if (!markdown.includes("\n") && markdown.includes("\\n")) {
+    markdown = markdown.replace(/\\n/g, "\n").replace(/\\"/g, '"');
+  }
+
+  const sections: Record<string, string> = {};
+  let current: string | null = null;
+  for (const line of markdown.split("\n")) {
+    const cleaned = cleanHeaderLine(line);
+    const hit = cleaned.length < 120 ? SECTION_KEYS.find(([ar]) => cleaned.startsWith(ar)) : undefined;
+    if (hit) {
+      current = hit[1];
+      // Content on the same line as the heading ("فهم سؤالك: ...").
+      const rest = cleaned
+        .slice(cleaned.indexOf(hit[0]))
+        .replace(/^[^\n:：\-–—]*[:：\-–—]\s*/, "");
+      const sameLine = cleaned.includes(":") || cleaned.includes("：") ? rest.replace(/\*+$/, "").trim() : "";
+      sections[current] = sameLine ? sameLine + "\n" : "";
+      continue;
+    }
+    if (current) sections[current] += line + "\n";
+  }
+  const get = (k: string) => (sections[k] || "").replace(/\*\*/g, "").trim();
+  const core = ["understandingOfQuestion", "legalDomain", "explanation", "preliminaryApplication"];
+  const coreEmpty = core.every((k) => !get(k));
+  return {
+    understandingOfQuestion: get("understandingOfQuestion"),
+    legalDomain: get("legalDomain"),
+    relevantLegalTexts: toCitations(get("relevantLegalTexts"), "law"),
+    // Safety net: if nothing could be sectioned, show the whole answer rather than blanks.
+    explanation: coreEmpty ? markdown : get("explanation"),
+    preliminaryApplication: get("preliminaryApplication"),
+    missingInformation: bullets(get("missingInformation")),
+    possibleProcedures: bullets(get("possibleProcedures")),
+    answerSources: toCitations(get("answerSources"), "src"),
+    disclaimer:
+      get("disclaimer") ||
+      "هذه الإجابة لأغراض تعليمية وإرشادية فقط ولا تُغني عن استشارة محامٍ مختص.",
+  };
+}
+
+/** POST /chat -- ask a legal question, get back a structured 8-section answer. */
+export async function postChat(request: ChatRequest): Promise<ChatResponse> {
+  const data = await apiFetch<BackendChatResponse>("/chat", {
+    method: "POST",
+    body: JSON.stringify({
+      message: request.question,
+      conversation_id: request.conversationId ?? null,
+    }),
+  });
+  return { answer: parseAnswer(data.answer), conversationId: data.conversation_id };
+}
+
+const SECTION_KEYS: [string, keyof LegalAnswer][] = [
+  ["فهم سؤالك", "understandingOfQuestion"],
+  ["المجال القانوني", "legalDomain"],
+  ["النصوص القانونية", "relevantLegalTexts"],
+  ["الشرح", "explanation"],
+  ["تطبيق مبدئي", "preliminaryApplication"],
+  ["معلومات ناقصة", "missingInformation"],
+  ["الإجراءات المحتملة", "possibleProcedures"],
+  ["مصادر الإجابة", "answerSources"],
+  ["تنبيه", "disclaimer"],
+];
+
+function bullets(text: string): string[] {
+  return text
+    .split("\n")
+    .map((l) => l.replace(/^\s*(?:[-*\u2022]|\d+[.)])\s*/, "").trim())
+    .filter(Boolean);
+}
+
+function toCitations(text: string, prefix: string): SourceCitation[] {
+  return bullets(text)
+    .filter((l) => !l.includes("لا توجد مصادر"))
+    .map((l, i) => ({ id: `${prefix}-${i}`, lawName: l, status: "current" as const }));
+}
+
 /** Turn the backend's markdown answer into the 8-section structure the UI renders. */
 function parseAnswer(markdown: string): LegalAnswer {
   const sections: Record<string, string> = {};
