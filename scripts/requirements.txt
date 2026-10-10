@@ -1,0 +1,20 @@
+# Dependencies for the offline data-ingestion pipeline in scripts/.
+#
+# These are DELIBERATELY SEPARATE from backend/requirements.txt: the
+# backend's requirements are for the running FastAPI service (fastapi,
+# sqlalchemy, google-genai, ...); these are one-off/batch tools that
+# download, extract, OCR, and normalize source documents offline, and
+# never run inside the API process. Install into their own venv:
+#
+#   cd scripts && python -m venv venv && source venv/bin/activate
+#   pip install -r requirements.txt
+#
+# scripts/run_ocr.py additionally needs system (non-pip) dependencies:
+#   apt install tesseract-ocr tesseract-ocr-ara poppler-utils
+
+requests>=2.31          # ingest_documents.py -- HTTP download of source documents
+pypdf>=3.17              # extract_text.py -- primary direct-text-extraction path
+pdfplumber>=0.10          # extract_text.py -- fallback extraction for layouts pypdf misses
+pytesseract>=0.3.10       # run_ocr.py -- Python wrapper around the Tesseract OCR engine
+pdf2image>=1.16           # run_ocr.py -- renders PDF pages to images for OCR
+openpyxl>=3.1             # validate_sources.py -- reads data/inventory/legal_sources.xlsx

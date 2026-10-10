@@ -1,0 +1,3 @@
+# Regression tests
+
+Empty for now, on purpose -- this is not a placeholder test file, it's a directory waiting for real bugs. Per `docs/evaluation.md`'s human-review loop: once real legal professionals review real AI answers and find a genuine incorrect answer, the fix for that specific case gets captured here as a test (`{question, expected_articles/points, why it broke}`), not just folded into a prompt tweak that could silently regress later. A wrong answer that only gets fixed by prompt-tuning once, with no regression test, tends to come back. This directory fills up as that review loop produces its first real findings.
