@@ -1,0 +1,112 @@
+"""
+Orchestrates the chat pipeline: analyzer -> hybrid search -> RAG engine ->
+answer_builder, then persists the conversation/message/citations.
+"""
+import json
+import logging
+from typing import Any, Dict, List, Optional, Tuple
+
+from sqlalchemy.orm import Session
+
+from app.models.system import AnswerCitation
+from app.models.users import Conversation, Message
+from app.rag import answer_builder
+from app.rag.analyzer import analyze_question
+from app.rag.engine import GeminiUnavailableError, generate_answer
+from app.repositories.user_repository import ConversationRepository
+from app.schemas.legal import SearchResultItem
+from app.search.hybrid import hybrid_search
+
+logger = logging.getLogger(__name__)
+
+# Maximum number of previous conversation turns to include as context.
+_HISTORY_TURNS = 4
+
+
+class ChatService:
+    def __init__(self, db: Session):
+        self.db = db
+        self.conversations = ConversationRepository(db)
+
+    def _get_or_create_conversation(
+        self, user_id: str, conversation_id: Optional[str], first_message: str
+    ) -> Conversation:
+        if conversation_id:
+            conv = self.conversations.get(conversation_id)
+            if conv and conv.user_id == user_id:
+                return conv
+        title = (first_message[:80] + "...") if len(first_message) > 80 else first_message
+        return self.conversations.create(user_id=user_id, title=title)
+
+    def _get_history(self, conversation_id: str) -> List[Dict[str, str]]:
+        """Fetch the last N user+assistant messages for context."""
+        try:
+            messages = (
+                self.db.query(Message)
+                .filter(Message.conversation_id == conversation_id)
+                .order_by(Message.created_at.desc())
+                .limit(_HISTORY_TURNS * 2)
+                .all()
+            )
+            # Reverse so they're in chronological order.
+            return [{"role": m.role, "content": m.content} for m in reversed(messages)]
+        except Exception as exc:
+            logger.warning("Could not fetch conversation history: %s", exc)
+            return []
+
+    def ask(
+        self,
+        user_id: str,
+        question: str,
+        conversation_id: Optional[str] = None,
+    ) -> Tuple[Conversation, Message, List[SearchResultItem], Dict[str, Any]]:
+        """
+        Returns (conversation, assistant_message, search_results, structured_answer_dict).
+        The structured_answer_dict matches LegalAnswerOut and is ready for the API response.
+        """
+        conversation = self._get_or_create_conversation(user_id, conversation_id, question)
+        self.conversations.add_message(conversation.id, role="user", content=question)
+
+        # 1. Fetch conversation history for context.
+        history = self._get_history(conversation.id)
+
+        # 2. Analyzer: understand the question and extract legal_area.
+        analysis = analyze_question(question)
+        legal_area = analysis.get("legal_area") or None
+
+        # 3. Search: hybrid retrieval over the legal corpus, filtered by legal area.
+        search_results = hybrid_search(self.db, question, limit=8, legal_area=legal_area)
+
+        # 4. RAG engine: call Gemini with grounded context, or fall back.
+        try:
+            raw = generate_answer(question, search_results, analysis, history)
+            answer_dict = answer_builder.parse_gemini_answer(raw)
+        except GeminiUnavailableError as exc:
+            logger.warning("Chat: Gemini unavailable, using fallback answer: %s", exc)
+            answer_dict = answer_builder.build_fallback_answer(
+                question=question,
+                analysis=analysis,
+                context_results=search_results,
+                note="خدمة الذكاء الاصطناعي (Gemini) غير مُهيأة حالياً على هذا الخادم.",
+            )
+
+        # Store structured answer as JSON string in the DB for history retrieval.
+        answer_json = json.dumps(answer_dict, ensure_ascii=False)
+        assistant_message = self.conversations.add_message(
+            conversation.id, role="assistant", content=answer_json
+        )
+
+        # 5. Persist citations for traceability (answer_citations table).
+        for result in search_results[:5]:
+            citation = AnswerCitation(
+                message_id=assistant_message.id,
+                source_type=result.result_type,
+                article_id=result.id if result.result_type == "article" else None,
+                judgment_id=result.id if result.result_type == "judgment" else None,
+                citation_text=result.title,
+                relevance_score=result.score,
+            )
+            self.db.add(citation)
+        self.db.commit()
+
+        return conversation, assistant_message, search_results, answer_dict

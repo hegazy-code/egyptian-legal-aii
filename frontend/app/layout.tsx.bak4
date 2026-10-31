@@ -1,0 +1,42 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import Masthead from "@/components/Masthead";
+import "@fontsource/amiri/arabic-400.css";
+import "@fontsource/amiri/arabic-700.css";
+import "@fontsource/ibm-plex-sans-arabic/arabic-400.css";
+import "@fontsource/ibm-plex-sans-arabic/arabic-500.css";
+import "@fontsource/ibm-plex-sans-arabic/arabic-600.css";
+import "@fontsource/ibm-plex-sans-arabic/arabic-700.css";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "حجازي للتقنية القانونية",
+  description:
+    "إجابات قانونية مصرية مبنية على نصوص المواد الرسمية، مع الخطوات والمواعيد وطرق الطعن. معلومات عامة وليست بديلاً عن استشارة محامٍ مقيّد بالنقابة.",
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html lang="ar" dir="rtl" className="h-full">
+      <body className="flex min-h-full flex-col bg-paper font-sans text-[17px] leading-[1.8] text-ink antialiased">
+        <Masthead />
+        <main className="flex-1">{children}</main>
+        <footer className="border-t border-sand bg-paper-deep">
+          <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-start sm:justify-between">
+            <p className="max-w-2xl text-sm leading-[1.9] text-muted">
+              معلومات قانونية عامة، وليست استشارة قانونية ولا بديلاً عن محامٍ مقيّد بنقابة المحامين. قد تتغير القوانين وتُعدَّل، وقد لا تكتمل الإجابة في قضايا بعينها. راجع محامياً قبل اتخاذ أي إجراء رسمي.
+            </p>
+            <nav className="flex flex-wrap gap-x-5 gap-y-1 text-sm font-medium">
+              <Link href="/legal-disclaimer" className="hover:text-seal">إخلاء المسؤولية</Link>
+              <Link href="/privacy" className="hover:text-seal">الخصوصية</Link>
+              <Link href="/terms" className="hover:text-seal">الشروط</Link>
+            </nav>
+          </div>
+          <div className="border-t border-sand py-3 text-center text-xs text-muted">
+            © {new Date().getFullYear()} حجازي للتقنية القانونية
+          </div>
+        </footer>
+      </body>
+    </html>
+  );
+}

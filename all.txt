@@ -1,0 +1,3544 @@
+﻿=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\types\index.ts
+/**
+ * Types mirroring the backend's answer shape.
+ *
+ * The backend (see /home/claude/egyptian-legal-ai/backend) does not yet expose
+ * a `/chat` endpoint -- these types are written against the product spec
+ * (8-section Arabic answer format + citation/no-hallucination policy) and are
+ * the contract the frontend expects. When the real backend lands, adjust the
+ * field names here to match its actual JSON -- lib/api.ts is the only place
+ * that needs to change shape-mapping logic.
+ */
+
+/** Whether a legal text is currently in force or has been repealed/amended. */
+export type SourceStatus = "current" | "historical";
+
+/**
+ * Whether a piece of the answer is a direct quote/citation of a legal text,
+ * or an AI-generated inference/summary built on top of one.
+ * (spec section 52: no-hallucination policy -- the UI should visually
+ * distinguish these when the backend provides the distinction.)
+ */
+export type AnswerBasis = "from_law" | "ai_inference";
+
+export type SourceKind = "law" | "judgment" | "procedure" | "other";
+
+/** A single citation: a law article, a court judgment, or another source. */
+export interface SourceCitation {
+  id: string;
+  /** e.g. "القانون المدني المصري" */
+  lawName: string;
+  /** e.g. "المادة 163" */
+  articleNumber?: string;
+  kind?: SourceKind;
+  status: SourceStatus;
+  /** Short quoted/summarized excerpt of the text, if available. */
+  excerpt?: string;
+  /** Link to the source document, if available. */
+  sourceUrl?: string;
+  basis?: AnswerBasis;
+}
+
+/**
+ * The 8-section Arabic answer format:
+ * 1. فهم سؤالك              -> understandingOfQuestion
+ * 2. المجال القانوني         -> legalDomain
+ * 3. النصوص القانونية ذات الصلة -> relevantLegalTexts
+ * 4. الشرح                  -> explanation
+ * 5. تطبيق مبدئي على الوقائع  -> preliminaryApplication
+ * 6. معلومات ناقصة           -> missingInformation
+ * 7. الإجراءات المحتملة       -> possibleProcedures
+ * 8. مصادر الإجابة           -> answerSources
+ * + تنبيه (disclaimer, always present, spec section 22)
+ */
+export interface LegalAnswer {
+  understandingOfQuestion: string;
+  legalDomain: string;
+  relevantLegalTexts: SourceCitation[];
+  explanation: string;
+  preliminaryApplication: string;
+  missingInformation: string[];
+  possibleProcedures: string[];
+  answerSources: SourceCitation[];
+  disclaimer: string;
+}
+
+/** One exchange in the /ask conversation. */
+export interface ChatTurn {
+  id: string;
+  question: string;
+  answer?: LegalAnswer;
+  /** Set when the request failed (network error, backend error, etc). */
+  error?: string;
+  createdAt: string;
+}
+
+export interface ChatRequest {
+  question: string;
+  conversationId?: string;
+}
+
+export interface ChatResponse {
+  answer: LegalAnswer;
+  conversationId?: string;
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\lib\api.ts
+import type { ChatRequest, ChatResponse } from "@/types";
+
+/**
+ * Base URL of the FastAPI backend. Falls back to localhost:8000 for local
+ * dev if NEXT_PUBLIC_API_URL isn't set (see .env.local.example).
+ */
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, "") || "http://localhost:8000";
+
+/** Thrown by apiFetch for both network failures and non-2xx responses. */
+export class ApiError extends Error {
+  status?: number;
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+const DEFAULT_TIMEOUT_MS = 30_000;
+
+async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...init?.headers,
+      },
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new ApiError("انتهت مهلة الاتصال بالخادم. حاول مرة أخرى.");
+    }
+    // fetch() rejects with a TypeError for connection-refused / DNS / CORS
+    // failures -- i.e. exactly the "backend isn't running" case.
+    throw new ApiError(
+      "تعذر الاتصال بالخادم. تأكد من أن الخادم يعمل ثم حاول مرة أخرى."
+    );
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (!res.ok) {
+    let message = `حدث خطأ في الخادم (رمز ${res.status}).`;
+    try {
+      const body = (await res.json()) as { message?: string; detail?: string };
+      message = body.message || body.detail || message;
+    } catch {
+      // response body wasn't JSON -- keep the generic message
+    }
+    throw new ApiError(message, res.status);
+  }
+
+  try {
+    return (await res.json()) as T;
+  } catch {
+    throw new ApiError("استجابة غير صالحة من الخادم.");
+  }
+}
+
+/** POST /chat -- ask a legal question, get back a structured 8-section answer. */
+export async function postChat(request: ChatRequest): Promise<ChatResponse> {
+  return apiFetch<ChatResponse>("/chat", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\hooks\useChat.ts
+"use client";
+
+import { useCallback, useRef, useState } from "react";
+import { postChat, ApiError } from "@/lib/api";
+import type { ChatTurn } from "@/types";
+
+function newId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+interface UseChatResult {
+  turns: ChatTurn[];
+  loading: boolean;
+  ask: (question: string) => Promise<void>;
+  reset: () => void;
+}
+
+/** Manages the question/answer history for the /ask page. */
+export function useChat(): UseChatResult {
+  const [turns, setTurns] = useState<ChatTurn[]>([]);
+  const [loading, setLoading] = useState(false);
+  // Keep conversationId in a ref so it persists across renders without
+  // causing extra re-renders and is always up-to-date inside the closure.
+  const conversationIdRef = useRef<string | undefined>(undefined);
+
+  const ask = useCallback(async (question: string) => {
+    const trimmed = question.trim();
+    if (!trimmed || loading) return;
+
+    const id = newId();
+    const createdAt = new Date().toISOString();
+
+    setTurns((prev) => [...prev, { id, question: trimmed, createdAt }]);
+    setLoading(true);
+
+    try {
+      const response = await postChat({
+        question: trimmed,
+        conversationId: conversationIdRef.current,
+      });
+
+      // Save the conversation ID returned by the backend so follow-up
+      // questions are added to the same conversation thread.
+      conversationIdRef.current = response.conversationId;
+
+      setTurns((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, answer: response.answer } : t))
+      );
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : "حدث خطأ غير متوقع. حاول مرة أخرى.";
+      setTurns((prev) => prev.map((t) => (t.id === id ? { ...t, error: message } : t)));
+    } finally {
+      setLoading(false);
+    }
+  }, [loading]);
+
+  const reset = useCallback(() => {
+    setTurns([]);
+    conversationIdRef.current = undefined;
+  }, []);
+
+  return { turns, loading, ask, reset };
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\components\ChatMessage.tsx
+import type { ReactNode } from "react";
+import type { ChatTurn } from "@/types";
+import SourceCard from "./SourceCard";
+import Disclaimer from "./Disclaimer";
+
+interface SectionProps {
+  title: string;
+  children: ReactNode;
+}
+
+function Section({ title, children }: SectionProps) {
+  return (
+    <section className="space-y-2">
+      <h3 className="text-sm font-bold text-teal-800 dark:text-teal-400">{title}</h3>
+      {children}
+    </section>
+  );
+}
+
+function TextList({ items }: { items: string[] }) {
+  if (items.length === 0) {
+    return <p className="text-sm text-slate-500 dark:text-slate-400">لا يوجد.</p>;
+  }
+  return (
+    <ul className="list-disc space-y-1 pr-5 text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+      {items.map((item, i) => (
+        <li key={i}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
+/** Renders one question/answer exchange in the 8-section Arabic answer format. */
+export default function ChatMessage({ turn, pending }: { turn: ChatTurn; pending?: boolean }) {
+  const { question, answer, error } = turn;
+
+  return (
+    <article className="space-y-4">
+      {/* User question bubble */}
+      <div className="flex justify-start">
+        <div className="max-w-2xl rounded-2xl rounded-tl-sm bg-teal-700 px-4 py-3 text-sm font-medium text-white shadow-sm">
+          {question}
+        </div>
+      </div>
+
+      {/* Assistant answer */}
+      <div className="max-w-3xl rounded-2xl rounded-tr-sm border border-slate-200 bg-slate-50 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+        {pending && !answer && !error ? (
+          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            <span
+              aria-hidden
+              className="h-4 w-4 animate-spin rounded-full border-2 border-teal-700 border-t-transparent"
+            />
+            جارٍ البحث في النصوص القانونية وإعداد الإجابة...
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300">
+            {error}
+          </div>
+        ) : null}
+
+        {answer ? (
+          <div className="space-y-5">
+            <Section title="١. فهم سؤالك">
+              <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                {answer.understandingOfQuestion}
+              </p>
+            </Section>
+
+            <Section title="٢. المجال القانوني">
+              <span className="inline-block rounded-full bg-teal-100 px-3 py-1 text-sm font-medium text-teal-900 dark:bg-teal-900/50 dark:text-teal-300">
+                {answer.legalDomain}
+              </span>
+            </Section>
+
+            <Section title="٣. النصوص القانونية ذات الصلة">
+              {answer.relevantLegalTexts.length === 0 ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  لم يتم العثور على نصوص قانونية محددة مرتبطة مباشرة بالسؤال.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {answer.relevantLegalTexts.map((s) => (
+                    <SourceCard key={s.id} source={s} />
+                  ))}
+                </ul>
+              )}
+            </Section>
+
+            <Section title="٤. الشرح">
+              <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                {answer.explanation}
+              </p>
+            </Section>
+
+            <Section title="٥. تطبيق مبدئي على الوقائع">
+              <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200">
+                {answer.preliminaryApplication}
+              </p>
+            </Section>
+
+            <Section title="٦. معلومات ناقصة">
+              <TextList items={answer.missingInformation} />
+            </Section>
+
+            <Section title="٧. الإجراءات المحتملة">
+              <TextList items={answer.possibleProcedures} />
+            </Section>
+
+            <Section title="٨. مصادر الإجابة">
+              {answer.answerSources.length === 0 ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400">لا توجد مصادر إضافية.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {answer.answerSources.map((s) => (
+                    <SourceCard key={s.id} source={s} />
+                  ))}
+                </ul>
+              )}
+            </Section>
+
+            <Disclaimer text={answer.disclaimer} />
+          </div>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\components\ComingSoon.tsx
+interface ComingSoonProps {
+  title: string;
+  note?: string;
+}
+
+/**
+ * Shared placeholder for every page that depends on functionality the
+ * backend doesn't implement yet (auth, cases, documents, admin/RBAC).
+ * See each page's TODO comment for exactly what it's waiting on.
+ */
+export default function ComingSoon({ title, note }: ComingSoonProps) {
+  return (
+    <div className="mx-auto flex max-w-xl flex-col items-center gap-4 px-4 py-24 text-center">
+      <span aria-hidden className="text-4xl">🚧</span>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{title}</h1>
+      <p className="text-lg font-semibold text-teal-800 dark:text-teal-400">قريباً</p>
+      <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+        {note ?? "هذه الصفحة قيد الإنشاء وتحتاج إلى نظام تسجيل الدخول والخادم الخلفي أولاً."}
+      </p>
+    </div>
+  );
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\components\Disclaimer.tsx
+interface DisclaimerProps {
+  /** Override the default text (e.g. to show the backend's own tanbih text). */
+  text?: string;
+  className?: string;
+}
+
+const DEFAULT_TEXT =
+  "هذه معلومات قانونية عامة وليست استشارة قانونية رسمية، ولا تُغني عن استشارة محامٍ مرخّص. قد تحتوي الإجابة على أخطاء أو تكون غير مكتملة، ولا يجوز الاعتماد عليها بمفردها في اتخاذ قرارات قانونية.";
+
+/** Reusable "not a substitute for a licensed lawyer" banner (spec §22, §52). */
+export default function Disclaimer({ text, className = "" }: DisclaimerProps) {
+  return (
+    <div
+      role="note"
+      className={`flex gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900 dark:border-amber-700/60 dark:bg-amber-950/40 dark:text-amber-200 ${className}`}
+    >
+      <span aria-hidden className="shrink-0 text-lg leading-none">⚠️</span>
+      <p className="font-medium">{text ?? DEFAULT_TEXT}</p>
+    </div>
+  );
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\components\Nav.tsx
+import Link from "next/link";
+
+const LINKS: { href: string; label: string }[] = [
+  { href: "/", label: "الرئيسية" },
+  { href: "/ask", label: "اسأل سؤالاً" },
+  { href: "/how-it-works", label: "كيف يعمل" },
+  { href: "/about", label: "من نحن" },
+];
+
+/** Top navigation bar, Arabic labels, RTL-friendly. */
+export default function Nav() {
+  return (
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
+      <nav className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+        <Link href="/" className="flex items-center gap-2 font-bold text-teal-800 dark:text-teal-400">
+          <span aria-hidden className="text-xl">⚖️</span>
+          <span>المساعد القانوني المصري</span>
+        </Link>
+
+        <ul className="flex flex-wrap items-center gap-1 text-sm">
+          {LINKS.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className="rounded-md px-3 py-2 font-medium text-slate-700 transition hover:bg-slate-100 hover:text-teal-800 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-teal-400"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link
+              href="/dashboard"
+              className="rounded-md border border-slate-300 px-3 py-2 font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
+            >
+              لوحة التحكم
+            </Link>
+          </li>
+        </ul>
+      </nav>
+    </header>
+  );
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\frontend\components\SourceCard.tsx
+import type { SourceCitation } from "@/types";
+
+const STATUS_LABEL: Record<SourceCitation["status"], string> = {
+  current: "سارٍ حالياً",
+  historical: "تاريخي / ملغى",
+};
+
+const BASIS_LABEL: Record<NonNullable<SourceCitation["basis"]>, string> = {
+  from_law: "من القانون مباشرة",
+  ai_inference: "استنتاج الذكاء الاصطناعي",
+};
+
+/** One citation: law/judgment name, article number, status badge, source link. */
+export default function SourceCard({ source }: { source: SourceCitation }) {
+  const isCurrent = source.status === "current";
+
+  return (
+    <li className="rounded-lg border border-slate-200 bg-white p-3 text-sm dark:border-slate-700 dark:bg-slate-900">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="font-semibold text-slate-900 dark:text-slate-100">
+          {source.lawName}
+          {source.articleNumber ? (
+            <span className="font-normal text-slate-600 dark:text-slate-400">
+              {" "}
+              — {source.articleNumber}
+            </span>
+          ) : null}
+        </div>
+        <span
+          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
+            isCurrent
+              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300"
+              : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+          }`}
+        >
+          {STATUS_LABEL[source.status]}
+        </span>
+      </div>
+
+      {source.excerpt ? (
+        <p className="mt-2 border-r-2 border-slate-300 pr-3 text-slate-700 dark:border-slate-600 dark:text-slate-300">
+          {source.excerpt}
+        </p>
+      ) : null}
+
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        {source.basis ? (
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+              source.basis === "from_law"
+                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300"
+                : "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300"
+            }`}
+          >
+            {BASIS_LABEL[source.basis]}
+          </span>
+        ) : null}
+
+        {source.sourceUrl ? (
+          <a
+            href={source.sourceUrl}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="text-xs font-medium text-teal-700 underline underline-offset-2 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300"
+          >
+            عرض المصدر ↗
+          </a>
+        ) : null}
+      </div>
+    </li>
+  );
+}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\admin.py
+"""
+Admin-only endpoints: POST /admin/sources, POST /admin/documents,
+PATCH /admin/documents/{id}, POST /admin/reindex, GET /admin/evaluations.
+"""
+from datetime import datetime
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_admin_user
+from app.database import get_db
+from app.models.legal import Document, Source
+from app.models.system import AuditLog, EvaluationResult
+from app.models.users import User
+from app.repositories.legal_repository import LegalRepository
+from app.schemas.documents import AdminDocumentCreate, AdminDocumentRead, AdminDocumentUpdate
+from app.schemas.legal import SourceCreate, SourceRead
+
+router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+class ReindexResponse(BaseModel):
+    status: str
+    detail: str
+
+
+class EvaluationResultRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    message_id: Optional[str] = None
+    evaluator: str
+    score: Optional[float] = None
+    criteria: Optional[str] = None
+    created_at: datetime
+
+
+def _log_admin_action(db: Session, admin: User, action: str, entity_type: str, entity_id: str):
+    db.add(AuditLog(user_id=admin.id, action=action, entity_type=entity_type, entity_id=entity_id))
+    db.commit()
+
+
+@router.post("/sources", response_model=SourceRead, status_code=status.HTTP_201_CREATED)
+def create_source(
+    payload: SourceCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin_user),
+):
+    repo = LegalRepository(db)
+    source = repo.create_source(Source(**payload.model_dump()))
+    _log_admin_action(db, admin, "create_source", "source", source.id)
+    return source
+
+
+@router.post("/documents", response_model=AdminDocumentRead, status_code=status.HTTP_201_CREATED)
+def create_document(
+    payload: AdminDocumentCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin_user),
+):
+    doc = Document(**payload.model_dump())
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    _log_admin_action(db, admin, "create_document", "document", doc.id)
+    return doc
+
+
+@router.patch("/documents/{document_id}", response_model=AdminDocumentRead)
+def update_document(
+    document_id: str,
+    payload: AdminDocumentUpdate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin_user),
+):
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(doc, field, value)
+    db.commit()
+    db.refresh(doc)
+    _log_admin_action(db, admin, "update_document", "document", doc.id)
+    return doc
+
+
+@router.post("/reindex", response_model=ReindexResponse)
+def reindex(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin_user),
+):
+    """
+    TODO: real implementation should (re)compute embeddings for every
+    article/judgment via app.search.vector once that's wired up, and
+    rebuild any full-text search indexes. Currently a stub that just
+    records the request via an audit log entry so the endpoint is wired
+    end-to-end and callable, without pretending to do real indexing work.
+    """
+    _log_admin_action(db, admin, "reindex_requested", "system", "-")
+    return ReindexResponse(
+        status="not_implemented",
+        detail="Reindexing is a TODO stub -- requires real embeddings/vector search (see app/search/vector.py).",
+    )
+
+
+@router.get("/evaluations", response_model=List[EvaluationResultRead])
+def list_evaluations(
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin_user),
+):
+    return (
+        db.query(EvaluationResult)
+        .order_by(EvaluationResult.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\auth.py
+"""POST /auth/register, /auth/login, /auth/logout -- real JWT + bcrypt auth."""
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_user
+from app.database import get_db
+from app.models.users import User
+from app.schemas.auth import Token, UserCreate, UserLogin, UserRead
+from app.services.auth_service import AuthError, AuthService
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+def register(payload: UserCreate, db: Session = Depends(get_db)):
+    service = AuthService(db)
+    try:
+        user = service.register(payload.email, payload.password, payload.full_name)
+    except AuthError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc))
+    return user
+
+
+@router.post("/login", response_model=Token)
+def login(payload: UserLogin, db: Session = Depends(get_db)):
+    service = AuthService(db)
+    try:
+        user = service.authenticate(payload.email, payload.password)
+    except AuthError as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc))
+    token = service.issue_token(user)
+    return Token(access_token=token)
+
+
+@router.post("/logout")
+def logout(current_user: User = Depends(get_current_user)):
+    # JWTs are stateless here; logout is a client-side token discard.
+    # TODO: swap in a server-side token blocklist (e.g. Redis) if immediate
+    # server-side revocation is required.
+    return {"detail": "Logged out successfully."}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\cases.py
+"""POST/GET /cases, GET /cases/{id}."""
+from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_user
+from app.database import get_db
+from app.models.users import User
+from app.schemas.cases import CaseCreate, CaseRead
+from app.services.case_service import CaseNotFoundError, CaseService
+
+router = APIRouter(prefix="/cases", tags=["cases"])
+
+
+@router.post("", response_model=CaseRead, status_code=status.HTTP_201_CREATED)
+def create_case(payload: CaseCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    service = CaseService(db)
+    case = service.create_case(current_user.id, payload.title, payload.description, payload.case_type)
+    return case
+
+
+@router.get("", response_model=List[CaseRead])
+def list_cases(
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    service = CaseService(db)
+    return service.list_cases(current_user.id, skip=skip, limit=limit)
+
+
+@router.get("/{case_id}", response_model=CaseRead)
+def get_case(case_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    service = CaseService(db)
+    try:
+        return service.get_case(case_id, current_user.id)
+    except CaseNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Case not found")
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\chat.py
+"""POST /chat, GET /conversations, GET /conversations/{id}."""
+from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.users import User
+from app.schemas.chat import (
+    ChatRequest,
+    ChatResponse,
+    CitationOut,
+    ConversationListItem,
+    ConversationRead,
+    LegalAnswerOut,
+)
+from app.services.chat_service import ChatService
+
+router = APIRouter(tags=["chat"])
+
+# ---------------------------------------------------------------------------
+# Guest user support
+# A locked system account is created on first use so anonymous /chat requests
+# satisfy the Conversation.user_id FK without needing a real login.
+# ---------------------------------------------------------------------------
+_GUEST_EMAIL = "guest@system.local"
+
+
+def _get_guest_user_id(db: Session) -> str:
+    """Return the ID of the system guest user, creating it on first call."""
+    user = db.query(User).filter(User.email == _GUEST_EMAIL).first()
+    if user:
+        return user.id
+    guest = User(
+        email=_GUEST_EMAIL,
+        hashed_password="!",   # unusable password -- bcrypt never produces "!"
+        full_name="مستخدم ضيف",
+        role="user",
+        is_active=True,
+    )
+    db.add(guest)
+    db.commit()
+    db.refresh(guest)
+    return guest.id
+
+
+# ---------------------------------------------------------------------------
+# NOTE: JWT auth is intentionally NOT required on POST /chat while the
+# frontend auth flow is being built. The conversations endpoints retain auth
+# because they expose per-user history.
+# Re-add `current_user: User = Depends(get_current_user)` to chat() and pass
+# current_user.id to service.ask() once the frontend login is wired up.
+# ---------------------------------------------------------------------------
+
+
+@router.post("/chat", response_model=ChatResponse)
+def chat(payload: ChatRequest, db: Session = Depends(get_db)):
+    guest_id = _get_guest_user_id(db)
+    service = ChatService(db)
+
+    conversation, assistant_message, search_results, answer_dict = service.ask(
+        user_id=guest_id,
+        question=payload.question,
+        conversation_id=payload.conversationId,
+    )
+
+    citations = [
+        CitationOut(
+            source_type=r.result_type,
+            citation_text=r.title,
+            article_id=r.id if r.result_type == "article" else None,
+            judgment_id=r.id if r.result_type == "judgment" else None,
+            relevance_score=r.score,
+        )
+        for r in search_results[:5]
+    ]
+
+    return ChatResponse(
+        conversationId=conversation.id,
+        messageId=assistant_message.id,
+        answer=LegalAnswerOut(**answer_dict),
+        citations=citations,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Conversation history endpoints (keep auth on these).
+# ---------------------------------------------------------------------------
+from app.api.deps import get_current_user          # noqa: E402
+from app.repositories.user_repository import ConversationRepository  # noqa: E402
+
+
+@router.get("/conversations", response_model=List[ConversationListItem])
+def list_conversations(
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    repo = ConversationRepository(db)
+    return repo.list_for_user(current_user.id, skip=skip, limit=limit)
+
+
+@router.get("/conversations/{conversation_id}", response_model=ConversationRead)
+def get_conversation(
+    conversation_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    repo = ConversationRepository(db)
+    conversation = repo.get(conversation_id)
+    if not conversation or conversation.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
+    return conversation
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\deps.py
+"""Shared FastAPI dependencies: DB session, current user, admin guard."""
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.users import User
+from app.security.jwt import decode_access_token
+
+_bearer_scheme = HTTPBearer(auto_error=False)
+
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(_bearer_scheme),
+    db: Session = Depends(get_db),
+) -> User:
+    if credentials is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    payload = decode_access_token(credentials.credentials)
+    if not payload or "sub" not in payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
+    user = db.query(User).filter(User.id == payload["sub"]).first()
+    if not user or not user.is_active:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found or inactive")
+    return user
+
+
+def get_current_admin_user(user: User = Depends(get_current_user)) -> User:
+    if user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    return user
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\documents.py
+"""POST /documents (user upload), GET /documents/{id}. OCR/analysis is a TODO stub."""
+import os
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from sqlalchemy.orm import Session
+
+from app.api.deps import get_current_user
+from app.database import get_db
+from app.ingestion.ocr import ocr_image
+from app.models.users import DocumentUploaded, User
+from app.schemas.documents import DocumentUploadedRead
+
+router = APIRouter(prefix="/documents", tags=["documents"])
+
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "uploads")
+
+
+@router.post("", response_model=DocumentUploadedRead, status_code=status.HTTP_201_CREATED)
+async def upload_document(
+    file: UploadFile,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    safe_name = f"{uuid.uuid4()}_{os.path.basename(file.filename or 'upload')}"
+    dest_path = os.path.join(UPLOAD_DIR, safe_name)
+
+    contents = await file.read()
+    with open(dest_path, "wb") as f:
+        f.write(contents)
+
+    is_image = (file.content_type or "").startswith("image/")
+    ocr_status = "not_applicable"
+    extracted_text = None
+    if is_image:
+        # TODO: real OCR pipeline. See app/ingestion/ocr.py -- currently a stub.
+        result = ocr_image(dest_path)
+        ocr_status = result["status"]
+        extracted_text = result["text"]
+
+    doc = DocumentUploaded(
+        user_id=current_user.id,
+        filename=file.filename or safe_name,
+        file_path=dest_path,
+        mime_type=file.content_type,
+        ocr_status=ocr_status,
+        extracted_text=extracted_text,
+    )
+    db.add(doc)
+    db.commit()
+    db.refresh(doc)
+    return doc
+
+
+@router.get("/{document_id}", response_model=DocumentUploadedRead)
+def get_document(document_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    doc = db.query(DocumentUploaded).filter(DocumentUploaded.id == document_id).first()
+    if not doc or doc.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+    return doc
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\search.py
+"""POST /search, GET /laws, GET /laws/{id}, GET /articles/{id}."""
+import time
+from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.system import SearchLog
+from app.repositories.legal_repository import LegalRepository
+from app.schemas.legal import ArticleRead, LawDetailRead, LawRead, SearchRequest, SearchResponse
+from app.search.hybrid import hybrid_search
+
+router = APIRouter(tags=["search"])
+
+
+@router.post("/search", response_model=SearchResponse)
+def search(payload: SearchRequest, db: Session = Depends(get_db)):
+    start = time.perf_counter()
+    results = hybrid_search(db, payload.query, limit=payload.limit)
+    latency_ms = int((time.perf_counter() - start) * 1000)
+
+    db.add(
+        SearchLog(
+            query_text=payload.query,
+            query_type="hybrid",
+            results_count=len(results),
+            latency_ms=latency_ms,
+        )
+    )
+    db.commit()
+
+    return SearchResponse(query=payload.query, total=len(results), results=results)
+
+
+@router.get("/laws", response_model=List[LawRead])
+def list_laws(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+    repo = LegalRepository(db)
+    return repo.list_laws(skip=skip, limit=limit)
+
+
+@router.get("/laws/{law_id}", response_model=LawDetailRead)
+def get_law(law_id: str, db: Session = Depends(get_db)):
+    repo = LegalRepository(db)
+    law = repo.get_law(law_id)
+    if not law:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Law not found")
+    return law
+
+
+@router.get("/articles/{article_id}", response_model=ArticleRead)
+def get_article(article_id: str, db: Session = Depends(get_db)):
+    repo = LegalRepository(db)
+    article = repo.get_article(article_id)
+    if not article:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Article not found")
+    return article
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\sources.py
+"""GET /sources/{id}."""
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.repositories.legal_repository import LegalRepository
+from app.schemas.legal import SourceRead
+
+router = APIRouter(prefix="/sources", tags=["sources"])
+
+
+@router.get("/{source_id}", response_model=SourceRead)
+def get_source(source_id: str, db: Session = Depends(get_db)):
+    repo = LegalRepository(db)
+    source = repo.get_source(source_id)
+    if not source:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Source not found")
+    return source
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\api\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\ingestion\extract_text.py
+"""
+TODO STUB: text extraction from raw ingested documents (PDF/HTML/DOCX).
+
+Intended behavior once implemented:
+- Detect file type (PDF, DOCX, HTML, plain text) from the Document's file_path.
+- For PDFs: use a library such as pdfplumber/PyMuPDF to extract selectable
+  text page-by-page; fall back to app.ingestion.ocr for scanned/image-only
+  pages.
+- For HTML (e.g. official gazette web pages): strip markup with something
+  like BeautifulSoup, preserving paragraph/article boundaries.
+- Return the extracted plain text plus basic metadata (page count, whether
+  OCR was needed) so it can be stored on Document.raw_text and queued for
+  app.ingestion.split_articles.
+
+Not implemented yet because there is no real ingested source corpus to test
+against. Returns a clearly-labeled NotImplemented-style placeholder so
+callers can integrate against this interface now.
+"""
+from typing import Optional, TypedDict
+
+
+class ExtractedText(TypedDict):
+    text: Optional[str]
+    method: str  # "native" | "ocr" | "unsupported"
+    status: str  # "ok" | "not_implemented" | "failed"
+
+
+def extract_text_from_file(file_path: str) -> ExtractedText:
+    """STUB: always returns not_implemented until a real extractor is wired up."""
+    return ExtractedText(
+        text=None,
+        method="unsupported",
+        status="not_implemented",
+    )
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\ingestion\normalize_arabic.py
+"""
+TODO STUB (partial): normalization of raw ingested Arabic legal text before
+it's split into articles / indexed for search.
+
+The lightweight helpers actually used today by search live in
+app/utils/arabic.py (diacritics stripping, digit/alef normalization) and are
+real, working code -- reused here.
+
+What's still a stub / needs real corpus data to build properly:
+- OCR-artifact cleanup (broken ligatures, stray line breaks mid-word from
+  justified PDF columns, reversed Arabic-Indic numerals from bad OCR).
+- Canonicalizing law/article header formatting variants across different
+  sources (gazette PDFs vs. scraped HTML) into one consistent shape before
+  app.ingestion.split_articles runs.
+"""
+from app.utils.arabic import simple_normalize
+
+
+def normalize_ingested_text(raw_text: str) -> str:
+    """
+    Currently just applies the basic normalization pipeline used by search.
+    TODO: extend with OCR-artifact cleanup and source-specific header
+    canonicalization once real ingested documents are available to test
+    against.
+    """
+    return simple_normalize(raw_text)
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\ingestion\ocr.py
+"""
+TODO STUB: OCR for scanned/image-only legal documents.
+
+Intended behavior once implemented:
+- Accept an image or a PDF page rendered to an image.
+- Run an Arabic-capable OCR engine (e.g. Tesseract with the `ara` language
+  pack, or a cloud OCR API) over the image.
+- Return recognized text plus a confidence score so low-confidence pages
+  can be flagged for manual review in the admin panel
+  (see app/api/admin.py -- PATCH /admin/documents/{id}).
+
+Not implemented yet: requires bundling/deploying an OCR engine and real
+scanned source documents to validate against, neither of which exist in
+this scaffold. Returns a clearly-labeled placeholder result.
+"""
+from typing import Optional, TypedDict
+
+
+class OcrResult(TypedDict):
+    text: Optional[str]
+    confidence: Optional[float]
+    status: str  # "ok" | "not_implemented" | "failed"
+
+
+def ocr_image(image_path: str) -> OcrResult:
+    """STUB: always returns not_implemented until a real OCR engine is wired up."""
+    return OcrResult(text=None, confidence=None, status="not_implemented")
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\ingestion\split_articles.py
+"""
+TODO STUB: split a full law's normalized text into individual Article rows.
+
+Intended behavior once implemented:
+- Scan the normalized full text (see app.ingestion.normalize_arabic) for
+  article boundary markers, typically lines starting with "مادة" or
+  "المادة" followed by a number (optionally "مكرر").
+- For each boundary, capture the article number and the text up to the next
+  boundary (or end of document/chapter).
+- Detect chapter/section headers (e.g. "الباب الأول", "الفصل الثاني") to
+  populate Article.chapter / Article.section.
+- Create one app.models.legal.Article row per detected article, linked to
+  the parent Law, preserving order via Article.order_index.
+
+Not implemented yet: needs a real, representative set of ingested law texts
+to validate the boundary-detection regexes against (formatting varies
+significantly between sources). Returns a clearly-labeled placeholder so
+the ingestion pipeline can be wired end-to-end now and this step swapped in
+later without touching any other module.
+"""
+from typing import List, TypedDict
+
+
+class SplitArticleResult(TypedDict):
+    article_number: str
+    text: str
+    chapter: str
+
+
+def split_law_into_articles(law_full_text: str) -> List[SplitArticleResult]:
+    """STUB: always returns an empty list until real boundary-detection is implemented."""
+    return []
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\ingestion\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\models\base.py
+"""
+Declarative base and common mixins shared by all ORM models.
+"""
+import uuid
+from datetime import datetime, timezone
+
+from sqlalchemy import DateTime, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def new_uuid() -> str:
+    return str(uuid.uuid4())
+
+
+class Base(DeclarativeBase):
+    """Shared declarative base for all models (imported by Alembic env.py)."""
+    pass
+
+
+class IDMixin:
+    """UUID primary key stored as a string (portable across SQLite/Postgres)."""
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=new_uuid, index=True
+    )
+
+
+class TimestampMixin:
+    """created_at / updated_at columns maintained automatically."""
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow, nullable=False
+    )
+
+
+class BaseModel(IDMixin, TimestampMixin, Base):
+    """Convenience combined base: id + created_at + updated_at."""
+    __abstract__ = True
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\models\judgments.py
+"""
+Judgments and topic/relationship graph models: judgments, courts, legal_topics,
+article_topics, judgment_topics, legal_relationships.
+"""
+from datetime import date
+from typing import List, Optional
+
+from sqlalchemy import Date, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.base import BaseModel
+
+
+class Court(BaseModel):
+    """A court, e.g. محكمة النقض (Court of Cassation)."""
+
+    __tablename__ = "courts"
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    level: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # cassation/appeal/first_instance
+    city: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+
+    judgments: Mapped[List["Judgment"]] = relationship(back_populates="court")
+
+    def __repr__(self) -> str:
+        return f"<Court id={self.id} name={self.name!r}>"
+
+
+class Judgment(BaseModel):
+    """A court judgment/ruling used as precedent."""
+
+    __tablename__ = "judgments"
+
+    court_id: Mapped[Optional[str]] = mapped_column(ForeignKey("courts.id"), nullable=True)
+    source_id: Mapped[Optional[str]] = mapped_column(ForeignKey("sources.id"), nullable=True)
+    case_number: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    chamber: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    judgment_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    full_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(30), default="published")
+
+    court: Mapped[Optional["Court"]] = relationship(back_populates="judgments")
+    source: Mapped[Optional["Source"]] = relationship()
+    topics: Mapped[List["JudgmentTopic"]] = relationship(back_populates="judgment", cascade="all, delete-orphan")
+
+    def __repr__(self) -> str:
+        return f"<Judgment id={self.id} case_number={self.case_number!r} year={self.year}>"
+
+
+class LegalTopic(BaseModel):
+    """A legal subject-matter tag (e.g. 'الإيجار', 'الطلاق'), hierarchical."""
+
+    __tablename__ = "legal_topics"
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    name_ar: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    parent_topic_id: Mapped[Optional[str]] = mapped_column(ForeignKey("legal_topics.id"), nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    parent: Mapped[Optional["LegalTopic"]] = relationship(remote_side="LegalTopic.id")
+
+    def __repr__(self) -> str:
+        return f"<LegalTopic id={self.id} name={self.name!r}>"
+
+
+class ArticleTopic(BaseModel):
+    """Association: article <-> legal topic."""
+
+    __tablename__ = "article_topics"
+
+    article_id: Mapped[str] = mapped_column(ForeignKey("articles.id"), nullable=False)
+    topic_id: Mapped[str] = mapped_column(ForeignKey("legal_topics.id"), nullable=False)
+
+    article: Mapped["Article"] = relationship()
+    topic: Mapped["LegalTopic"] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<ArticleTopic article_id={self.article_id} topic_id={self.topic_id}>"
+
+
+class JudgmentTopic(BaseModel):
+    """Association: judgment <-> legal topic."""
+
+    __tablename__ = "judgment_topics"
+
+    judgment_id: Mapped[str] = mapped_column(ForeignKey("judgments.id"), nullable=False)
+    topic_id: Mapped[str] = mapped_column(ForeignKey("legal_topics.id"), nullable=False)
+
+    judgment: Mapped["Judgment"] = relationship(back_populates="topics")
+    topic: Mapped["LegalTopic"] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<JudgmentTopic judgment_id={self.judgment_id} topic_id={self.topic_id}>"
+
+
+class LegalRelationship(BaseModel):
+    """
+    Generic typed edge between two legal entities, e.g. a judgment that
+    'interprets' an article, or a law that 'repeals' another law.
+
+    source_type/target_type + *_id are a polymorphic reference (not a real
+    FK, since the target table varies) into one of: article, law, judgment,
+    regulation, ministerial_decision.
+    """
+
+    __tablename__ = "legal_relationships"
+
+    source_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    source_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    target_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    target_id: Mapped[str] = mapped_column(String(36), nullable=False)
+    relationship_type: Mapped[str] = mapped_column(String(50), nullable=False)  # cites/amends/interprets/repeals
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    def __repr__(self) -> str:
+        return (
+            f"<LegalRelationship {self.source_type}:{self.source_id} "
+            f"-{self.relationship_type}-> {self.target_type}:{self.target_id}>"
+        )
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\models\legal.py
+"""
+Core legal corpus models: sources, documents, laws, law_versions, articles,
+article_versions, amendments, regulations, ministerial_decisions.
+"""
+from datetime import date
+from typing import List, Optional
+
+from sqlalchemy import Date, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.base import BaseModel
+
+
+class Source(BaseModel):
+    """Where a piece of legal content came from (gazette, official site, upload...)."""
+
+    __tablename__ = "sources"
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(50), nullable=False, default="official")
+    url: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+    publisher: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    reliability_score: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    documents: Mapped[List["Document"]] = relationship(back_populates="source")
+
+    def __repr__(self) -> str:
+        return f"<Source id={self.id} name={self.name!r}>"
+
+
+class Document(BaseModel):
+    """A raw ingested document (PDF/HTML/etc.) before/after structuring into laws/judgments."""
+
+    __tablename__ = "documents"
+
+    source_id: Mapped[Optional[str]] = mapped_column(ForeignKey("sources.id"), nullable=True)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    document_type: Mapped[str] = mapped_column(String(50), nullable=False, default="law")
+    file_path: Mapped[Optional[str]] = mapped_column(String(1000), nullable=True)
+    raw_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    language: Mapped[str] = mapped_column(String(10), default="ar")
+    published_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    status: Mapped[str] = mapped_column(String(30), default="pending")  # pending/processed/failed
+
+    source: Mapped[Optional["Source"]] = relationship(back_populates="documents")
+    laws: Mapped[List["Law"]] = relationship(back_populates="document")
+
+    def __repr__(self) -> str:
+        return f"<Document id={self.id} title={self.title!r} status={self.status}>"
+
+
+class Law(BaseModel):
+    """A named law/statute, e.g. 'قانون العقوبات رقم 58 لسنة 1937'."""
+
+    __tablename__ = "laws"
+
+    document_id: Mapped[Optional[str]] = mapped_column(ForeignKey("documents.id"), nullable=True)
+    source_id: Mapped[Optional[str]] = mapped_column(ForeignKey("sources.id"), nullable=True)
+    law_number: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    year: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)  # e.g. civil, criminal
+    status: Mapped[str] = mapped_column(String(30), default="active")  # active/repealed/amended
+    issued_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+
+    document: Mapped[Optional["Document"]] = relationship(back_populates="laws")
+    source: Mapped[Optional["Source"]] = relationship()
+    versions: Mapped[List["LawVersion"]] = relationship(back_populates="law", cascade="all, delete-orphan")
+    articles: Mapped[List["Article"]] = relationship(back_populates="law", cascade="all, delete-orphan")
+    regulations: Mapped[List["Regulation"]] = relationship(back_populates="law")
+
+    def __repr__(self) -> str:
+        return f"<Law id={self.id} number={self.law_number} title={self.title!r}>"
+
+
+class LawVersion(BaseModel):
+    """A point-in-time snapshot of a law's full text (tracks amendments over time)."""
+
+    __tablename__ = "law_versions"
+
+    law_id: Mapped[str] = mapped_column(ForeignKey("laws.id"), nullable=False)
+    version_number: Mapped[int] = mapped_column(Integer, default=1)
+    effective_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    change_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    full_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    law: Mapped["Law"] = relationship(back_populates="versions")
+
+    def __repr__(self) -> str:
+        return f"<LawVersion id={self.id} law_id={self.law_id} v={self.version_number}>"
+
+
+class Article(BaseModel):
+    """A single article ('مادة') within a law -- the primary retrieval/citation unit."""
+
+    __tablename__ = "articles"
+
+    law_id: Mapped[str] = mapped_column(ForeignKey("laws.id"), nullable=False)
+    article_number: Mapped[str] = mapped_column(String(50), nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    chapter: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    section: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    order_index: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    status: Mapped[str] = mapped_column(String(30), default="active")  # active/repealed/amended
+
+    law: Mapped["Law"] = relationship(back_populates="articles")
+    versions: Mapped[List["ArticleVersion"]] = relationship(
+        back_populates="article", cascade="all, delete-orphan"
+    )
+    amendments: Mapped[List["Amendment"]] = relationship(back_populates="article")
+
+    def __repr__(self) -> str:
+        return f"<Article id={self.id} law_id={self.law_id} number={self.article_number!r}>"
+
+
+class ArticleVersion(BaseModel):
+    """A point-in-time snapshot of a single article's text."""
+
+    __tablename__ = "article_versions"
+
+    article_id: Mapped[str] = mapped_column(ForeignKey("articles.id"), nullable=False)
+    version_number: Mapped[int] = mapped_column(Integer, default=1)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    effective_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    change_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    article: Mapped["Article"] = relationship(back_populates="versions")
+
+    def __repr__(self) -> str:
+        return f"<ArticleVersion id={self.id} article_id={self.article_id} v={self.version_number}>"
+
+
+class Amendment(BaseModel):
+    """Records that a law/article was amended by another law, with effective date."""
+
+    __tablename__ = "amendments"
+
+    article_id: Mapped[Optional[str]] = mapped_column(ForeignKey("articles.id"), nullable=True)
+    law_id: Mapped[Optional[str]] = mapped_column(ForeignKey("laws.id"), nullable=True)
+    amending_law_id: Mapped[Optional[str]] = mapped_column(ForeignKey("laws.id"), nullable=True)
+    amendment_type: Mapped[str] = mapped_column(String(30), default="modification")  # modification/repeal/addition
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    effective_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+
+    article: Mapped[Optional["Article"]] = relationship(back_populates="amendments", foreign_keys=[article_id])
+    law: Mapped[Optional["Law"]] = relationship(foreign_keys=[law_id])
+    amending_law: Mapped[Optional["Law"]] = relationship(foreign_keys=[amending_law_id])
+
+    def __repr__(self) -> str:
+        return f"<Amendment id={self.id} type={self.amendment_type}>"
+
+
+class Regulation(BaseModel):
+    """Executive regulation ('اللائحة التنفيذية') attached to a law."""
+
+    __tablename__ = "regulations"
+
+    law_id: Mapped[Optional[str]] = mapped_column(ForeignKey("laws.id"), nullable=True)
+    source_id: Mapped[Optional[str]] = mapped_column(ForeignKey("sources.id"), nullable=True)
+    regulation_number: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    issued_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    law: Mapped[Optional["Law"]] = relationship(back_populates="regulations")
+    source: Mapped[Optional["Source"]] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<Regulation id={self.id} title={self.title!r}>"
+
+
+class MinisterialDecision(BaseModel):
+    """A ministerial decree/decision ('قرار وزاري'), optionally tied to a law."""
+
+    __tablename__ = "ministerial_decisions"
+
+    related_law_id: Mapped[Optional[str]] = mapped_column(ForeignKey("laws.id"), nullable=True)
+    source_id: Mapped[Optional[str]] = mapped_column(ForeignKey("sources.id"), nullable=True)
+    decision_number: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    ministry: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    issued_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    related_law: Mapped[Optional["Law"]] = relationship()
+    source: Mapped[Optional["Source"]] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<MinisterialDecision id={self.id} title={self.title!r}>"
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\models\system.py
+"""
+System/infrastructure models: embeddings, search_logs, answer_citations,
+evaluation_results, audit_logs.
+"""
+from datetime import datetime
+from typing import Optional
+
+from sqlalchemy import Float, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.base import BaseModel
+
+
+class Embedding(BaseModel):
+    """
+    Vector embedding for a piece of content (article, judgment, document...).
+
+    TODO: this is a stub. `vector` is stored as a JSON-encoded list of floats
+    in a Text column so it works on SQLite today. Once the corpus is large
+    enough to justify Postgres, swap this column to `pgvector.sqlalchemy.Vector`
+    and migrate DATABASE_URL to Postgres -- no other app code needs to change
+    since retrieval goes through app/search/vector.py.
+    """
+
+    __tablename__ = "embeddings"
+
+    entity_type: Mapped[str] = mapped_column(String(50), nullable=False)  # article/judgment/document
+    entity_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    model_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    dimension: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    vector: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # TODO: pgvector.Vector later
+
+    def __repr__(self) -> str:
+        return f"<Embedding id={self.id} entity_type={self.entity_type} entity_id={self.entity_id}>"
+
+
+class SearchLog(BaseModel):
+    """Logs every search/query for analytics and evaluation."""
+
+    __tablename__ = "search_logs"
+
+    user_id: Mapped[Optional[str]] = mapped_column(ForeignKey("users.id"), nullable=True)
+    query_text: Mapped[str] = mapped_column(Text, nullable=False)
+    query_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # keyword/exact_reference/hybrid
+    results_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    latency_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
+    user: Mapped[Optional["User"]] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<SearchLog id={self.id} query={self.query_text[:30]!r}>"
+
+
+class AnswerCitation(BaseModel):
+    """Links a chat message's answer to the specific source(s) it cited."""
+
+    __tablename__ = "answer_citations"
+
+    message_id: Mapped[str] = mapped_column(ForeignKey("messages.id"), nullable=False)
+    article_id: Mapped[Optional[str]] = mapped_column(ForeignKey("articles.id"), nullable=True)
+    judgment_id: Mapped[Optional[str]] = mapped_column(ForeignKey("judgments.id"), nullable=True)
+    source_type: Mapped[str] = mapped_column(String(50), nullable=False)  # article/judgment/regulation/...
+    citation_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    relevance_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+
+    message: Mapped["Message"] = relationship()
+    article: Mapped[Optional["Article"]] = relationship()
+    judgment: Mapped[Optional["Judgment"]] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<AnswerCitation id={self.id} message_id={self.message_id} source_type={self.source_type}>"
+
+
+class EvaluationResult(BaseModel):
+    """Human or automated evaluation of an answer's quality (for the admin dashboard)."""
+
+    __tablename__ = "evaluation_results"
+
+    message_id: Mapped[Optional[str]] = mapped_column(ForeignKey("messages.id"), nullable=True)
+    evaluator: Mapped[str] = mapped_column(String(50), default="auto")  # human/auto
+    score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    criteria: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)  # e.g. "groundedness"
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    message: Mapped[Optional["Message"]] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<EvaluationResult id={self.id} score={self.score}>"
+
+
+class AuditLog(BaseModel):
+    """Tracks admin/user actions for accountability (source edits, reindex triggers, etc.)."""
+
+    __tablename__ = "audit_logs"
+
+    user_id: Mapped[Optional[str]] = mapped_column(ForeignKey("users.id"), nullable=True)
+    action: Mapped[str] = mapped_column(String(100), nullable=False)
+    entity_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    entity_id: Mapped[Optional[str]] = mapped_column(String(36), nullable=True)
+    details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON-encoded string
+    ip_address: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
+
+    user: Mapped[Optional["User"]] = relationship()
+
+    def __repr__(self) -> str:
+        return f"<AuditLog id={self.id} action={self.action!r}>"
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\models\users.py
+"""
+User-facing models: users, conversations, messages, cases, documents_uploaded.
+"""
+from datetime import datetime
+from typing import List, Optional
+
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.models.base import BaseModel
+
+
+class User(BaseModel):
+    __tablename__ = "users"
+
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    full_name: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    role: Mapped[str] = mapped_column(String(20), default="user")  # user/admin
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_login_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    conversations: Mapped[List["Conversation"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    cases: Mapped[List["Case"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    documents_uploaded: Mapped[List["DocumentUploaded"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"<User id={self.id} email={self.email!r}>"
+
+
+class Conversation(BaseModel):
+    __tablename__ = "conversations"
+
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
+    title: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="active")
+
+    user: Mapped["User"] = relationship(back_populates="conversations")
+    messages: Mapped[List["Message"]] = relationship(
+        back_populates="conversation", cascade="all, delete-orphan", order_by="Message.created_at"
+    )
+
+    def __repr__(self) -> str:
+        return f"<Conversation id={self.id} user_id={self.user_id}>"
+
+
+class Message(BaseModel):
+    __tablename__ = "messages"
+
+    conversation_id: Mapped[str] = mapped_column(ForeignKey("conversations.id"), nullable=False)
+    role: Mapped[str] = mapped_column(String(20), nullable=False)  # user/assistant/system
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    conversation: Mapped["Conversation"] = relationship(back_populates="messages")
+
+    def __repr__(self) -> str:
+        return f"<Message id={self.id} role={self.role} conversation_id={self.conversation_id}>"
+
+
+class Case(BaseModel):
+    """A user's personal legal matter/file (not a court case record)."""
+
+    __tablename__ = "cases"
+
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    case_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    status: Mapped[str] = mapped_column(String(30), default="open")  # open/closed/archived
+
+    user: Mapped["User"] = relationship(back_populates="cases")
+    documents_uploaded: Mapped[List["DocumentUploaded"]] = relationship(back_populates="case")
+
+    def __repr__(self) -> str:
+        return f"<Case id={self.id} title={self.title!r} status={self.status}>"
+
+
+class DocumentUploaded(BaseModel):
+    """A file a user uploaded (evidence, contract, etc.) -- OCR/analysis is a TODO stub."""
+
+    __tablename__ = "documents_uploaded"
+
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
+    case_id: Mapped[Optional[str]] = mapped_column(ForeignKey("cases.id"), nullable=True)
+    filename: Mapped[str] = mapped_column(String(500), nullable=False)
+    file_path: Mapped[str] = mapped_column(String(1000), nullable=False)
+    mime_type: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    ocr_status: Mapped[str] = mapped_column(String(30), default="pending")  # pending/processing/done/failed/not_applicable
+    extracted_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    user: Mapped["User"] = relationship(back_populates="documents_uploaded")
+    case: Mapped[Optional["Case"]] = relationship(back_populates="documents_uploaded")
+
+    def __repr__(self) -> str:
+        return f"<DocumentUploaded id={self.id} filename={self.filename!r} status={self.ocr_status}>"
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\models\__init__.py
+"""
+Import Base and every model here so Alembic autogenerate (and SQLAlchemy's
+mapper configuration in general) can see the full schema.
+"""
+from app.models.base import Base  # noqa: F401
+
+# legal.py
+from app.models.legal import (  # noqa: F401
+    Source,
+    Document,
+    Law,
+    LawVersion,
+    Article,
+    ArticleVersion,
+    Amendment,
+    Regulation,
+    MinisterialDecision,
+)
+
+# judgments.py
+from app.models.judgments import (  # noqa: F401
+    Court,
+    Judgment,
+    LegalTopic,
+    ArticleTopic,
+    JudgmentTopic,
+    LegalRelationship,
+)
+
+# users.py
+from app.models.users import (  # noqa: F401
+    User,
+    Conversation,
+    Message,
+    Case,
+    DocumentUploaded,
+)
+
+# system.py
+from app.models.system import (  # noqa: F401
+    Embedding,
+    SearchLog,
+    AnswerCitation,
+    EvaluationResult,
+    AuditLog,
+)
+
+__all__ = [
+    "Base",
+    "Source",
+    "Document",
+    "Law",
+    "LawVersion",
+    "Article",
+    "ArticleVersion",
+    "Amendment",
+    "Regulation",
+    "MinisterialDecision",
+    "Court",
+    "Judgment",
+    "LegalTopic",
+    "ArticleTopic",
+    "JudgmentTopic",
+    "LegalRelationship",
+    "User",
+    "Conversation",
+    "Message",
+    "Case",
+    "DocumentUploaded",
+    "Embedding",
+    "SearchLog",
+    "AnswerCitation",
+    "EvaluationResult",
+    "AuditLog",
+]
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\rag\analyzer.py
+"""
+Question-understanding step of the RAG pipeline (mirrors the "analyzer" of
+the 5-agent pattern: analyzer -> search -> rag -> answer_builder -> [critic,
+future]). Extracts a structured JSON summary of the user's question via
+Gemini: legal_area, facts, dates, missing_info.
+"""
+import json
+import logging
+from typing import Any, Dict
+
+from app.rag.engine import GeminiUnavailableError, call_gemini_with_retry
+
+logger = logging.getLogger(__name__)
+
+ANALYZER_SYSTEM_PROMPT = """\
+أنت محلل أسئلة قانونية للقانون المصري. مهمتك الوحيدة هي قراءة سؤال المستخدم واستخراج
+معلومات منظمة عنه بصيغة JSON فقط، دون أي إجابة قانونية أو استنتاج قانوني. لا تخترع وقائع
+لم يذكرها المستخدم صراحة.
+"""
+
+_ANALYZER_SCHEMA_INSTRUCTIONS = """أعد النتيجة بصيغة JSON فقط بالمخطط التالي بالضبط:
+{
+  "legal_area": "<المجال القانوني الأقرب للسؤال، مثل: قانون مدني، قانون جنائي، قانون عمل...>",
+  "facts": ["<وقائع صريحة مذكورة في السؤال>"],
+  "dates": ["<أي تواريخ مذكورة في السؤال>"],
+  "missing_info": ["<معلومات ناقصة قد تلزم لإجابة أدق>"]
+}"""
+
+_DEFAULT_ANALYSIS: Dict[str, Any] = {
+    "legal_area": "غير محدد",
+    "facts": [],
+    "dates": [],
+    "missing_info": ["تعذر تحليل السؤال آلياً -- يرجى إضافة تفاصيل إضافية."],
+}
+
+
+def analyze_question(question: str) -> Dict[str, Any]:
+    """
+    Returns a dict with keys: legal_area, facts, dates, missing_info.
+    Falls back to a safe default (and logs a warning) if Gemini is not
+    configured or the call/parse fails -- callers should treat this as
+    best-effort, not a hard dependency.
+    """
+    prompt = f"سؤال المستخدم:\n{question}\n\n{_ANALYZER_SCHEMA_INSTRUCTIONS}"
+    try:
+        raw = call_gemini_with_retry(
+            contents=prompt,
+            system_instruction=ANALYZER_SYSTEM_PROMPT,
+            response_mime_type="application/json",
+            max_output_tokens=512,
+        )
+        data = json.loads(raw)
+        # Make sure required keys always exist even if the model omits one.
+        for key in ("legal_area", "facts", "dates", "missing_info"):
+            data.setdefault(key, _DEFAULT_ANALYSIS[key])
+        return data
+    except GeminiUnavailableError as exc:
+        logger.warning("Analyzer: Gemini unavailable, using default analysis: %s", exc)
+        return dict(_DEFAULT_ANALYSIS)
+    except (json.JSONDecodeError, TypeError, ValueError) as exc:
+        logger.warning("Analyzer: failed to parse Gemini JSON response: %s", exc)
+        return dict(_DEFAULT_ANALYSIS)
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\rag\answer_builder.py
+"""
+Parses and builds the structured Arabic legal answer (8-section JSON dict).
+
+All public functions return a plain Python dict whose keys match LegalAnswerOut
+(see app/schemas/chat.py). The dict is passed directly to LegalAnswerOut(**dict)
+in the API layer, so every key must be present and correctly typed.
+"""
+import json
+import logging
+from typing import Any, Dict, List, Optional
+
+from app.schemas.legal import SearchResultItem
+
+logger = logging.getLogger(__name__)
+
+_DISCLAIMER = (
+    "هذه الإجابة لأغراض تعليمية وإرشادية فقط ولا تُغني عن استشارة محامٍ مختص "
+    "مرخّص له بمزاولة المهنة."
+)
+
+_EMPTY_ANSWER: Dict[str, Any] = {
+    "understandingOfQuestion": "",
+    "legalDomain": "غير محدد",
+    "relevantLegalTexts": [],
+    "explanation": "",
+    "preliminaryApplication": "",
+    "missingInformation": [],
+    "possibleProcedures": [],
+    "answerSources": [],
+    "disclaimer": _DISCLAIMER,
+}
+
+
+def parse_gemini_answer(raw_response: str) -> Dict[str, Any]:
+    """
+    Parse the structured JSON dict from Gemini's response.
+
+    The engine prompts Gemini to return JSON with exactly the 8 LegalAnswerOut
+    fields. This function extracts and validates that dict, falling back to a
+    safe skeleton when the response can't be parsed.
+    """
+    try:
+        data = json.loads(raw_response)
+        if isinstance(data, dict) and any(
+            k in data for k in ("understandingOfQuestion", "explanation", "legalDomain")
+        ):
+            # Fill any missing optional keys with safe defaults.
+            result = dict(_EMPTY_ANSWER)
+            result.update(data)
+            return result
+    except (json.JSONDecodeError, AttributeError, TypeError) as exc:
+        logger.warning("answer_builder: failed to parse Gemini JSON: %s", exc)
+
+    # If it's not structured JSON, wrap the raw text in the explanation field.
+    result = dict(_EMPTY_ANSWER)
+    result["explanation"] = raw_response.strip() if raw_response else "تعذر توليد إجابة."
+    return result
+
+
+def build_fallback_answer(
+    question: str,
+    analysis: Optional[Dict[str, Any]],
+    context_results: List[SearchResultItem],
+    note: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Deterministically assembles a valid 8-section answer dict without calling
+    any model -- used when Gemini is unavailable so the endpoint still returns
+    a well-formed, non-fabricated reply.
+    """
+    analysis = analysis or {}
+    legal_area = analysis.get("legal_area", "غير محدد")
+    missing_info: List[str] = analysis.get("missing_info") or []
+
+    answer_sources = [
+        {
+            "id": r.id or "",
+            "lawName": r.title or "",
+            "articleNumber": None,
+            "kind": "other",
+            "status": "current",
+            "excerpt": (r.snippet or "")[:300],
+            "basis": "ai_inference",
+        }
+        for r in context_results
+    ]
+
+    return {
+        "understandingOfQuestion": question or "لم يتم استلام سؤال واضح.",
+        "legalDomain": legal_area,
+        "relevantLegalTexts": [],
+        "explanation": (
+            note
+            or "خدمة الذكاء الاصطناعي غير متاحة حالياً. يرجى إعادة المحاولة لاحقاً."
+        ),
+        "preliminaryApplication": (
+            "لا يمكن تقديم تطبيق مبدئي موثوق دون نصوص قانونية مسترجعة كافية."
+        ),
+        "missingInformation": (
+            missing_info if missing_info else ["يرجى تزويدنا بمزيد من تفاصيل الواقعة."]
+        ),
+        "possibleProcedures": [
+            "يُنصح باستشارة محامٍ مختص لتحديد الإجراءات القانونية المناسبة لحالتك."
+        ],
+        "answerSources": answer_sources,
+        "disclaimer": _DISCLAIMER,
+    }
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\rag\engine.py
+"""
+RAG engine: assembles retrieved legal sources into a grounding context,
+calls Google Gemini, and enforces the no-hallucination system prompt.
+
+Answers are always in Arabic and MUST follow the 8-section format returned
+as structured JSON (matching LegalAnswerOut schema in app/schemas/chat.py).
+The model is explicitly forbidden from inventing laws, articles, judgments,
+or citations -- if the retrieved context is insufficient, answer from your comprehensive knowledge of Egyptian law -- explain what the law says, the exact procedures, where to go, and what will happen step by step. Never invent fake article numbers.
+"""
+import logging
+import time
+from typing import Any, Dict, List, Optional
+
+from app.config import settings
+from app.schemas.legal import SearchResultItem
+
+logger = logging.getLogger(__name__)
+
+NO_HALLUCINATION_SYSTEM_PROMPT = """
+أنت مستشار قانوني مصري متخصص. تتكلم مع العميل مباشرة كأنك محامي موثوق يجلس معه وجهاً لوجه.
+
+هدفك الوحيد: أن يخرج العميل من المحادثة وهو يعرف بالضبط ما هي حقوقه، ماذا يفعل، وأين يذهب — بدون أن يحتاج لأي مصدر آخر.
+
+═══════════════════════════════════════
+قواعد الاستشهاد — ملزمة تماماً
+═══════════════════════════════════════
+
+قبل الاستشهاد بأي مادة قانونية، تحقق:
+- هل النص الحرفي للمادة يعالج المسألة التي يسألها العميل فعلاً؟
+- مثال: مادة السرقة ليست دليلاً على صحة الاعتراف حتى لو القضية عن سرقة.
+
+إذا كان السياق المُرفق يحتوي مواد قانونية — استشهد بها حرفياً مع اسم القانون الوارد في المصدر.
+إذا لم تجد مادة مناسبة في السياق — اذكر ذلك صراحة ثم أجب من معرفتك بالقانون المصري.
+لا تخترع أرقام مواد. إذا لم تتذكر رقم المادة بالضبط، اذكر القانون والمبدأ فقط.
+
+═══════════════════════════════════════
+تنسيق الإجابة — اتبعه دائماً
+═══════════════════════════════════════
+
+**١. حكمك على الوضع (٣ أسطر بالكثير)**
+ابدأ بجملة مباشرة تخبر العميل وضعه القانوني بالضبط.
+مثال: "وضعك قانونياً واضح: الاعتراف الذي انتُزع منك بالإكراه باطل ولا تستطيع المحكمة الاستناد إليه."
+
+---
+
+**٢. ما يقوله القانون**
+اذكر المادة القانونية باسمها الكامل (القانون + رقمه + سنته + رقم المادة).
+اقتبس النص الحرفي.
+ثم اشرح بكلمات بسيطة ماذا يعني هذا للعميل تحديداً.
+
+---
+
+**٣. حقوقك الآن**
+قائمة نقطية واضحة بكل حق يملكه العميل في هذا الوضع.
+
+---
+
+**٤. خطواتك العملية (بالترتيب)**
+خطوة ١: [ماذا يفعل] — [أين يذهب تحديداً] — [المستندات المطلوبة]
+خطوة ٢: ...
+خطوة ٣: ...
+اذكر التسلسل الصحيح. لا تترك خطوة غامضة.
+
+---
+
+**٥. المستندات التي تحتاجها**
+قائمة بكل ورقة بالاسم الرسمي الدقيق.
+مثال: صورة بطاقة الرقم القومي / عقد الإيجار الأصلي / التقرير الطبي الجنائي / إيصال سداد الرسوم.
+
+---
+
+**٦. المواعيد والمدد القانونية**
+اذكر كل موعد مهم بوضوح.
+مثال: "لديك ٣٠ يوماً من تاريخ صدور الحكم للاستئناف — لا تتأخر."
+
+---
+
+**٧. إذا خسرت — خياراتك**
+- الاستئناف: أمام أي محكمة؟ في كم يوم؟
+- الطعن بالنقض: شروطه ومواعيده (٦٠ يوم من تاريخ الحكم).
+- التماس إعادة النظر: متى يجوز؟
+
+---
+
+**٨. احمِ نفسك الآن**
+ما الذي يجب فعله فوراً لحماية حقوقه قبل فوات الأوان؟
+ما الأدلة التي يجب توثيقها اليوم؟
+هل هناك إجراء مستعجل (حجز احتياطي، أمر وقتي، إيقاف تنفيذ)؟
+
+---
+
+*تنبيه: هذه معلومات قانونية تعليمية ولا تُغني عن استشارة محامٍ مرخّص في القضايا المعقدة.*
+
+═══════════════════════════════════════
+أسلوب الكتابة
+═══════════════════════════════════════
+
+- خاطب العميل مباشرة: "حقك هو..." "يجب عليك..." "لا يحق لهم..."
+- كن واثقاً وحاسماً. لا تتردد.
+- استخدم العناوين والنقاط دائماً.
+- اكتب بعربية واضحة يفهمها أي شخص عادي.
+- لا تبدأ بـ "وفقاً لما سبق" أو "بناء على ذلك" — ابدأ بالحكم مباشرة.
+- الإجابة دائماً باللغة العربية.
+"""
+
+
+class GeminiUnavailableError(Exception):
+    """Raised when the Gemini API cannot be reached or is not configured."""
+
+
+def _get_client():
+    """Lazily construct a genai client so import doesn't fail without a key."""
+    if not settings.GEMINI_API_KEY:
+        raise GeminiUnavailableError("GEMINI_API_KEY is not configured.")
+    from google import genai
+
+    return genai.Client(api_key=settings.GEMINI_API_KEY)
+
+
+def call_gemini_with_retry(
+    contents: str,
+    system_instruction: str,
+    response_mime_type: str = "application/json",
+    max_output_tokens: int = 8192,
+    model: Optional[str] = None,
+) -> str:
+    """
+    Calls Gemini via google-genai, retrying once after a short sleep if the
+    API responds with 429 (rate limited) or 503 (overloaded).
+
+    Returns the raw text of the model's response. Raises GeminiUnavailableError
+    if the API key isn't configured or both attempts fail.
+    """
+    from google.genai import types
+    from google.genai import errors as genai_errors
+
+    client = _get_client()
+    model_name = model or settings.GEMINI_MODEL
+
+    attempts = 0
+    last_error: Optional[Exception] = None
+    while attempts < 2:
+        attempts += 1
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    response_mime_type=response_mime_type,
+                    max_output_tokens=max_output_tokens,
+                ),
+            )
+            return response.text or ""
+        except genai_errors.APIError as exc:  # type: ignore[attr-defined]
+            last_error = exc
+            code = getattr(exc, "code", None)
+            if code in (429, 503) and attempts < 2:
+                logger.warning("Gemini APIError %s, retrying once after backoff...", code)
+                time.sleep(2)
+                continue
+            raise GeminiUnavailableError(f"Gemini API call failed: {exc}") from exc
+        except Exception as exc:  # pragma: no cover - defensive
+            last_error = exc
+            raise GeminiUnavailableError(f"Gemini API call failed: {exc}") from exc
+
+    raise GeminiUnavailableError(f"Gemini API call failed after retries: {last_error}")
+
+
+def build_context_block(results: List[SearchResultItem]) -> str:
+    """Renders retrieved search results into a labeled context block for the prompt.
+    Includes law title and article number so Gemini never needs to invent them."""
+    if not results:
+        return "لا توجد نصوص قانونية مسترجعة — أجب من معرفتك بالقانون المصري مع ذكر القانون والمادة."
+    lines = []
+    for idx, r in enumerate(results, start=1):
+        # Title now contains "المادة X — اسم القانون" from keyword.py
+        lines.append(
+            f"[مصدر {idx}]\n"
+            f"المصدر: {r.title}\n"
+            f"النص الحرفي: {r.snippet}\n"
+            f"(يجب الاستشهاد بهذا المصدر حرفياً في الإجابة)"
+        )
+    return "\n\n".join(lines)
+
+
+def generate_answer(
+    question: str,
+    context_results: List[SearchResultItem],
+    analysis: Optional[Dict[str, Any]] = None,
+    conversation_history: Optional[List[Dict[str, str]]] = None,
+) -> str:
+    """
+    Calls Gemini to produce a structured JSON answer matching the 8-section
+    LegalAnswerOut schema. Returns the raw JSON string from the model.
+    """
+    context_block = build_context_block(context_results)
+
+    analysis_block = ""
+    if analysis:
+        analysis_block = f"\nتحليل أولي للسؤال (JSON): {analysis}\n"
+
+    history_block = ""
+    if conversation_history:
+        lines = []
+        for turn in conversation_history[-4:]:  # last 4 turns for context window
+            role_label = "المستخدم" if turn["role"] == "user" else "المساعد"
+            lines.append(f"{role_label}: {turn['content'][:300]}")
+        history_block = "\nسياق المحادثة السابقة:\n" + "\n".join(lines) + "\n"
+
+    prompt = f"""سؤال المستخدم:
+{question}
+{analysis_block}{history_block}
+سياق البحث (المصادر القانونية المسترجعة فقط -- لا تستخدم أي معلومة من خارج هذا السياق):
+{context_block}
+
+المطلوب: أجب بصيغة JSON فقط يطابق المخطط التالي بالضبط (لا تضف مفاتيح إضافية):
+{{
+  "understandingOfQuestion": "<ملخص فهمك للسؤال في جملة أو جملتين>",
+  "legalDomain": "<المجال القانوني: مثل قانون جنائي، قانون مدني، قانون عمل، إلخ>",
+  "relevantLegalTexts": [
+    {{
+      "id": "<اسم مختصر مميز مثل civil-163>",
+      "lawName": "<اسم القانون كما ورد في السياق>",
+      "articleNumber": "<رقم المادة أو null إن لم يكن مقالاً>",
+      "kind": "<law | judgment | procedure | other>",
+      "status": "<current | historical>",
+      "excerpt": "<اقتباس مختصر من نص المصدر -- لا تخترع نصاً غير موجود في السياق>",
+      "basis": "<from_law إن كان نصاً حرفياً، أو ai_inference إن كان استنتاجاً>"
+    }}
+  ],
+  "explanation": "<الشرح التفصيلي للإجابة بناءً على السياق المسترجع فقط>",
+  "preliminaryApplication": "<تطبيق مبدئي على وقائع السؤال المحددة>",
+  "missingInformation": ["<معلومة ناقصة 1>", "<معلومة ناقصة 2>"],
+  "possibleProcedures": ["<إجراء قانوني محتمل 1>", "<إجراء قانوني محتمل 2>"],
+  "answerSources": [
+    {{
+      "id": "<اسم مختصر مميز>",
+      "lawName": "<اسم القانون>",
+      "articleNumber": "<رقم المادة أو null>",
+      "kind": "<law | judgment | procedure | other>",
+      "status": "<current | historical>",
+      "excerpt": "<نص مختصر من المصدر>",
+      "basis": "<from_law | ai_inference>"
+    }}
+  ],
+  "disclaimer": "هذه الإجابة لأغراض تعليمية وإرشادية فقط ولا تُغني عن استشارة محامٍ مختص مرخّص له بمزاولة المهنة."
+}}
+
+# RICH_INSTRUCTIONS_INJECTED
+
+
+تعليمات إلزامية لمحتوى كل حقل — لا تختصر أبداً:
+
+"explanation" (الشرح): يجب أن يكون ٤٠٠ كلمة على الأقل. اشرح:
+- النص القانوني الحرفي للمادة ومعناها.
+- الحق القانوني للعميل بالتحديد.
+- التزامات الطرف الآخر.
+- الاستثناءات والحالات الخاصة.
+- كيف تحسب المبالغ أو التعويضات إن وجدت (بالأرقام والمعادلة).
+
+"preliminaryApplication" (التطبيق): يجب أن يكون ٢٠٠ كلمة على الأقل.
+خاطب العميل مباشرة: "في حالتك أنت..." واشرح النتيجة المتوقعة بالتفصيل والأرقام.
+
+"possibleProcedures" (الإجراءات): يجب أن تكون ٦ خطوات على الأقل، كل خطوة جملة كاملة تتضمن:
+- الفعل المطلوب بالضبط.
+- الجهة المختصة بالاسم (مكتب العمل / المحكمة العمالية الابتدائية / النيابة / الشهر العقاري).
+- المستندات المطلوبة بالاسم.
+- الميعاد القانوني بالأيام أو الشهور.
+- خطوة عن الاستئناف (٣٠ يوماً) وخطوة عن الطعن بالنقض (٦٠ يوماً).
+
+"missingInformation": ٣ عناصر على الأقل — ما الذي يغيّر النتيجة لو عرفناه.
+
+اكتب بأسلوب محامٍ واثق يخاطب موكله: "حقك هو..." "يجب عليك..." "لا يحق لهم...".
+لا تكتب جملاً عامة. كل جملة يجب أن تحمل معلومة عملية.
+
+"""
+    raw = call_gemini_with_retry(
+        contents=prompt,
+        system_instruction=NO_HALLUCINATION_SYSTEM_PROMPT,
+        response_mime_type="application/json",
+        max_output_tokens=8192,
+    )
+    return raw
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\rag\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\repositories\judgment_repository.py
+"""Thin DB access layer for judgments/courts."""
+from typing import List, Optional
+
+from sqlalchemy.orm import Session
+
+from app.models.judgments import Court, Judgment
+
+
+class JudgmentRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get(self, judgment_id: str) -> Optional[Judgment]:
+        return self.db.query(Judgment).filter(Judgment.id == judgment_id).first()
+
+    def list(self, skip: int = 0, limit: int = 20) -> List[Judgment]:
+        return self.db.query(Judgment).order_by(Judgment.created_at.desc()).offset(skip).limit(limit).all()
+
+    def list_by_court(self, court_id: str, skip: int = 0, limit: int = 20) -> List[Judgment]:
+        return (
+            self.db.query(Judgment)
+            .filter(Judgment.court_id == court_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def get_court(self, court_id: str) -> Optional[Court]:
+        return self.db.query(Court).filter(Court.id == court_id).first()
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\repositories\legal_repository.py
+"""Thin DB access layer for laws/articles/sources."""
+from typing import List, Optional
+
+from sqlalchemy.orm import Session
+
+from app.models.legal import Article, Law, Source
+
+
+class LegalRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def list_laws(self, skip: int = 0, limit: int = 20) -> List[Law]:
+        return self.db.query(Law).order_by(Law.created_at.desc()).offset(skip).limit(limit).all()
+
+    def get_law(self, law_id: str) -> Optional[Law]:
+        return self.db.query(Law).filter(Law.id == law_id).first()
+
+    def get_article(self, article_id: str) -> Optional[Article]:
+        return self.db.query(Article).filter(Article.id == article_id).first()
+
+    def get_source(self, source_id: str) -> Optional[Source]:
+        return self.db.query(Source).filter(Source.id == source_id).first()
+
+    def create_source(self, source: Source) -> Source:
+        self.db.add(source)
+        self.db.commit()
+        self.db.refresh(source)
+        return source
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\repositories\user_repository.py
+"""Thin DB access layer for users/conversations/messages/cases."""
+from typing import List, Optional
+
+from sqlalchemy.orm import Session
+
+from app.models.users import Case, Conversation, Message, User
+
+
+class UserRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get_by_email(self, email: str) -> Optional[User]:
+        return self.db.query(User).filter(User.email == email).first()
+
+    def get_by_id(self, user_id: str) -> Optional[User]:
+        return self.db.query(User).filter(User.id == user_id).first()
+
+    def create(self, user: User) -> User:
+        self.db.add(user)
+        self.db.commit()
+        self.db.refresh(user)
+        return user
+
+
+class ConversationRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create(self, user_id: str, title: Optional[str] = None) -> Conversation:
+        conv = Conversation(user_id=user_id, title=title)
+        self.db.add(conv)
+        self.db.commit()
+        self.db.refresh(conv)
+        return conv
+
+    def get(self, conversation_id: str) -> Optional[Conversation]:
+        return self.db.query(Conversation).filter(Conversation.id == conversation_id).first()
+
+    def list_for_user(self, user_id: str, skip: int = 0, limit: int = 20) -> List[Conversation]:
+        return (
+            self.db.query(Conversation)
+            .filter(Conversation.user_id == user_id)
+            .order_by(Conversation.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def add_message(self, conversation_id: str, role: str, content: str) -> Message:
+        msg = Message(conversation_id=conversation_id, role=role, content=content)
+        self.db.add(msg)
+        self.db.commit()
+        self.db.refresh(msg)
+        return msg
+
+
+class CaseRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create(self, case: Case) -> Case:
+        self.db.add(case)
+        self.db.commit()
+        self.db.refresh(case)
+        return case
+
+    def get(self, case_id: str) -> Optional[Case]:
+        return self.db.query(Case).filter(Case.id == case_id).first()
+
+    def list_for_user(self, user_id: str, skip: int = 0, limit: int = 20) -> List[Case]:
+        return (
+            self.db.query(Case)
+            .filter(Case.user_id == user_id)
+            .order_by(Case.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\repositories\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\schemas\auth.py
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+    full_name: Optional[str] = None
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    email: EmailStr
+    full_name: Optional[str] = None
+    role: str
+    is_active: bool
+    created_at: datetime
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+class TokenPayload(BaseModel):
+    sub: str
+    role: Optional[str] = None
+    exp: Optional[int] = None
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\schemas\cases.py
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
+
+
+class CaseCreate(BaseModel):
+    title: str
+    description: Optional[str] = None
+    case_type: Optional[str] = None
+
+
+class CaseUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    case_type: Optional[str] = None
+    status: Optional[str] = None
+
+
+class CaseRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    user_id: str
+    title: str
+    description: Optional[str] = None
+    case_type: Optional[str] = None
+    status: str
+    created_at: datetime
+    updated_at: datetime
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\schemas\chat.py
+from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict
+
+
+class ChatRequest(BaseModel):
+    question: str
+    conversationId: Optional[str] = None
+
+
+class SourceCitation(BaseModel):
+    id: str = ""
+    lawName: str = ""
+    articleNumber: Optional[str] = None
+    kind: Optional[str] = "other"
+    status: str = "current"
+    excerpt: Optional[str] = None
+    sourceUrl: Optional[str] = None
+    basis: Optional[str] = None
+
+
+class LegalAnswerOut(BaseModel):
+    understandingOfQuestion: str = ""
+    legalDomain: str = "غير محدد"
+    relevantLegalTexts: List[SourceCitation] = []
+    explanation: str = ""
+    preliminaryApplication: str = ""
+    missingInformation: List[str] = []
+    possibleProcedures: List[str] = []
+    answerSources: List[SourceCitation] = []
+    disclaimer: str = (
+        "هذه الإجابة لأغراض تعليمية وإرشادية فقط ولا تُغني عن استشارة محامٍ مختص "
+        "مرخّص له بمزاولة المهنة."
+    )
+
+
+class CitationOut(BaseModel):
+    source_type: str
+    citation_text: Optional[str] = None
+    article_id: Optional[str] = None
+    judgment_id: Optional[str] = None
+    relevance_score: Optional[float] = None
+
+
+class ChatResponse(BaseModel):
+    conversationId: Optional[str] = None
+    answer: LegalAnswerOut
+
+
+class MessageRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    role: str
+    content: str
+    created_at: datetime
+
+
+class ConversationRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    title: Optional[str] = None
+    status: str
+    created_at: datetime
+    messages: List[MessageRead] = []
+
+
+class ConversationListItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    title: Optional[str] = None
+    status: str
+    created_at: datetime
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\schemas\documents.py
+from datetime import date, datetime
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
+
+
+class DocumentUploadedRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    user_id: str
+    case_id: Optional[str] = None
+    filename: str
+    mime_type: Optional[str] = None
+    ocr_status: str
+    extracted_text: Optional[str] = None
+    created_at: datetime
+
+
+# --- Admin-managed corpus Document (app.models.legal.Document) ---
+
+
+class AdminDocumentCreate(BaseModel):
+    title: str
+    document_type: str = "law"
+    source_id: Optional[str] = None
+    raw_text: Optional[str] = None
+    language: str = "ar"
+    published_date: Optional[date] = None
+
+
+class AdminDocumentUpdate(BaseModel):
+    title: Optional[str] = None
+    document_type: Optional[str] = None
+    raw_text: Optional[str] = None
+    status: Optional[str] = None
+    published_date: Optional[date] = None
+
+
+class AdminDocumentRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    title: str
+    document_type: str
+    status: str
+    language: str
+    created_at: datetime
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\schemas\legal.py
+from datetime import date, datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict
+
+
+class SourceCreate(BaseModel):
+    name: str
+    source_type: str = "official"
+    url: Optional[str] = None
+    publisher: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class SourceRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    source_type: str
+    url: Optional[str] = None
+    publisher: Optional[str] = None
+    created_at: datetime
+
+
+class ArticleRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    law_id: str
+    article_number: str
+    text: str
+    chapter: Optional[str] = None
+    section: Optional[str] = None
+    status: str
+
+
+class LawRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    law_number: Optional[str] = None
+    title: str
+    year: Optional[int] = None
+    category: Optional[str] = None
+    status: str
+    issued_date: Optional[date] = None
+
+
+class LawDetailRead(LawRead):
+    articles: List[ArticleRead] = []
+
+
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 10
+
+
+class SearchResultItem(BaseModel):
+    result_type: str  # "article" | "judgment"
+    id: str
+    title: str
+    snippet: str
+    score: float = 0.0
+
+
+class SearchResponse(BaseModel):
+    query: str
+    total: int
+    results: List[SearchResultItem]
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\schemas\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\search\exact_reference.py
+"""
+Detect explicit legal-article references in Arabic text, e.g. "المادة 341"
+or "المادة رقم 75 من قانون العقوبات", so exact-lookup can be prioritized
+over fuzzy keyword search.
+"""
+import re
+from dataclasses import dataclass
+from typing import List, Optional
+
+from app.utils.arabic import normalize_arabic_digits
+
+# Matches: المادة (رقم)? <number> (من <law name>)?
+_ARTICLE_REF_RE = re.compile(
+    r"(?:المادة|مادة)\s*(?:رقم)?\s*\(?\s*(\d+)\s*\)?"
+    r"(?:\s*(?:مكرر|مكررا|مكرراً))?"
+    r"(?:\s*من\s+([؀-ۿ\s]{3,60}?))?(?=[.,؛،؟!]|$)"
+)
+
+
+@dataclass
+class ArticleReference:
+    article_number: str
+    law_name: Optional[str] = None
+    raw_match: str = ""
+
+
+def extract_article_references(text: str) -> List[ArticleReference]:
+    """Find all 'المادة N (من قانون كذا)' style references in free text."""
+    if not text:
+        return []
+    normalized = normalize_arabic_digits(text)
+    refs: List[ArticleReference] = []
+    for match in _ARTICLE_REF_RE.finditer(normalized):
+        number = match.group(1)
+        law_name = match.group(2).strip() if match.group(2) else None
+        refs.append(ArticleReference(article_number=number, law_name=law_name, raw_match=match.group(0)))
+    return refs
+
+
+def has_exact_reference(text: str) -> bool:
+    return len(extract_article_references(text)) > 0
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\search\hybrid.py
+"""
+Merge exact-reference, keyword, and vector search into one ranked result list.
+Exact article references always win and are placed first.
+Now accepts an optional `legal_area` parameter to pre-filter results by law category.
+"""
+from typing import List, Optional
+
+from sqlalchemy.orm import Session
+
+from app.models.legal import Article, Law
+from app.schemas.legal import SearchResultItem
+from app.search.exact_reference import extract_article_references
+from app.search.keyword import keyword_search_articles, keyword_search_judgments
+from app.search.vector import vector_search
+
+_SNIPPET_SIZE = 500  # characters, keep consistent with keyword.py
+
+
+def hybrid_search(
+    db: Session,
+    query: str,
+    limit: int = 10,
+    legal_area: Optional[str] = None,
+) -> List[SearchResultItem]:
+    """
+    Hybrid search merging:
+      1. Exact article-number references (score=10.0, highest priority)
+      2. Keyword search (articles + judgments, scored by match density)
+      3. Vector/semantic search (cosine similarity, if embeddings are available)
+
+    When `legal_area` is provided (e.g. "قانون جنائي"), results are filtered to
+    laws whose category matches -- reducing irrelevant cross-domain noise.
+    """
+    results: List[SearchResultItem] = []
+    seen_ids = set()
+
+    # Build a set of law_ids matching the legal_area for filtering.
+    area_law_ids: Optional[set] = None
+    if legal_area and legal_area.strip() and legal_area.strip() != "غير محدد":
+        area_term = legal_area.strip()
+        matching_laws = (
+            db.query(Law.id)
+            .filter(Law.category.ilike(f"%{area_term}%"))
+            .all()
+        )
+        if matching_laws:
+            area_law_ids = {row[0] for row in matching_laws}
+            # If the filter matches no laws at all, don't restrict (avoids empty results).
+
+    # 1. Exact article-number references take priority.
+    for ref in extract_article_references(query):
+        q = db.query(Article).filter(Article.article_number == ref.article_number)
+        if area_law_ids:
+            q = q.filter(Article.law_id.in_(area_law_ids))
+        rows = q.limit(5).all()
+        for a in rows:
+            if a.id in seen_ids:
+                continue
+            seen_ids.add(a.id)
+            results.append(
+                SearchResultItem(
+                    result_type="article",
+                    id=a.id,
+                    title=f"المادة {a.article_number}",
+                    snippet=(a.text or "")[:_SNIPPET_SIZE],
+                    score=10.0,
+                )
+            )
+
+    # 2. Keyword search (articles + judgments).
+    for item in keyword_search_articles(db, query, limit=limit):
+        if item.id not in seen_ids:
+            seen_ids.add(item.id)
+            results.append(item)
+    for item in keyword_search_judgments(db, query, limit=limit):
+        if item.id not in seen_ids:
+            seen_ids.add(item.id)
+            results.append(item)
+
+    # 3. Vector search (cosine similarity from JSONL embeddings if available).
+    for item in vector_search(db, query, limit=limit):
+        if item.id not in seen_ids:
+            seen_ids.add(item.id)
+            results.append(item)
+
+    results.sort(key=lambda r: r.score, reverse=True)
+    return results[:limit]
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\search\keyword.py
+"""
+Keyword search over the legal corpus.
+
+Uses SQL LIKE matching with match-density scoring -- a result where the
+search term appears more frequently relative to the text length ranks higher.
+Snippet size increased to 500 characters so Gemini receives meaningful context.
+
+TODO: once on Postgres, swap LIKE for full-text search (tsvector/websearch_to_tsquery).
+"""
+from typing import List
+
+from sqlalchemy import func, or_
+from sqlalchemy.orm import Session, joinedload
+
+from app.models.judgments import Judgment
+from app.models.legal import Article
+from app.schemas.legal import SearchResultItem
+from app.utils.arabic import simple_normalize
+
+_SNIPPET_SIZE = 500  # characters
+
+
+def _match_score(text: str, term: str) -> float:
+    """Score based on term frequency relative to text length (avoids flat 1.0)."""
+    if not text or not term:
+        return 0.5
+    text_lower = text.lower()
+    term_lower = term.lower()
+    count = text_lower.count(term_lower)
+    if count == 0:
+        return 0.5
+    # Normalised TF: more occurrences relative to text length = higher score.
+    tf = count / max(len(text.split()), 1)
+    # Cap between 0.5 and 3.0 so keyword hits stay below exact-ref score of 10.0.
+    return min(3.0, 0.5 + tf * 20)
+
+
+# Arabic prefixes to strip for root matching
+_ARABIC_PREFIXES = ("وال", "بال", "كال", "فال", "لل", "وب", "وك", "ول",
+                    "وف", "ال", "و", "ب", "ل", "ك", "ف")
+
+def _extract_root(word: str) -> str:
+    """Strip common Arabic prefixes to get a matchable root."""
+    for prefix in _ARABIC_PREFIXES:
+        if word.startswith(prefix) and len(word) - len(prefix) >= 3:
+            return word[len(prefix):]
+    return word
+
+# Arabic stop words to exclude from keyword search
+_ARABIC_STOPWORDS = {
+    "ما","هي","هو","هل","من","في","عن","إلى","الى","على","عند","كيف",
+    "ماذا","لماذا","متى","اين","أين","هذا","هذه","ذلك","تلك","التي","الذي",
+    "مع","بين","حول","خلال","بعد","قبل","حتى","لكن","او","أو","و","ف",
+    "ب","ل","ك","لا","ليس","كان","يكون","يجب","هناك",
+}
+
+
+# colloquial -> legal term expansion
+_SYNONYMS = {
+    "\u0641\u0635\u0644\u0646\u064a": ["\u0641\u0635\u0644", "\u062a\u0639\u0633\u0641\u064a"],
+    "\u0637\u0631\u062f\u0646\u064a": ["\u0641\u0635\u0644", "\u062a\u0639\u0633\u0641\u064a"],
+    "\u0637\u0631\u062f": ["\u0641\u0635\u0644", "\u0625\u062e\u0644\u0627\u0621"],
+    "\u0634\u063a\u0644": ["\u0639\u0645\u0644", "\u0627\u0644\u0639\u0627\u0645\u0644"],
+    "\u0645\u0631\u062a\u0628": ["\u0623\u062c\u0631", "\u0627\u0644\u0623\u062c\u0631"],
+    "\u0645\u0631\u062a\u0628\u064a": ["\u0623\u062c\u0631", "\u0627\u0644\u0623\u062c\u0631"],
+    "\u0641\u0644\u0648\u0633": ["\u0645\u0628\u0644\u063a", "\u0646\u0642\u0648\u062f"],
+    "\u0646\u0635\u0628": ["\u0627\u062d\u062a\u064a\u0627\u0644", "\u0627\u0644\u0646\u0635\u0628"],
+    "\u0633\u0631\u0642\u0648\u0646\u064a": ["\u0627\u0644\u0633\u0631\u0642\u0629", "\u0633\u0631\u0642\u0629"],
+    "\u0636\u0631\u0628\u0648\u0646\u064a": ["\u0627\u0644\u0636\u0631\u0628", "\u062c\u0631\u062d"],
+    "\u0637\u0644\u0642\u0646\u064a": ["\u0627\u0644\u0637\u0644\u0627\u0642", "\u0637\u0644\u0627\u0642"],
+    "\u0645\u0639\u0627\u0634": ["\u0645\u0643\u0627\u0641\u0623\u0629", "\u0646\u0647\u0627\u064a\u0629 \u0627\u0644\u062e\u062f\u0645\u0629"],
+    "\u0634\u064a\u0643": ["\u0627\u0644\u0634\u064a\u0643", "\u0631\u0635\u064a\u062f"],
+    "\u0625\u064a\u062c\u0627\u0631": ["\u0627\u0644\u0625\u064a\u062c\u0627\u0631", "\u0627\u0644\u0645\u0633\u062a\u0623\u062c\u0631"],
+    "\u0627\u0639\u062a\u0631\u0641\u062a": ["\u0627\u0644\u0627\u0639\u062a\u0631\u0627\u0641", "\u0625\u0643\u0631\u0627\u0647"],
+    "اعترفت": ["الاعتراف", "إكراه", "المتهم"],
+    "اعتراف": ["الاعتراف", "إكراه", "المتهم"],
+    "الضرب": ["إكراه", "الاعتراف", "التهديد"],
+    "ضرب": ["إكراه", "الاعتراف"],
+    "الشرطة": ["مأمور الضبط", "المتهم", "إكراه"],
+    "يطردني": ["المستأجر", "الإيجار", "المؤجر"],
+    "يطلعني": ["المستأجر", "الإيجار"],
+    "الشقة": ["المستأجر", "الإيجار", "المكان المؤجر"],
+    "شقة": ["المستأجر", "الإيجار"],
+    "ساكن": ["المستأجر", "الإيجار"],
+    "طلقني": ["الطلاق", "النفقة"],
+    "مراتي": ["الزوجة", "النفقة"],
+    "جوزي": ["الزوج", "النفقة"],
+    "ميراث": ["التركة", "الورثة"],
+    "ورث": ["التركة", "الورثة"],
+    "سرقوا": ["السرقة"],
+    "تزوير": ["التزوير", "المحرر"],
+    "إيصال أمانة": ["الوديعة", "بدد"],
+    "أمانة": ["الوديعة", "بدد"],
+}
+
+def _expand(words):
+    out = list(words)
+    for word in words:
+        for key, vals in _SYNONYMS.items():
+            if key in word or word in key:
+                out.extend(vals)
+    seen = set(); res = []
+    for x in out:
+        if x not in seen:
+            seen.add(x); res.append(x)
+    return res
+
+
+def keyword_search_articles(db: Session, query: str, limit: int = 10) -> List[SearchResultItem]:
+    normalized = simple_normalize(query)
+    if not normalized:
+        return []
+    # Split into meaningful words (>=3 chars, not stopwords)
+    words = [w for w in normalized.split() if len(w) >= 3 and w not in _ARABIC_STOPWORDS]
+    if not words:
+        words = [normalized]  # fallback to full query
+    words = _expand(words)
+    # OR search: any article containing any keyword
+    conditions = []
+    for word in words[:10]:  # max 6 keywords to avoid huge queries
+        pat = f"%{word}%"
+        conditions.append(Article.text.ilike(pat))
+        conditions.append(Article.article_number.ilike(pat))
+        # Also search for root form (without Arabic prefixes)
+        root = _extract_root(word)
+        if root != word and len(root) >= 3:
+            root_pat = f"%{root}%"
+            conditions.append(Article.text.ilike(root_pat))
+    rows = (
+        db.query(Article)
+        .options(joinedload(Article.law))
+        .filter(or_(*conditions))
+        .limit(300)
+        .all()
+    )
+    # Score by number of keyword matches
+    DF = {}
+    for w in words:
+        DF[w] = sum(1 for a in rows if w in (a.text or '').lower()) or 1
+    scored = []
+    for a in rows:
+        text_lower = (a.text or "").lower()
+        score = 0.0
+        matched = 0
+        for w in words:
+            if w in text_lower:
+                matched += 1
+                score += 10.0 / (DF.get(w) or 1)
+                score += text_lower.count(w) * 0.5
+        if len(words) >= 3 and matched < 2:
+            score *= 0.2
+        if len(text_lower) < 80:
+            score *= 0.4
+        scored.append((score, a))
+    scored.sort(key=lambda x: x[0], reverse=True)
+    scored = [(s, a) for s, a in scored[:limit] if s > 0]
+    results = []
+    for computed_score, a in scored:
+        text = a.text or ""
+        snippet = text[:_SNIPPET_SIZE]
+        law_title = a.law.title if getattr(a, 'law', None) else ''
+        results.append(
+            SearchResultItem(
+                result_type="article",
+                id=a.id,
+                title=f"المادة {a.article_number} - {law_title}",
+                snippet=snippet,
+                score=computed_score,
+            )
+        )
+    # Sort by score descending within this batch.
+    results.sort(key=lambda r: r.score, reverse=True)
+    return results
+
+
+def keyword_search_judgments(db: Session, query: str, limit: int = 10) -> List[SearchResultItem]:
+    normalized = simple_normalize(query)
+    if not normalized:
+        return []
+    like_pattern = f"%{normalized}%"
+    rows = (
+        db.query(Judgment)
+        .filter(or_(Judgment.summary.ilike(like_pattern), Judgment.full_text.ilike(like_pattern)))
+        .limit(limit)
+        .all()
+    )
+    results = []
+    for j in rows:
+        text = j.summary or j.full_text or ""
+        snippet = text[:_SNIPPET_SIZE]
+        law_title = a.law.title if getattr(a, 'law', None) else ''
+        results.append(
+            SearchResultItem(
+                result_type="judgment",
+                id=j.id,
+                title=f"حكم رقم {j.case_number or ''} لسنة {j.year or ''}",
+                snippet=snippet,
+                score=computed_score,
+            )
+        )
+    results.sort(key=lambda r: r.score, reverse=True)
+    return results
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\search\vector.py
+"""
+Semantic/vector search using cosine similarity.
+
+Implementation loads embeddings from data/embeddings/articles.jsonl (generated
+by scripts/create_embeddings.py) into memory on first call, then embeds the
+query via Gemini text-embedding-004 and ranks by cosine similarity.
+
+Falls back to an empty result set when:
+  - The JSONL file doesn't exist yet (no embeddings generated)
+  - The Gemini API key isn't configured
+  - Any unexpected error occurs
+
+This keeps the hybrid search callers safe regardless of state.
+
+TODO: once on Postgres + pgvector, replace the in-memory approach with:
+    db.execute("SELECT id FROM embeddings ORDER BY embedding <-> :q LIMIT :k", ...)
+"""
+import json
+import logging
+import math
+from pathlib import Path
+from typing import List, Optional
+
+from sqlalchemy.orm import Session
+
+from app.schemas.legal import SearchResultItem
+
+logger = logging.getLogger(__name__)
+
+_EMBEDDINGS_JSONL = Path("data/embeddings/articles.jsonl")
+_SIMILARITY_THRESHOLD = 0.50   # minimum cosine similarity to include a result
+_SCORE_SCALE = 5.0             # multiply cosine [0,1] to sit below exact-ref score of 10
+
+# Module-level cache so we only read the file once per process.
+_CACHE: Optional[List[dict]] = None
+
+
+def _load_embeddings() -> List[dict]:
+    global _CACHE
+    if _CACHE is not None:
+        return _CACHE
+    if not _EMBEDDINGS_JSONL.exists():
+        logger.debug("vector_search: %s not found -- returning empty results", _EMBEDDINGS_JSONL)
+        _CACHE = []
+        return _CACHE
+    data: List[dict] = []
+    try:
+        with open(_EMBEDDINGS_JSONL, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    obj = json.loads(line)
+                    if obj.get("embedding"):
+                        data.append(obj)
+        logger.info("vector_search: loaded %d embeddings from %s", len(data), _EMBEDDINGS_JSONL)
+    except Exception as exc:
+        logger.warning("vector_search: failed to load embeddings: %s", exc)
+        data = []
+    _CACHE = data
+    return _CACHE
+
+
+def _cosine_similarity(a: List[float], b: List[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b))
+    norm_a = math.sqrt(sum(x * x for x in a))
+    norm_b = math.sqrt(sum(x * x for x in b))
+    if norm_a == 0.0 or norm_b == 0.0:
+        return 0.0
+    return dot / (norm_a * norm_b)
+
+
+def _embed_query(query: str) -> Optional[List[float]]:
+    """Embed a query string with Gemini text-embedding-004, task type RETRIEVAL_QUERY."""
+    try:
+        from app.config import settings
+        if not settings.GEMINI_API_KEY:
+            return None
+        from google import genai
+        from google.genai import types as genai_types
+
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        result = client.models.embed_content(
+            model="text-embedding-004",
+            contents=query,
+            config=genai_types.EmbedContentConfig(task_type="RETRIEVAL_QUERY"),
+        )
+        return list(result.embeddings[0].values)
+    except Exception as exc:
+        logger.warning("vector_search: could not embed query: %s", exc)
+        return None
+
+
+def vector_search(db: Session, query: str, limit: int = 10) -> List[SearchResultItem]:
+    """
+    Returns up to `limit` results ranked by semantic similarity.
+    Returns an empty list if embeddings aren't available or the API call fails.
+    """
+    embeddings = _load_embeddings()
+    if not embeddings:
+        return []
+
+    query_vec = _embed_query(query)
+    if query_vec is None:
+        return []
+
+    scored: List[tuple] = []
+    for item in embeddings:
+        emb = item.get("embedding", [])
+        if not emb:
+            continue
+        sim = _cosine_similarity(query_vec, emb)
+        if sim >= _SIMILARITY_THRESHOLD:
+            scored.append((sim, item))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+
+    results: List[SearchResultItem] = []
+    for sim, item in scored[:limit]:
+        results.append(
+            SearchResultItem(
+                result_type="article",
+                id=item.get("article_id", ""),
+                title=f"المادة {item.get('article_number', '')}",
+                snippet=(item.get("text_preview") or "")[:500],
+                score=float(sim) * _SCORE_SCALE,
+            )
+        )
+    return results
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\search\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\security\hashing.py
+"""Password hashing helpers (bcrypt via passlib)."""
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def hash_password(plain_password: str) -> str:
+    return pwd_context.hash(plain_password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\security\jwt.py
+"""JWT access-token creation and verification (python-jose)."""
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional
+
+from jose import JWTError, jwt
+
+from app.config import settings
+
+
+def create_access_token(subject: str, role: str = "user", expires_minutes: Optional[int] = None) -> str:
+    expire_minutes = expires_minutes if expires_minutes is not None else settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
+    to_encode: Dict[str, Any] = {"sub": subject, "role": role, "exp": expire}
+    return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+
+def decode_access_token(token: str) -> Optional[Dict[str, Any]]:
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\security\rate_limit.py
+"""
+Simple in-memory rate limiter stub.
+
+TODO: This is process-local and resets on restart -- fine for a single-worker
+dev deployment. For production with multiple workers/instances, replace with
+a shared store (e.g. Redis) or swap to `slowapi` backed by Redis.
+"""
+import time
+from collections import defaultdict
+from threading import Lock
+from typing import Dict, List
+
+from app.config import settings
+
+
+class InMemoryRateLimiter:
+    def __init__(self, requests_per_minute: int = 30):
+        self.requests_per_minute = requests_per_minute
+        self._hits: Dict[str, List[float]] = defaultdict(list)
+        self._lock = Lock()
+
+    def is_allowed(self, key: str) -> bool:
+        now = time.time()
+        window_start = now - 60
+        with self._lock:
+            hits = [t for t in self._hits[key] if t > window_start]
+            if len(hits) >= self.requests_per_minute:
+                self._hits[key] = hits
+                return False
+            hits.append(now)
+            self._hits[key] = hits
+            return True
+
+
+rate_limiter = InMemoryRateLimiter(requests_per_minute=settings.RATE_LIMIT_PER_MINUTE)
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\security\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\services\auth_service.py
+"""Business logic for registration/login and JWT issuance."""
+from datetime import datetime, timezone
+from typing import Optional
+
+from sqlalchemy.orm import Session
+
+from app.models.users import User
+from app.repositories.user_repository import UserRepository
+from app.security.hashing import hash_password, verify_password
+from app.security.jwt import create_access_token
+
+
+class AuthError(Exception):
+    """Raised for user-facing auth failures (bad credentials, duplicate email...)."""
+
+
+class AuthService:
+    def __init__(self, db: Session):
+        self.db = db
+        self.users = UserRepository(db)
+
+    def register(self, email: str, password: str, full_name: Optional[str] = None) -> User:
+        existing = self.users.get_by_email(email)
+        if existing:
+            raise AuthError("Email already registered.")
+        user = User(email=email, hashed_password=hash_password(password), full_name=full_name)
+        return self.users.create(user)
+
+    def authenticate(self, email: str, password: str) -> User:
+        user = self.users.get_by_email(email)
+        if not user or not verify_password(password, user.hashed_password):
+            raise AuthError("Invalid email or password.")
+        if not user.is_active:
+            raise AuthError("This account is disabled.")
+        user.last_login_at = datetime.now(timezone.utc)
+        self.db.commit()
+        return user
+
+    def issue_token(self, user: User) -> str:
+        return create_access_token(subject=user.id, role=user.role)
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\services\case_service.py
+"""Business logic for user cases (personal legal matters)."""
+from typing import List, Optional
+
+from sqlalchemy.orm import Session
+
+from app.models.users import Case
+from app.repositories.user_repository import CaseRepository
+
+
+class CaseNotFoundError(Exception):
+    pass
+
+
+class CaseService:
+    def __init__(self, db: Session):
+        self.db = db
+        self.cases = CaseRepository(db)
+
+    def create_case(self, user_id: str, title: str, description: Optional[str], case_type: Optional[str]) -> Case:
+        case = Case(user_id=user_id, title=title, description=description, case_type=case_type)
+        return self.cases.create(case)
+
+    def get_case(self, case_id: str, user_id: str) -> Case:
+        case = self.cases.get(case_id)
+        if not case or case.user_id != user_id:
+            raise CaseNotFoundError(f"Case {case_id} not found.")
+        return case
+
+    def list_cases(self, user_id: str, skip: int = 0, limit: int = 20) -> List[Case]:
+        return self.cases.list_for_user(user_id, skip=skip, limit=limit)
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\services\chat_service.py
+"""
+Orchestrates the chat pipeline: analyzer -> hybrid search -> RAG engine ->
+answer_builder, then persists the conversation/message/citations.
+"""
+import json
+import logging
+from typing import Any, Dict, List, Optional, Tuple
+
+from sqlalchemy.orm import Session
+
+from app.models.system import AnswerCitation
+from app.models.users import Conversation, Message
+from app.rag import answer_builder
+from app.rag.analyzer import analyze_question
+from app.rag.engine import GeminiUnavailableError, generate_answer
+from app.repositories.user_repository import ConversationRepository
+from app.schemas.legal import SearchResultItem
+from app.search.hybrid import hybrid_search
+
+logger = logging.getLogger(__name__)
+
+# Maximum number of previous conversation turns to include as context.
+_HISTORY_TURNS = 4
+
+
+class ChatService:
+    def __init__(self, db: Session):
+        self.db = db
+        self.conversations = ConversationRepository(db)
+
+    def _get_or_create_conversation(
+        self, user_id: str, conversation_id: Optional[str], first_message: str
+    ) -> Conversation:
+        if conversation_id:
+            conv = self.conversations.get(conversation_id)
+            if conv and conv.user_id == user_id:
+                return conv
+        title = (first_message[:80] + "...") if len(first_message) > 80 else first_message
+        return self.conversations.create(user_id=user_id, title=title)
+
+    def _get_history(self, conversation_id: str) -> List[Dict[str, str]]:
+        """Fetch the last N user+assistant messages for context."""
+        try:
+            messages = (
+                self.db.query(Message)
+                .filter(Message.conversation_id == conversation_id)
+                .order_by(Message.created_at.desc())
+                .limit(_HISTORY_TURNS * 2)
+                .all()
+            )
+            # Reverse so they're in chronological order.
+            return [{"role": m.role, "content": m.content} for m in reversed(messages)]
+        except Exception as exc:
+            logger.warning("Could not fetch conversation history: %s", exc)
+            return []
+
+    def ask(
+        self,
+        user_id: str,
+        question: str,
+        conversation_id: Optional[str] = None,
+    ) -> Tuple[Conversation, Message, List[SearchResultItem], Dict[str, Any]]:
+        """
+        Returns (conversation, assistant_message, search_results, structured_answer_dict).
+        The structured_answer_dict matches LegalAnswerOut and is ready for the API response.
+        """
+        conversation = self._get_or_create_conversation(user_id, conversation_id, question)
+        self.conversations.add_message(conversation.id, role="user", content=question)
+
+        # 1. Fetch conversation history for context.
+        history = self._get_history(conversation.id)
+
+        # 2. Analyzer: understand the question and extract legal_area.
+        analysis = analyze_question(question)
+        legal_area = analysis.get("legal_area") or None
+
+        # 3. Search: hybrid retrieval over the legal corpus, filtered by legal area.
+        search_results = hybrid_search(self.db, question, limit=8, legal_area=legal_area)
+
+        # 4. RAG engine: call Gemini with grounded context, or fall back.
+        try:
+            raw = generate_answer(question, search_results, analysis, history)
+            answer_dict = answer_builder.parse_gemini_answer(raw)
+        except GeminiUnavailableError as exc:
+            logger.warning("Chat: Gemini unavailable, using fallback answer: %s", exc)
+            answer_dict = answer_builder.build_fallback_answer(
+                question=question,
+                analysis=analysis,
+                context_results=search_results,
+                note="خدمة الذكاء الاصطناعي (Gemini) غير مُهيأة حالياً على هذا الخادم.",
+            )
+
+        # Store structured answer as JSON string in the DB for history retrieval.
+        answer_json = json.dumps(answer_dict, ensure_ascii=False)
+        assistant_message = self.conversations.add_message(
+            conversation.id, role="assistant", content=answer_json
+        )
+
+        # 5. Persist citations for traceability (answer_citations table).
+        for result in search_results[:5]:
+            citation = AnswerCitation(
+                message_id=assistant_message.id,
+                source_type=result.result_type,
+                article_id=result.id if result.result_type == "article" else None,
+                judgment_id=result.id if result.result_type == "judgment" else None,
+                citation_text=result.title,
+                relevance_score=result.score,
+            )
+            self.db.add(citation)
+        self.db.commit()
+
+        return conversation, assistant_message, search_results, answer_dict
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\services\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\utils\arabic.py
+"""Small Arabic text helpers used across search/ingestion/rag."""
+import re
+
+_ARABIC_DIACRITICS = re.compile(r"[ً-ٰٟۖ-ۭ]")
+_ARABIC_INDIC_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
+
+
+def strip_diacritics(text: str) -> str:
+    """Remove Arabic diacritical marks (tashkeel) for more robust matching."""
+    return _ARABIC_DIACRITICS.sub("", text or "")
+
+
+def normalize_arabic_digits(text: str) -> str:
+    """Convert Arabic-Indic digits (٠-٩) to ASCII digits (0-9)."""
+    return (text or "").translate(_ARABIC_INDIC_DIGITS)
+
+
+def normalize_alef_forms(text: str) -> str:
+    """Collapse alef variants (أ إ آ) to bare alef (ا) for lenient matching."""
+    if not text:
+        return text
+    for ch in ("أ", "إ", "آ"):
+        text = text.replace(ch, "ا")
+    return text
+
+
+def simple_normalize(text: str) -> str:
+    """Light normalization pipeline used by keyword search."""
+    text = strip_diacritics(text)
+    text = normalize_arabic_digits(text)
+    text = normalize_alef_forms(text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\utils\pagination.py
+"""Small pagination helper for list endpoints."""
+from typing import Tuple
+
+
+def clamp_pagination(skip: int = 0, limit: int = 20, max_limit: int = 100) -> Tuple[int, int]:
+    skip = max(skip, 0)
+    limit = max(1, min(limit, max_limit))
+    return skip, limit
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\utils\__init__.py
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\config.py
+"""
+Application configuration.
+
+Reads settings from environment variables / a local .env file via
+pydantic-settings + python-dotenv. DATABASE_URL defaults to a local SQLite
+file so the app runs with zero external services. Swapping to Postgres
+(e.g. Supabase/Neon) later only requires changing DATABASE_URL -- no code
+changes elsewhere, since SQLAlchemy's create_engine() dispatches on the URL
+scheme and the ORM models avoid Postgres-only column types (the vector
+embedding column is a stubbed Text/JSON column for now, see
+app/models/system.py).
+"""
+from functools import lru_cache
+from typing import List
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    # --- App ---
+    APP_NAME: str = "Egyptian Legal AI"
+    ENV: str = "development"
+    DEBUG: bool = True
+
+    # --- Database ---
+    # Default: local SQLite file, zero external services required.
+    # Swap to e.g. postgresql+psycopg://user:pass@host:5432/db when ready
+    # for Postgres + pgvector; no other code needs to change.
+    DATABASE_URL: str = "sqlite:///./legal_ai.db"
+
+    # --- Auth / JWT ---
+    JWT_SECRET: str = "CHANGE_ME_DEV_SECRET_DO_NOT_USE_IN_PRODUCTION"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
+
+    # --- External APIs ---
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-flash-lite-latest"
+    TAVILY_API_KEY: str = ""
+
+    # --- CORS ---
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+
+    # --- Rate limiting (simple in-memory stub, see app/security/rate_limit.py) ---
+    RATE_LIMIT_PER_MINUTE: int = 30
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+        extra="ignore",
+    )
+
+    @property
+    def cors_origins_list(self) -> List[str]:
+        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+
+settings = get_settings()
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\database.py
+"""
+SQLAlchemy engine / session setup.
+
+Works against the DATABASE_URL in app/config.py. Defaults to SQLite for
+zero-dependency local development; swapping DATABASE_URL to a Postgres DSN
+later requires no changes here since create_engine() dispatches on the URL.
+"""
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from app.config import settings
+
+connect_args = {}
+if settings.DATABASE_URL.startswith("sqlite"):
+    # Needed for SQLite when used with FastAPI's threaded request handling.
+    connect_args = {"check_same_thread": False}
+
+engine = create_engine(settings.DATABASE_URL, connect_args=connect_args)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_db():
+    """FastAPI dependency that yields a DB session and always closes it."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\main.py
+"""FastAPI application entrypoint: mounts routers, CORS, health check."""
+import logging
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api import admin, auth, cases, chat, documents, search, sources
+from app.config import settings
+
+logging.basicConfig(level=logging.INFO)
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    description="Educational Egyptian legal Q&A backend (source-grounded, never fabricated citations).",
+    version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins_list,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router)
+app.include_router(chat.router)
+app.include_router(cases.router)
+app.include_router(documents.router)
+app.include_router(search.router)
+app.include_router(sources.router)
+app.include_router(admin.router)
+
+
+@app.get("/health", tags=["health"])
+def health_check():
+    return {"status": "ok", "service": settings.APP_NAME, "env": settings.ENV}
+
+
+@app.get("/", tags=["health"])
+def root():
+    return {"message": f"{settings.APP_NAME} backend is running.", "docs": "/docs"}
+=== C:\Users\Yousssef\OneDrive\Desktop\egyptian-legal-ai\backend\app\__init__.py

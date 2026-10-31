@@ -1,0 +1,202 @@
+"""
+Keyword search over the legal corpus.
+
+Uses SQL LIKE matching with match-density scoring -- a result where the
+search term appears more frequently relative to the text length ranks higher.
+Snippet size increased to 500 characters so Gemini receives meaningful context.
+
+TODO: once on Postgres, swap LIKE for full-text search (tsvector/websearch_to_tsquery).
+"""
+from typing import List
+
+from sqlalchemy import func, or_
+from sqlalchemy.orm import Session, joinedload
+
+from app.models.judgments import Judgment
+from app.models.legal import Article
+from app.schemas.legal import SearchResultItem
+from app.utils.arabic import simple_normalize
+
+_SNIPPET_SIZE = 500  # characters
+
+
+def _match_score(text: str, term: str) -> float:
+    """Score based on term frequency relative to text length (avoids flat 1.0)."""
+    if not text or not term:
+        return 0.5
+    text_lower = text.lower()
+    term_lower = term.lower()
+    count = text_lower.count(term_lower)
+    if count == 0:
+        return 0.5
+    # Normalised TF: more occurrences relative to text length = higher score.
+    tf = count / max(len(text.split()), 1)
+    # Cap between 0.5 and 3.0 so keyword hits stay below exact-ref score of 10.0.
+    return min(3.0, 0.5 + tf * 20)
+
+
+# Arabic prefixes to strip for root matching
+_ARABIC_PREFIXES = ("وال", "بال", "كال", "فال", "لل", "وب", "وك", "ول",
+                    "وف", "ال", "و", "ب", "ل", "ك", "ف")
+
+def _extract_root(word: str) -> str:
+    """Strip common Arabic prefixes to get a matchable root."""
+    for prefix in _ARABIC_PREFIXES:
+        if word.startswith(prefix) and len(word) - len(prefix) >= 3:
+            return word[len(prefix):]
+    return word
+
+# Arabic stop words to exclude from keyword search
+_ARABIC_STOPWORDS = {
+    "ما","هي","هو","هل","من","في","عن","إلى","الى","على","عند","كيف",
+    "ماذا","لماذا","متى","اين","أين","هذا","هذه","ذلك","تلك","التي","الذي",
+    "مع","بين","حول","خلال","بعد","قبل","حتى","لكن","او","أو","و","ف",
+    "ب","ل","ك","لا","ليس","كان","يكون","يجب","هناك",
+}
+
+
+# colloquial -> legal term expansion
+_SYNONYMS = {
+    "\u0641\u0635\u0644\u0646\u064a": ["\u0641\u0635\u0644", "\u062a\u0639\u0633\u0641\u064a"],
+    "\u0637\u0631\u062f\u0646\u064a": ["\u0641\u0635\u0644", "\u062a\u0639\u0633\u0641\u064a"],
+    "\u0637\u0631\u062f": ["\u0641\u0635\u0644", "\u0625\u062e\u0644\u0627\u0621"],
+    "\u0634\u063a\u0644": ["\u0639\u0645\u0644", "\u0627\u0644\u0639\u0627\u0645\u0644"],
+    "\u0645\u0631\u062a\u0628": ["\u0623\u062c\u0631", "\u0627\u0644\u0623\u062c\u0631"],
+    "\u0645\u0631\u062a\u0628\u064a": ["\u0623\u062c\u0631", "\u0627\u0644\u0623\u062c\u0631"],
+    "\u0641\u0644\u0648\u0633": ["\u0645\u0628\u0644\u063a", "\u0646\u0642\u0648\u062f"],
+    "\u0646\u0635\u0628": ["\u0627\u062d\u062a\u064a\u0627\u0644", "\u0627\u0644\u0646\u0635\u0628"],
+    "\u0633\u0631\u0642\u0648\u0646\u064a": ["\u0627\u0644\u0633\u0631\u0642\u0629", "\u0633\u0631\u0642\u0629"],
+    "\u0636\u0631\u0628\u0648\u0646\u064a": ["\u0627\u0644\u0636\u0631\u0628", "\u062c\u0631\u062d"],
+    "\u0637\u0644\u0642\u0646\u064a": ["\u0627\u0644\u0637\u0644\u0627\u0642", "\u0637\u0644\u0627\u0642"],
+    "\u0645\u0639\u0627\u0634": ["\u0645\u0643\u0627\u0641\u0623\u0629", "\u0646\u0647\u0627\u064a\u0629 \u0627\u0644\u062e\u062f\u0645\u0629"],
+    "\u0634\u064a\u0643": ["\u0627\u0644\u0634\u064a\u0643", "\u0631\u0635\u064a\u062f"],
+    "\u0625\u064a\u062c\u0627\u0631": ["\u0627\u0644\u0625\u064a\u062c\u0627\u0631", "\u0627\u0644\u0645\u0633\u062a\u0623\u062c\u0631"],
+    "\u0627\u0639\u062a\u0631\u0641\u062a": ["\u0627\u0644\u0627\u0639\u062a\u0631\u0627\u0641", "\u0625\u0643\u0631\u0627\u0647"],
+    "اعترفت": ["الاعتراف", "إكراه", "المتهم"],
+    "اعتراف": ["الاعتراف", "إكراه", "المتهم"],
+    "الضرب": ["إكراه", "الاعتراف", "التهديد"],
+    "ضرب": ["إكراه", "الاعتراف"],
+    "الشرطة": ["مأمور الضبط", "المتهم", "إكراه"],
+    "يطردني": ["المستأجر", "الإيجار", "المؤجر"],
+    "يطلعني": ["المستأجر", "الإيجار"],
+    "الشقة": ["المستأجر", "الإيجار", "المكان المؤجر"],
+    "شقة": ["المستأجر", "الإيجار"],
+    "ساكن": ["المستأجر", "الإيجار"],
+    "طلقني": ["الطلاق", "النفقة"],
+    "مراتي": ["الزوجة", "النفقة"],
+    "جوزي": ["الزوج", "النفقة"],
+    "ميراث": ["التركة", "الورثة"],
+    "ورث": ["التركة", "الورثة"],
+    "سرقوا": ["السرقة"],
+    "تزوير": ["التزوير", "المحرر"],
+    "إيصال أمانة": ["الوديعة", "بدد"],
+    "أمانة": ["الوديعة", "بدد"],
+}
+
+def _expand(words):
+    out = list(words)
+    for word in words:
+        for key, vals in _SYNONYMS.items():
+            if key in word or word in key:
+                out.extend(vals)
+    seen = set(); res = []
+    for x in out:
+        if x not in seen:
+            seen.add(x); res.append(x)
+    return res
+
+
+def keyword_search_articles(db: Session, query: str, limit: int = 10) -> List[SearchResultItem]:
+    normalized = simple_normalize(query)
+    if not normalized:
+        return []
+    # Split into meaningful words (>=3 chars, not stopwords)
+    words = [w for w in normalized.split() if len(w) >= 3 and w not in _ARABIC_STOPWORDS]
+    if not words:
+        words = [normalized]  # fallback to full query
+    words = _expand(words)
+    # OR search: any article containing any keyword
+    conditions = []
+    for word in words[:10]:  # max 6 keywords to avoid huge queries
+        pat = f"%{word}%"
+        conditions.append(Article.text.ilike(pat))
+        conditions.append(Article.article_number.ilike(pat))
+        # Also search for root form (without Arabic prefixes)
+        root = _extract_root(word)
+        if root != word and len(root) >= 3:
+            root_pat = f"%{root}%"
+            conditions.append(Article.text.ilike(root_pat))
+    rows = (
+        db.query(Article)
+        .options(joinedload(Article.law))
+        .filter(or_(*conditions))
+        .limit(5000)
+        .all()
+    )
+    # Score by number of keyword matches
+    DF = {}
+    for w in words:
+        DF[w] = sum(1 for a in rows if w in (a.text or '').lower()) or 1
+    scored = []
+    for a in rows:
+        text_lower = (a.text or "").lower()
+        score = 0.0
+        matched = 0
+        for w in words:
+            if w in text_lower:
+                matched += 1
+                score += 10.0 / (DF.get(w) or 1)
+                score += text_lower.count(w) * 0.5
+        if len(words) >= 3 and matched < 2:
+            score *= 0.2
+        if len(text_lower) < 80:
+            score *= 0.4
+        scored.append((score, a))
+    scored.sort(key=lambda x: x[0], reverse=True)
+    scored = [(s, a) for s, a in scored[:limit] if s > 0]
+    results = []
+    for computed_score, a in scored:
+        text = a.text or ""
+        snippet = text[:_SNIPPET_SIZE]
+        law_title = a.law.title if getattr(a, 'law', None) else ''
+        results.append(
+            SearchResultItem(
+                result_type="article",
+                id=a.id,
+                title=f"المادة {a.article_number} - {law_title}",
+                snippet=snippet,
+                score=computed_score,
+            )
+        )
+    # Sort by score descending within this batch.
+    results.sort(key=lambda r: r.score, reverse=True)
+    return results
+
+
+def keyword_search_judgments(db: Session, query: str, limit: int = 10) -> List[SearchResultItem]:
+    normalized = simple_normalize(query)
+    if not normalized:
+        return []
+    like_pattern = f"%{normalized}%"
+    rows = (
+        db.query(Judgment)
+        .filter(or_(Judgment.summary.ilike(like_pattern), Judgment.full_text.ilike(like_pattern)))
+        .limit(limit)
+        .all()
+    )
+    results = []
+    for j in rows:
+        text = j.summary or j.full_text or ""
+        snippet = text[:_SNIPPET_SIZE]
+        law_title = a.law.title if getattr(a, 'law', None) else ''
+        results.append(
+            SearchResultItem(
+                result_type="judgment",
+                id=j.id,
+                title=f"حكم رقم {j.case_number or ''} لسنة {j.year or ''}",
+                snippet=snippet,
+                score=computed_score,
+            )
+        )
+    results.sort(key=lambda r: r.score, reverse=True)
+    return results

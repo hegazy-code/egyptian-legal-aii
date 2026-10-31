@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-ink: #141C26;
+  --color-seal: #8A2434;
+  --color-paper: #FCFBF9;
+  --color-paper-deep: #F4F1EC;
+  --color-sand: #E2DCD0;
+  --color-muted: #4A5461;
+  --color-verified: #1E6B4F;
+  --font-sans: "IBM Plex Sans Arabic", "Cairo", "Tahoma", sans-serif;
+  --font-legal: "Amiri", "Times New Roman", serif;
+}
+
+html { color-scheme: light; }
+body { background: var(--color-paper); color: var(--color-ink); }
