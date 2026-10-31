@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import Nav from "@/components/Nav";
+import Nav from "@/components/Masthead";
 import Link from "next/link";
 // Self-hosted Cairo (Arabic + Latin) -- bundled locally via @fontsource
 // instead of next/font/google, so the app never depends on reaching
@@ -45,3 +45,4 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     </html>
   );
 }
+
