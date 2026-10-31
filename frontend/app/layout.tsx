@@ -11,6 +11,11 @@ import "@fontsource/cairo/arabic-700.css";
 import "@fontsource/cairo/latin-400.css";
 import "@fontsource/cairo/latin-600.css";
 import "@fontsource/cairo/latin-700.css";
+import "@fontsource/ibm-plex-sans-arabic/arabic-400.css";
+import "@fontsource/ibm-plex-sans-arabic/arabic-600.css";
+import "@fontsource/ibm-plex-sans-arabic/arabic-700.css";
+import "@fontsource/amiri/arabic-400.css";
+import "@fontsource/amiri/arabic-700.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
