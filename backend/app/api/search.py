@@ -34,7 +34,7 @@ def search(payload: SearchRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/laws", response_model=List[LawRead])
-def list_laws(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+def list_laws(skip: int = 0, limit: int = 500, db: Session = Depends(get_db)):
     repo = LegalRepository(db)
     return repo.list_laws(skip=skip, limit=limit)
 
