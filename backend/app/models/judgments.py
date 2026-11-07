@@ -5,7 +5,7 @@ article_topics, judgment_topics, legal_relationships.
 from datetime import date
 from typing import List, Optional
 
-from sqlalchemy import Date, ForeignKey, Integer, String, Text
+from sqlalchemy import Date, ForeignKey, Integer, String, Text, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel
@@ -30,6 +30,7 @@ class Judgment(BaseModel):
     """A court judgment/ruling used as precedent."""
 
     __tablename__ = "judgments"
+    __table_args__ = (Index("uq_judgment_court_case_year", "court_id", "case_number", "year", unique=True),)
 
     court_id: Mapped[Optional[str]] = mapped_column(ForeignKey("courts.id"), nullable=True)
     source_id: Mapped[Optional[str]] = mapped_column(ForeignKey("sources.id"), nullable=True)
