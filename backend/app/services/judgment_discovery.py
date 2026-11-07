@@ -10,6 +10,7 @@ from html.parser import HTMLParser
 from urllib.parse import urlparse, urljoin
 import re
 import unicodedata
+import ipaddress
 
 import httpx
 
@@ -59,7 +60,19 @@ class _HTMLText(HTMLParser):
 
 def _host_allowed(url: str, hosts: tuple[str, ...]) -> bool:
     p = urlparse(url)
-    return p.scheme == "https" and bool(p.hostname) and p.hostname.lower() in hosts and not p.username and not p.password
+    if p.scheme != "https" or not p.hostname or p.username or p.password:
+        return False
+    try:
+        if p.port not in (None, 443):
+            return False
+    except ValueError:
+        return False
+    try:
+        ipaddress.ip_address(p.hostname)
+        return False
+    except ValueError:
+        pass
+    return p.hostname.lower().rstrip(".") in {h.lower().rstrip(".") for h in hosts}
 
 
 def _bounded_html(url: str, client: httpx.Client) -> tuple[str, bytes]:
