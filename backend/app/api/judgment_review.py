@@ -144,8 +144,8 @@ def approve_judgment(
     source = db.query(Source).filter(Source.id == judgment.source_id).first()
     if not source or source.url != payload.verified_source_url:
         raise HTTPException(422, "Source URL must match registered provenance")
-    if payload.verified_excerpt.strip() == payload.independent_excerpt.strip():
-        raise HTTPException(422, "Independent evidence must contain distinct passages")
+    if payload.verified_excerpt.strip() not in judgment.full_text:
+        raise HTTPException(422, "Primary evidence excerpt must appear verbatim in judgment text")
     db.add(JudgmentEvidence(
         judgment_id=judgment.id,
         reviewer_id=admin.id,
