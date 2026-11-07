@@ -101,8 +101,8 @@ def approve_judgment(
         not urlparse(payload.verified_source_url).hostname or
         not urlparse(payload.independent_source_url).hostname):
         raise HTTPException(422, 'HTTPS evidence URLs required')
-    if payload.verified_source_url == payload.independent_source_url:
-        raise HTTPException(422, "Independent corroborating source required")
+    if urlparse(payload.verified_source_url).hostname == urlparse(payload.independent_source_url).hostname:
+        raise HTTPException(422, "Independent corroboration must come from a different publisher host")
     source = db.query(Source).filter(Source.id == judgment.source_id).first()
     if not source or source.url != payload.verified_source_url:
         raise HTTPException(422, "Source URL must match registered provenance")
