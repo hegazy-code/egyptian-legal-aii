@@ -47,3 +47,22 @@ def test_source_disabled_by_default():
     source = SourceConfig("example", "https://example.org", ("example.org",))
     with httpx.Client() as client:
         assert discover(source, client) == []
+
+
+def test_arabic_indic_year_supported():
+    draft = prepare_draft(sample("محكمة النقض الطعن رقم ١٢٣ لسنة ٩٠ جلسة 01/02/2020"))
+    assert draft["judgment_schema"]["year"] == 90
+
+
+def test_script_content_is_not_evidence():
+    import httpx
+    from app.services.judgment_discovery import retrieve
+    html = ('<html><script>محكمة النقض الطعن رقم 999 لسنة 90</script>'
+            '<body>محكمة النقض الطعن رقم 123 لسنة 90 جلسة 01/02/2020</body></html>')
+    def handler(request):
+        return httpx.Response(200, headers={"content-type": "text/html"}, text=html)
+    source = SourceConfig("fixture", "https://example.org", ("example.org",), enabled=True)
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        evidence = retrieve("https://example.org/test", source, client)
+    assert "999" not in evidence.text
+    assert prepare_draft(evidence)["evidence"]["case_number"] == "123"
