@@ -5,6 +5,7 @@ is recorded in the existing audit_logs table in the same DB transaction.
 """
 import json
 import ipaddress
+import os
 from datetime import date
 from hashlib import sha256
 
@@ -150,16 +151,25 @@ def approve_judgment(
     evidence_ok, issues = check_review_evidence(judgment.full_text, payload.verified_excerpt, payload.independent_excerpt)
     if not evidence_ok:
         raise HTTPException(422, {"evidence_issues": issues})
+    approved_hosts = frozenset(
+        host.strip().lower() for host in
+        os.environ.get("JUDGMENT_VERIFIED_EVIDENCE_HOSTS", "").split(",")
+        if host.strip()
+    )
+    primary_host = urlparse(payload.verified_source_url).hostname.lower()
+    independent_host = urlparse(payload.independent_source_url).hostname.lower()
+    if primary_host not in approved_hosts or independent_host not in approved_hosts:
+        raise HTTPException(422, "Both publishers must be configured as trusted evidence hosts")
     # Server retrieves both documents independently; client-provided trust flags
     # and excerpts cannot bypass these network and content checks.
     try:
         primary = fetch_verified_html(
             payload.verified_source_url,
-            allowed_hosts=frozenset({urlparse(source.url).hostname.lower()}),
+            allowed_hosts=approved_hosts,
         )
         secondary = fetch_verified_html(
             payload.independent_source_url,
-            allowed_hosts=frozenset({urlparse(payload.independent_source_url).hostname.lower()}),
+            allowed_hosts=approved_hosts,
         )
     except Exception:
         raise HTTPException(422, "Independent source retrieval or TLS validation failed")
