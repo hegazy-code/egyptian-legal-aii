@@ -71,7 +71,7 @@ def verify_retrieved_documents(
     if len(first) < 30 or first not in staged or first not in normalized(primary.extracted_text):
         blockers.append("primary_quote_not_corroborated")
     if len(second) < 30 or second not in normalized(independent.extracted_text):
-        blockers.append("independent_quote_not_corroborrated")
+        blockers.append("independent_quote_not_corroborated")
     return VerificationResult(
         passed=not blockers,
         blockers=tuple(blockers),
