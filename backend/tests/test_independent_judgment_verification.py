@@ -53,3 +53,31 @@ def test_fingerprints_match_actual_raw_bytes():
     result = check(a, b)
     assert result.primary_sha256 == sha256(a.raw).hexdigest()
     assert result.independent_sha256 == sha256(b.raw).hexdigest()
+
+
+def test_unrelated_secondary_page_cannot_approve_unrelated_case():
+    a, b = documents()
+    unrelated = "A completely unrelated judicial decision from another case."
+    result = verify_retrieved_documents(
+        PASSAGE, a,
+        replace(b, raw=unrelated.encode(), extracted_text=unrelated),
+        primary_excerpt=PASSAGE,
+        independent_excerpt=unrelated,
+        expected_primary_url=a.url,
+    )
+    assert not result.passed
+    assert "independent_quote_not_corroborated" in result.blockers
+
+
+def test_secondary_quote_must_be_in_primary_document_too():
+    a, b = documents()
+    unrelated = "Another unrelated decision with entirely different case facts."
+    result = verify_retrieved_documents(
+        PASSAGE + " " + unrelated, a,
+        replace(b, raw=unrelated.encode(), extracted_text=unrelated),
+        primary_excerpt=PASSAGE,
+        independent_excerpt=unrelated,
+        expected_primary_url=a.url,
+    )
+    assert not result.passed
+    assert "independent_quote_not_corroborated" in result.blockers
