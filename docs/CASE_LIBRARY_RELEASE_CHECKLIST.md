@@ -22,15 +22,17 @@
 - [x] Admin-only draft, approve, list and unpublish endpoints; audit entries written in same transaction.
 - [x] Judicial-year values below 1800 supported; Arabic/Persian digits normalized during extraction.
 - [x] Harden evidence URLs against credentials, IP literals, malformed hosts and custom ports.
-- [x] Require registered court identity on new drafts and scope application-level duplicate checks by court, case number and year. Judgment date remains pending.
+- [x] Require registered court identity and judgment date on new drafts; scope duplicate checks by court, case number and year.
 - [x] Require judgment date and add database unique index plus Alembic migration (not executed yet).
 - [ ] Test both migrations on a backed-up staging database; resolve any pre-existing duplicates before applying.
 - [x] Record staged and approved judgment text SHA-256 fingerprints in existing admin audit logs.
 - [x] Add private persistent reviewer evidence model and migration; approval saves two reviewer-supplied excerpts, URLs, reviewer and judgment text fingerprint in one transaction.
-- [ ] Independently retrieve and authenticate source content, preserve immutable source hashes/retrieval timestamps and precise citation spans; reviewer assertions alone are insufficient.
-- [ ] Require independent *content* verification, not just distinct hostnames and reviewer-supplied Boolean flags.
-- [ ] Make database-level deduplication concurrency-safe, with migration.
-- [ ] Add DNS resolution/IP-range and outbound egress controls before networked ingestion in production.
+- [x] Implement server-side pinned-IP TLS retrieval, configured host allowlist, independent content checks and persisted source hashes/timestamps; integration tests not confirmed.
+- [ ] Validate trustworthiness and editorial independence of real publishers; persist precise citation offsets and preserve raw evidence securely.
+- [x] Require both server-retrieved source documents to contain the corresponding review quotations before approval; no publication implied.
+- [x] Add database-level unique index and Alembic migration for court/case/year; staging migration still untested.
+- [x] Implement pinned-IP DNS/global-address validation and TLS hostname verification for admin approval retrieval.
+- [ ] Verify deployment-level outbound egress controls and test against DNS rebinding, proxies and malicious endpoints.
 - [ ] Review rate limits, admin permissions, audit access and safe error handling.
 - [ ] Review failure/retry behavior and transaction rollback for each API transition.
 
