@@ -67,9 +67,9 @@ def _bounded_html(url: str, client: httpx.Client) -> tuple[str, bytes]:
     chunks = []
     total = 0
     with client.stream("GET", url, follow_redirects=False, timeout=15) as response:
-        response.raise_for_status()
         if response.is_redirect:
             raise ValueError("Redirect rejected")
+        response.raise_for_status()
         if "text/html" not in response.headers.get("content-type", "").lower():
             raise ValueError("HTML response required")
         for chunk in response.iter_bytes():
