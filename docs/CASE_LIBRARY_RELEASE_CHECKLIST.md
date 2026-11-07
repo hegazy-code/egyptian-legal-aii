@@ -22,8 +22,10 @@
 - [x] Admin-only draft, approve, list and unpublish endpoints; audit entries written in same transaction.
 - [x] Judicial-year values below 1800 supported; Arabic/Persian digits normalized during extraction.
 - [x] Harden evidence URLs against credentials, IP literals, malformed hosts and custom ports.
-- [ ] Add court identity and judgment date to staging and approval; prevent cross-court false duplicate collisions.
-- [ ] Persist independent evidence, immutable source hashes, timestamps, citation spans, reviewer identity and verification outcomes.
+- [x] Require registered court identity on new drafts and scope application-level duplicate checks by court, case number and year. Judgment date remains pending.
+- [ ] Add judgment date and database-enforced concurrent duplicate protection.
+- [x] Record staged and approved judgment text SHA-256 fingerprints in existing admin audit logs.
+- [ ] Persist independently verified evidence documents, immutable source hashes, retrieval timestamps, citation spans, reviewer identity and verification outcomes.
 - [ ] Require independent *content* verification, not just distinct hostnames and reviewer-supplied Boolean flags.
 - [ ] Make database-level deduplication concurrency-safe, with migration.
 - [ ] Add DNS resolution/IP-range and outbound egress controls before networked ingestion in production.
