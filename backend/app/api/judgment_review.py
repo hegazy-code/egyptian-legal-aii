@@ -17,6 +17,7 @@ from sqlalchemy.exc import IntegrityError
 from app.api.deps import get_current_admin_user
 from app.database import get_db
 from app.models.judgments import Judgment, Court
+from app.models.judgment_evidence import JudgmentEvidence
 from app.models.legal import Source
 from app.models.system import AuditLog
 from app.models.users import User
@@ -41,6 +42,8 @@ class ReviewDecision(BaseModel):
     citation_verified: bool
     personal_data_cleared: bool
     source_authenticity_verified: bool = False
+    verified_excerpt: str = Field(min_length=30, max_length=5000)
+    independent_excerpt: str = Field(min_length=30, max_length=5000)
 
 
 def _valid_evidence_url(value: str) -> bool:
@@ -141,6 +144,18 @@ def approve_judgment(
     source = db.query(Source).filter(Source.id == judgment.source_id).first()
     if not source or source.url != payload.verified_source_url:
         raise HTTPException(422, "Source URL must match registered provenance")
+    if payload.verified_excerpt.strip() == payload.independent_excerpt.strip():
+        raise HTTPException(422, "Independent evidence must contain distinct passages")
+    db.add(JudgmentEvidence(
+        judgment_id=judgment.id,
+        reviewer_id=admin.id,
+        source_url=payload.verified_source_url,
+        independent_url=payload.independent_source_url,
+        text_sha256=sha256(judgment.full_text.encode("utf-8")).hexdigest(),
+        source_excerpt=payload.verified_excerpt,
+        independent_excerpt=payload.independent_excerpt,
+        review_reason=payload.reason,
+    ))
     judgment.status = "approved"
     _audit(db, admin, judgment, "judgment_approved", {**payload.model_dump(), "court_id": judgment.court_id, "text_sha256": sha256(judgment.full_text.encode("utf-8")).hexdigest()})
     db.commit()
