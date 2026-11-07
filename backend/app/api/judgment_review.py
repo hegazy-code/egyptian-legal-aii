@@ -5,7 +5,7 @@ is recorded in the existing audit_logs table in the same DB transaction.
 """
 import json
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -108,7 +108,7 @@ def approve_judgment(
 @router.post("/{judgment_id}/unpublish")
 def unpublish_judgment(
     judgment_id: str,
-    reason: str = Field(min_length=10),
+    reason: str = Query(min_length=10),
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_admin_user),
 ):
