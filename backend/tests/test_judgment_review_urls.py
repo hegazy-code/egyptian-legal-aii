@@ -24,4 +24,4 @@ def test_invalid_provenance_urls(url):
 
 
 def test_judicial_year_allowed():
-    assert StageJudgment(source_id="source", case_number="123", year=90, full_text="x" * 100).year == 90
+    assert StageJudgment(source_id="source", court_id="court", case_number="123", year=90, full_text="x" * 100).year == 90
