@@ -1,0 +1,23 @@
+name: Case Library Safety Tests
+on:
+  push:
+    branches: [feature/case-library-ingestion-m1]
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/case-library-tests.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pytest tests/test_judgment_discovery.py tests/test_judgment_publication_policy.py -q
+      - run: python -m compileall -q app/api/judgment_review.py app/services/judgment_discovery.py app/services/judgment_publication_policy.py scripts/inspect_scc_candidates.py
+      - run: python scripts/inspect_scc_candidates.py --offline
