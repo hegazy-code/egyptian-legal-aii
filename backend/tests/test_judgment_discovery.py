@@ -91,3 +91,20 @@ def test_redirects_rejected_even_if_destination_is_allowed():
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         with pytest.raises(ValueError, match="Redirect"):
             retrieve("https://example.org/redirect", source, client)
+
+
+def test_nonstandard_ports_and_ip_hosts_are_rejected():
+    import pytest
+    import httpx
+    from app.services.judgment_discovery import retrieve
+    source = SourceConfig("fixture", "https://example.org", ("example.org", "127.0.0.1"), enabled=True)
+    with httpx.Client(transport=httpx.MockTransport(lambda req: httpx.Response(200, headers={"content-type": "text/html"}, text="ok"))) as client:
+        for url in ("https://example.org:8443/test", "https://127.0.0.1/test", "https://example.org@evil.test/test"):
+            with pytest.raises(ValueError, match="allowlist"):
+                retrieve(url, source, client)
+
+
+def test_persian_digits_are_normalized():
+    draft = prepare_draft(sample("محكمة النقض الطعن رقم ۱۲۳ لسنة ۹۰ جلسة 01/02/2020"))
+    assert draft["judgment_schema"]["year"] == 90
+    assert draft["evidence"]["case_number"] == "123"
