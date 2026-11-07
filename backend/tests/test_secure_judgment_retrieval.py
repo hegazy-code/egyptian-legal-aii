@@ -39,3 +39,45 @@ def test_html_extractor_ignores_scripts_but_preserves_body():
     assert "Before" in "".join(parser.parts)
     assert "After" in "".join(parser.parts)
     assert "ignore" not in "".join(parser.parts)
+
+
+def test_pinned_ip_https_fetch_and_hash(monkeypatch):
+    import socket
+    import urllib3
+    from app.services import secure_judgment_retrieval as retrieval
+    calls = {}
+    class FakeResponse:
+        status = 200
+        headers = {"Content-Type": "text/html; charset=utf-8"}
+        def read(self, count):
+            return b"<html><body>Verified judgment text</body></html>"
+        def release_conn(self):
+            calls["released"] = True
+    class FakePool:
+        def __init__(self, host, **kwargs):
+            calls["ip"] = host
+            calls.update(kwargs)
+        def urlopen(self, method, path, **kwargs):
+            calls["path"] = path
+            calls["request"] = kwargs
+            return FakeResponse()
+        def close(self):
+            calls["closed"] = True
+    monkeypatch.setattr(socket, "getaddrinfo", lambda *a, **k: [
+        (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("8.8.8.8", 443))
+    ])
+    monkeypatch.setattr(urllib3, "HTTPSConnectionPool", FakePool)
+    doc = retrieval.fetch_verified_html(
+        "https://court.example.org/judgment?id=42",
+        allowed_hosts=frozenset({"court.example.org"}),
+    )
+    assert calls["ip"] == "8.8.8.8"
+    assert calls["server_hostname"] == "court.example.org"
+    assert calls["assert_hostname"] == "court.example.org"
+    assert calls["request"]["redirect"] is False
+    assert calls["request"]["retries"] is False
+    assert calls["request"]["headers"]["Host"] == "court.example.org"
+    assert calls["path"] == "/judgment?id=42"
+    assert doc.trusted_source
+    assert "Verified judgment text" in doc.extracted_text
+    assert calls["released"] and calls["closed"]
