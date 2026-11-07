@@ -129,6 +129,7 @@ def retrieve(url: str, source: SourceConfig, client: httpx.Client) -> Evidence:
 
 def normalize(text: str) -> str:
     text = unicodedata.normalize("NFKC", text)
+    text = text.translate(str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789"))
     text = re.sub(r"[\u064b-\u065f\u0670]", "", text)
     return re.sub(r"\s+", " ", text).strip()
 
