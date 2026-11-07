@@ -5,12 +5,14 @@ is recorded in the existing audit_logs table in the same DB transaction.
 """
 import json
 import ipaddress
+from datetime import date
 from hashlib import sha256
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from urllib.parse import urlparse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.api.deps import get_current_admin_user
 from app.database import get_db
@@ -27,6 +29,7 @@ class StageJudgment(BaseModel):
     court_id: str
     case_number: str = Field(min_length=1, max_length=100)
     year: int = Field(ge=1, le=2200)
+    judgment_date: date
     full_text: str = Field(min_length=100)
     summary: str | None = None
 
@@ -91,13 +94,17 @@ def stage_judgment(
         raise HTTPException(409, "Possible duplicate judgment; review existing record")
     judgment = Judgment(
         source_id=source.id, court_id=court.id, case_number=payload.case_number,
-        year=payload.year, full_text=payload.full_text,
+        year=payload.year, judgment_date=payload.judgment_date, full_text=payload.full_text,
         summary=payload.summary, status="draft",
     )
     db.add(judgment)
     db.flush()
     _audit(db, admin, judgment, "judgment_draft_created", {"source_id": source.id, "court_id": court.id, "text_sha256": sha256(payload.full_text.encode("utf-8")).hexdigest()})
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Judgment already exists for this court, number and year")
     return {"id": judgment.id, "status": judgment.status}
 
 
