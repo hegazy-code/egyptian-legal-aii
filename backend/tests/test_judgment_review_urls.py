@@ -1,5 +1,6 @@
 """URL validation is fail-closed and never contacts a remote host."""
 import pytest
+from datetime import date
 from app.api.judgment_review import _valid_evidence_url, StageJudgment
 
 
@@ -24,4 +25,4 @@ def test_invalid_provenance_urls(url):
 
 
 def test_judicial_year_allowed():
-    assert StageJudgment(source_id="source", court_id="court", case_number="123", year=90, full_text="x" * 100).year == 90
+    assert StageJudgment(source_id="source", court_id="court", case_number="123", year=90, judgment_date=date(2025, 1, 1), full_text="x" * 100).year == 90
