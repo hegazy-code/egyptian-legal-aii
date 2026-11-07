@@ -16,6 +16,7 @@ def prepared(monkeypatch):
     engine = create_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(engine)
     monkeypatch.setenv("JUDGMENT_VERIFIED_EVIDENCE_HOSTS", "court.example.org,publisher.example.org")
+    monkeypatch.setenv("JUDGMENT_EVIDENCE_PUBLISHER_IDS", '{"court.example.org":"court-operator","publisher.example.org":"independent-publisher"}')
     with Session(engine) as db:
         court = Court(name="Test Court")
         source = Source(name="Court", source_type="court", url="https://court.example.org/case")
@@ -77,3 +78,16 @@ def test_unconfigured_hosts_block_before_any_network_call(prepared, monkeypatch)
         judgment_review.approve_judgment(judgment.id, decision, db, admin)
     assert exc.value.status_code == 422
     assert db.get(Judgment, judgment.id).status == "draft"
+
+
+def test_same_publisher_operating_two_hosts_is_not_independent(prepared, monkeypatch):
+    db, judgment, admin, decision = prepared
+    monkeypatch.setenv("JUDGMENT_EVIDENCE_PUBLISHER_IDS",
+                       '{"court.example.org":"same-company","publisher.example.org":"same-company"}')
+    def no_fetch(*args, **kwargs):
+        raise AssertionError("Publisher gate must block before network access")
+    monkeypatch.setattr(judgment_review, "fetch_verified_html", no_fetch)
+    with pytest.raises(HTTPException) as exc:
+        judgment_review.approve_judgment(judgment.id, decision, db, admin)
+    assert exc.value.status_code == 422
+    assert db.query(JudgmentEvidence).count() == 0
