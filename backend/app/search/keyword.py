@@ -174,28 +174,30 @@ def keyword_search_articles(db: Session, query: str, limit: int = 10) -> List[Se
 
 
 def keyword_search_judgments(db: Session, query: str, limit: int = 10) -> List[SearchResultItem]:
+    """Only explicitly published judgments are eligible for public search."""
     normalized = simple_normalize(query)
     if not normalized:
         return []
     like_pattern = f"%{normalized}%"
     rows = (
         db.query(Judgment)
-        .filter(or_(Judgment.summary.ilike(like_pattern), Judgment.full_text.ilike(like_pattern)))
+        .filter(
+            Judgment.status == "published",
+            or_(Judgment.summary.ilike(like_pattern), Judgment.full_text.ilike(like_pattern)),
+        )
         .limit(limit)
         .all()
     )
     results = []
     for j in rows:
         text = j.summary or j.full_text or ""
-        snippet = text[:_SNIPPET_SIZE]
-        law_title = a.law.title if getattr(a, 'law', None) else ''
         results.append(
             SearchResultItem(
                 result_type="judgment",
                 id=j.id,
                 title=f"حكم رقم {j.case_number or ''} لسنة {j.year or ''}",
-                snippet=snippet,
-                score=computed_score,
+                snippet=text[:_SNIPPET_SIZE],
+                score=_match_score(text, normalized),
             )
         )
     results.sort(key=lambda r: r.score, reverse=True)
