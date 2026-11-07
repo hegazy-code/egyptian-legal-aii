@@ -24,13 +24,11 @@ class _Text(HTMLParser):
         self.skip = 0
 
     def handle_starttag(self, tag, attrs):
-        if self.skip:
+        if tag in ("script", "style", "noscript"):
             self.skip += 1
-        elif tag in ("script", "style", "noscript"):
-            self.skip = 1
 
     def handle_endtag(self, tag):
-        if self.skip:
+        if tag in ("script", "style", "noscript") and self.skip:
             self.skip -= 1
 
     def handle_data(self, data):
@@ -71,6 +69,8 @@ def fetch_verified_html(url: str, *, allowed_hosts: frozenset[str]) -> Retrieved
     host = _hostname(url)
     if host not in allowed_hosts:
         raise ValueError("Host is not explicitly allowlisted")
+    if len(url) > 1000:
+        raise ValueError("Evidence URL too long")
     addresses = _public_addresses(host)
     parsed = urlsplit(url)
     path = parsed.path or "/"
@@ -91,7 +91,7 @@ def fetch_verified_html(url: str, *, allowed_hosts: frozenset[str]) -> Retrieved
         )
         if response.status != 200:
             raise ValueError("Source must return HTTP 200 without redirects")
-        if "text/html" not in response.headers.get("Content-Type", "").lower():
+        if response.headers.get("Content-Type", "").lower().split(";", 1)[0].strip() != "text/html":
             raise ValueError("Only HTML evidence supported")
         raw = response.read(MAX_BYTES + 1)
         if len(raw) > MAX_BYTES:
