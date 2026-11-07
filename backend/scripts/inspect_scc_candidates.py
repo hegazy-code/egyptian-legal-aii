@@ -8,13 +8,16 @@ Network access must be authorized by operator after rights and access review.
 """
 import argparse
 import json
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 import httpx
 
 from app.services.judgment_discovery import Evidence, SourceConfig, prepare_draft, retrieve, run_batch
 
-ROOT = Path(__file__).resolve().parents[1]
 CANDIDATES = ROOT / "data" / "scc_ten_judgment_candidates.json"
 
 
