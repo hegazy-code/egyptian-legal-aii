@@ -6,29 +6,39 @@
       "id": "cassation",
       "name_ar": "محكمة النقض المصرية",
       "index_url": "https://cc.gov.eg/judgments_search/",
-      "allowed_hosts": ["cc.gov.eg"],
+      "allowed_hosts": [
+        "cc.gov.eg"
+      ],
       "category": "judgments",
       "priority": 1,
       "enabled": false,
       "rights_review_required": true,
-      "notes": "Official judgments search; assess robots/terms and dynamic result navigation before automated retrieval."
+      "notes": "Official court search confirmed 2026-11-07. Terms (May 2026) explicitly prohibit automated/bulk extraction and commercial republication without prior written permission. DO NOT enable ingestion or fetch court content automatically unless court grants explicit written permission.",
+      "terms_url": "https://cc.gov.eg/terms",
+      "automated_retrieval_permitted": false,
+      "commercial_republication_permitted": false
     },
     {
       "id": "constitutional",
       "name_ar": "المحكمة الدستورية العليا",
       "index_url": "https://www.sccourt.gov.eg/newportal/",
-      "allowed_hosts": ["www.sccourt.gov.eg"],
+      "allowed_hosts": [
+        "www.sccourt.gov.eg"
+      ],
       "category": "judgments",
       "priority": 1,
       "enabled": false,
       "rights_review_required": true,
-      "notes": "Official judgment and principle search; determine canonical judgment detail links."
+      "notes": "Official constitutional court index and an individual judgment HTML page found via public search 2026-11-07; no live direct HTTP/TLS test possible in current execution environment; publication and automated extraction rights unverified.",
+      "sample_detail_url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/11499_40_103_1_2.html"
     },
     {
       "id": "state_council",
       "name_ar": "مجلس الدولة المصري",
       "index_url": "https://esc.gov.eg/",
-      "allowed_hosts": ["esc.gov.eg"],
+      "allowed_hosts": [
+        "esc.gov.eg"
+      ],
       "category": "judgments",
       "priority": 2,
       "enabled": false,
@@ -39,7 +49,9 @@
       "id": "mksegypt",
       "name_ar": "مؤسسة دعم العدالة والمساواة",
       "index_url": "https://www.mksegypt.org/ar/documents/section/judgments-of-the-supreme-constitutional-court",
-      "allowed_hosts": ["www.mksegypt.org"],
+      "allowed_hosts": [
+        "www.mksegypt.org"
+      ],
       "category": "secondary_crosscheck",
       "priority": 3,
       "enabled": false,
