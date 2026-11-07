@@ -1,5 +1,5 @@
 """Offline checks for court-scoped identity and private evidence persistence."""
-from datetime import date
+from datetime import date, datetime, timezone
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError
@@ -53,6 +53,10 @@ def test_evidence_is_private_database_record(db):
         independent_url="https://publisher.example.org/case",
         text_sha256="a" * 64, source_excerpt="court text", independent_excerpt="independent text",
         review_reason="Reviewed against documents",
+        primary_sha256="b" * 64, independent_sha256="c" * 64,
+        primary_fetched_at=datetime.now(timezone.utc),
+        independent_fetched_at=datetime.now(timezone.utc),
+        verification_outcome="passed",
     )
     db.add(evidence)
     db.commit()
