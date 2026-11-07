@@ -24,7 +24,8 @@
 - [x] Harden evidence URLs against credentials, IP literals, malformed hosts and custom ports.
 - [x] Require registered court identity and judgment date on new drafts; scope duplicate checks by court, case number and year.
 - [x] Require judgment date and add database unique index plus Alembic migration (not executed yet).
-- [ ] Test both migrations on a backed-up staging database; resolve any pre-existing duplicates before applying.
+- [x] Test both migrations on a fresh SQLite CI database (run 42379646464).
+- [ ] Test migrations on a backed-up production-like PostgreSQL staging database; resolve any pre-existing duplicates before applying.
 - [x] Record staged and approved judgment text SHA-256 fingerprints in existing admin audit logs.
 - [x] Add private persistent reviewer evidence model and migration; approval saves two reviewer-supplied excerpts, URLs, reviewer and judgment text fingerprint in one transaction.
 - [x] Implement server-side pinned-IP TLS retrieval, configured host allowlist, independent content checks and persisted source hashes/timestamps; integration tests not confirmed.
@@ -61,8 +62,8 @@
 - [ ] Define re-review and re-publication rules after source changes or legal corrections.
 
 ## 5 — Tests and release quality
-- [x] Offline unit/regression tests (including evidence/uniqueness) and GitHub Actions workflow committed; not yet executed successfully.
-- [ ] **Run** backend tests in a working CI/local environment and capture a green result; clone attempt on 2026-11-07 failed due to DNS resolution of github.com.
+- [x] GitHub Actions run 42379646464 passed: 60 tests, fresh SQLite Alembic upgrade through a0b1c2d3e4f5, compileall and offline source inspection (2026-11-07).
+- [x] Capture green GitHub Actions run 42379646464 for selected Phase 1 tests and fresh SQLite migrations; broader suite, PostgreSQL staging and E2E remain pending.
 - [ ] Run formatting/static analysis, dependency/security checks and database migration tests.
 - [ ] Test admin/non-admin authorization, malicious URLs, concurrent duplicates, malformed documents and API failures.
 - [ ] Test public search/chat for all statuses: draft, approved, unpublished, published.
