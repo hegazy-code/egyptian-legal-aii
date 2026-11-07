@@ -66,3 +66,28 @@ def test_script_content_is_not_evidence():
         evidence = retrieve("https://example.org/test", source, client)
     assert "999" not in evidence.text
     assert prepare_draft(evidence)["evidence"]["case_number"] == "123"
+
+
+def test_streaming_size_limit_rejects_oversized_response():
+    import httpx
+    import pytest
+    from app.services.judgment_discovery import retrieve
+    def handler(request):
+        return httpx.Response(200, headers={"content-type": "text/html"},
+                              content=b"a" * 2_000_001)
+    source = SourceConfig("fixture", "https://example.org", ("example.org",), enabled=True)
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(ValueError, match="Oversized"):
+            retrieve("https://example.org/large", source, client)
+
+
+def test_redirects_rejected_even_if_destination_is_allowed():
+    import httpx
+    import pytest
+    from app.services.judgment_discovery import retrieve
+    def handler(request):
+        return httpx.Response(302, headers={"location": "https://example.org/other"})
+    source = SourceConfig("fixture", "https://example.org", ("example.org",), enabled=True)
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(ValueError, match="Redirect"):
+            retrieve("https://example.org/redirect", source, client)
