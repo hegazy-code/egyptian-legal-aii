@@ -4,6 +4,7 @@ No public ingestion route. No background publishing. Every state transition
 is recorded in the existing audit_logs table in the same DB transaction.
 """
 import json
+import ipaddress
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from urllib.parse import urlparse
@@ -37,6 +38,29 @@ class ReviewDecision(BaseModel):
     source_authenticity_verified: bool = False
 
 
+def _valid_evidence_url(value: str) -> bool:
+    """Allow only public DNS hostnames over HTTPS without credentials or custom ports."""
+    try:
+        parsed = urlparse(value)
+        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+            return False
+        if parsed.port not in (None, 443):
+            return False
+        try:
+            ipaddress.ip_address(parsed.hostname)
+            return False
+        except ValueError:
+            pass
+        labels = parsed.hostname.split(".")
+        return len(labels) >= 2 and all(
+            label and len(label) <= 63 and label[0].isalnum()
+            and label[-1].isalnum() and all(c.isalnum() or c == "-" for c in label)
+            for label in labels
+        )
+    except ValueError:
+        return False
+
+
 def _audit(db, admin, judgment, action, details):
     db.add(AuditLog(
         user_id=admin.id, action=action, entity_type="judgment",
@@ -51,7 +75,7 @@ def stage_judgment(
     admin: User = Depends(get_current_admin_user),
 ):
     source = db.query(Source).filter(Source.id == payload.source_id).first()
-    if not source or not source.url or urlparse(source.url).scheme != "https" or not urlparse(source.url).hostname:
+    if not source or not source.url or not _valid_evidence_url(source.url):
         raise HTTPException(422, "Verified HTTPS source record required")
     existing = db.query(Judgment).filter(
         Judgment.case_number == payload.case_number, Judgment.year == payload.year
@@ -96,14 +120,8 @@ def approve_judgment(
         raise HTTPException(422, "Judgment text and source required")
     if not payload.citation_verified or not payload.personal_data_cleared or not payload.source_authenticity_verified:
         raise HTTPException(422, "Citation and privacy checks must pass")
-    if (urlparse(payload.verified_source_url).scheme != 'https' or
-        urlparse(payload.independent_source_url).scheme != 'https' or
-        not urlparse(payload.verified_source_url).hostname or
-        not urlparse(payload.independent_source_url).hostname):
-        raise HTTPException(422, 'HTTPS evidence URLs required')
-    if (urlparse(payload.verified_source_url).username or urlparse(payload.verified_source_url).password or
-        urlparse(payload.independent_source_url).username or urlparse(payload.independent_source_url).password):
-        raise HTTPException(422, "Credentials in evidence URLs are forbidden")
+    if not _valid_evidence_url(payload.verified_source_url) or not _valid_evidence_url(payload.independent_source_url):
+        raise HTTPException(422, "Valid HTTPS evidence URLs with public hostnames required")
     if urlparse(payload.verified_source_url).hostname.lower() == urlparse(payload.independent_source_url).hostname.lower():
         raise HTTPException(422, "Independent corroboration must come from a different publisher host")
     source = db.query(Source).filter(Source.id == judgment.source_id).first()
