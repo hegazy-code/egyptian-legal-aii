@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from app.models import Base, Court, Judgment, Source, User, JudgmentEvidence
+from app.models.system import AuditLog
 from app.api import judgment_review
 from app.services.independent_judgment_verification import RetrievedDocument
 
@@ -53,6 +54,10 @@ def test_approval_saves_verified_documents_and_never_publishes(prepared, monkeyp
     evidence = db.query(JudgmentEvidence).filter_by(judgment_id=judgment.id).one()
     assert evidence.verification_outcome == "passed"
     assert len(evidence.primary_sha256) == 64
+    audit = db.query(AuditLog).filter_by(action="judgment_approved").one()
+    assert QUOTE not in audit.details
+    assert decision.reason not in audit.details
+    assert evidence.primary_sha256 in audit.details
 
 
 def test_untrusted_second_document_blocks_approval(prepared, monkeypatch):
