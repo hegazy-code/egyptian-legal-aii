@@ -72,7 +72,8 @@ def verify_retrieved_documents(
         blockers.append("primary_quote_not_corroborated")
     if len(second) < 30 or second not in staged or second not in normalized(primary.extracted_text) or second not in normalized(independent.extracted_text):
         blockers.append("independent_quote_not_corroborated")
-    # A secondary page with unrelated content cannot corroborate the staged judgment.\n    return VerificationResult(
+    # A secondary page with unrelated content cannot corroborate the staged judgment.
+    return VerificationResult(
         passed=not blockers,
         blockers=tuple(blockers),
         primary_sha256=sha256(primary.raw).hexdigest(),
