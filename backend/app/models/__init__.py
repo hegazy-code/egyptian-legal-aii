@@ -27,6 +27,8 @@ from app.models.judgments import (  # noqa: F401
     LegalRelationship,
 )
 
+from app.models.judgment_evidence import JudgmentEvidence  # noqa: F401
+
 # users.py
 from app.models.users import (  # noqa: F401
     User,
@@ -58,6 +60,7 @@ __all__ = [
     "MinisterialDecision",
     "Court",
     "Judgment",
+    "JudgmentEvidence",
     "LegalTopic",
     "ArticleTopic",
     "JudgmentTopic",
