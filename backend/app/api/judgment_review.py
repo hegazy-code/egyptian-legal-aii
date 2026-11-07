@@ -224,6 +224,53 @@ def approve_judgment(
     return {"id": judgment.id, "status": "approved", "published": False}
 
 
+
+class PublishDecision(BaseModel):
+    reason: str = Field(min_length=10, max_length=2000)
+    confirm_public_release: bool = False
+
+
+@router.post("/{judgment_id}/publish")
+def publish_judgment(
+    judgment_id: str,
+    payload: PublishDecision,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin_user),
+):
+    """Explicit admin publication; public search only indexes published status."""
+    if os.environ.get("JUDGMENT_MANUAL_PUBLICATION_ENABLED", "").lower() != "true":
+        raise HTTPException(403, "Manual judgment publication is disabled")
+    if not payload.confirm_public_release:
+        raise HTTPException(422, "Explicit publication confirmation required")
+    judgment = db.query(Judgment).filter(Judgment.id == judgment_id).with_for_update().first()
+    if not judgment:
+        raise HTTPException(404, "Judgment not found")
+    if judgment.status != "approved":
+        raise HTTPException(409, "Only approved judgments may be published")
+    if not all((judgment.source_id, judgment.court_id, judgment.case_number,
+                judgment.year, judgment.judgment_date, judgment.full_text)):
+        raise HTTPException(422, "Judgment identity and full text required")
+    evidence = (db.query(JudgmentEvidence)
+                .filter(JudgmentEvidence.judgment_id == judgment.id,
+                        JudgmentEvidence.verification_outcome == "passed")
+                .order_by(JudgmentEvidence.recorded_at.desc()).first())
+    if not evidence or evidence.text_sha256 != sha256(judgment.full_text.encode("utf-8")).hexdigest():
+        raise HTTPException(422, "Matching verified evidence required")
+    if not evidence.primary_sha256 or not evidence.independent_sha256:
+        raise HTTPException(422, "Both retrieved source fingerprints required")
+    judgment.status = "published"
+    _audit(db, admin, judgment, "judgment_published", {
+        "evidence_id": evidence.id, "text_sha256": evidence.text_sha256,
+        "reason_sha256": sha256(payload.reason.encode("utf-8")).hexdigest(),
+    })
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    return {"id": judgment.id, "status": "published"}
+
+
 @router.post("/{judgment_id}/unpublish")
 def unpublish_judgment(
     judgment_id: str,
