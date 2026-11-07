@@ -33,3 +33,10 @@ def test_new_judgment_is_draft_by_default(db):
     db.commit()
     assert judgment.status == "draft"
     assert keyword_search_judgments(db, "محكمة النقض") == []
+
+
+def test_wildcard_search_does_not_match_every_published_judgment(db):
+    db.add(Judgment(case_number="literal", year=90, full_text="محكمة النقض", status="published"))
+    db.commit()
+    assert keyword_search_judgments(db, "%") == []
+    assert keyword_search_judgments(db, "_") == []
