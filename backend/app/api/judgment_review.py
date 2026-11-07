@@ -51,7 +51,7 @@ def stage_judgment(
     admin: User = Depends(get_current_admin_user),
 ):
     source = db.query(Source).filter(Source.id == payload.source_id).first()
-    if not source or not source.url or not source.url.startswith("https://"):
+    if not source or not source.url or urlparse(source.url).scheme != "https" or not urlparse(source.url).hostname:
         raise HTTPException(422, "Verified HTTPS source record required")
     existing = db.query(Judgment).filter(
         Judgment.case_number == payload.case_number, Judgment.year == payload.year
@@ -101,7 +101,10 @@ def approve_judgment(
         not urlparse(payload.verified_source_url).hostname or
         not urlparse(payload.independent_source_url).hostname):
         raise HTTPException(422, 'HTTPS evidence URLs required')
-    if urlparse(payload.verified_source_url).hostname == urlparse(payload.independent_source_url).hostname:
+    if (urlparse(payload.verified_source_url).username or urlparse(payload.verified_source_url).password or
+        urlparse(payload.independent_source_url).username or urlparse(payload.independent_source_url).password):
+        raise HTTPException(422, "Credentials in evidence URLs are forbidden")
+    if urlparse(payload.verified_source_url).hostname.lower() == urlparse(payload.independent_source_url).hostname.lower():
         raise HTTPException(422, "Independent corroboration must come from a different publisher host")
     source = db.query(Source).filter(Source.id == judgment.source_id).first()
     if not source or source.url != payload.verified_source_url:
