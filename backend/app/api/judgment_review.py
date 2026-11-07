@@ -23,7 +23,7 @@ router = APIRouter(prefix="/admin/judgments", tags=["admin-judgments"])
 class StageJudgment(BaseModel):
     source_id: str
     case_number: str = Field(min_length=1, max_length=100)
-    year: int = Field(ge=1800, le=2200)
+    year: int = Field(ge=1, le=2200)
     full_text: str = Field(min_length=100)
     summary: str | None = None
 
