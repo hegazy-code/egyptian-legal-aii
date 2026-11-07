@@ -15,7 +15,7 @@ def test_valid_public_provenance_urls(url):
     "http://example.org/case", "https://127.0.0.1/case",
     "https://[::1]/case", "https://localhost/case",
     "https://example.org:8080/case", "https://user:password@example.org/case",
-    "https://example.org@evil.test/case" if False else "https://example.org@127.0.0.1/case",
+    "https://example.org@127.0.0.1/case",
     "https://bad..example.org/case", "https://example.org:broken/case",
     "javascript:alert(1)", "https://-example.org/case",
 ])
