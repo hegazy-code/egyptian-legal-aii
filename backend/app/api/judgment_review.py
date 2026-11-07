@@ -22,6 +22,8 @@ from app.models.legal import Source
 from app.models.system import AuditLog
 from app.models.users import User
 from app.services.judgment_evidence_checks import check_review_evidence
+from app.services.secure_judgment_retrieval import fetch_verified_html
+from app.services.independent_judgment_verification import verify_retrieved_documents
 
 router = APIRouter(prefix="/admin/judgments", tags=["admin-judgments"])
 
@@ -148,6 +150,27 @@ def approve_judgment(
     evidence_ok, issues = check_review_evidence(judgment.full_text, payload.verified_excerpt, payload.independent_excerpt)
     if not evidence_ok:
         raise HTTPException(422, {"evidence_issues": issues})
+    # Server retrieves both documents independently; client-provided trust flags
+    # and excerpts cannot bypass these network and content checks.
+    try:
+        primary = fetch_verified_html(
+            payload.verified_source_url,
+            allowed_hosts=frozenset({urlparse(source.url).hostname.lower()}),
+        )
+        secondary = fetch_verified_html(
+            payload.independent_source_url,
+            allowed_hosts=frozenset({urlparse(payload.independent_source_url).hostname.lower()}),
+        )
+    except Exception:
+        raise HTTPException(422, "Independent source retrieval or TLS validation failed")
+    verification = verify_retrieved_documents(
+        judgment.full_text, primary, secondary,
+        primary_excerpt=payload.verified_excerpt,
+        independent_excerpt=payload.independent_excerpt,
+        expected_primary_url=source.url,
+    )
+    if not verification.passed:
+        raise HTTPException(422, {"verification_blockers": verification.blockers})
     db.add(JudgmentEvidence(
         judgment_id=judgment.id,
         reviewer_id=admin.id,
@@ -157,6 +180,11 @@ def approve_judgment(
         source_excerpt=payload.verified_excerpt,
         independent_excerpt=payload.independent_excerpt,
         review_reason=payload.reason,
+        primary_sha256=verification.primary_sha256,
+        independent_sha256=verification.independent_sha256,
+        primary_fetched_at=primary.fetched_at,
+        independent_fetched_at=secondary.fetched_at,
+        verification_outcome="passed",
     ))
     judgment.status = "approved"
     _audit(db, admin, judgment, "judgment_approved", {**payload.model_dump(), "court_id": judgment.court_id, "text_sha256": sha256(judgment.full_text.encode("utf-8")).hexdigest()})
