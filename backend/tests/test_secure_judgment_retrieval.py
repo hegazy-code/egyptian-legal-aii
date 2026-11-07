@@ -30,3 +30,12 @@ def test_host_allowlist_checked_before_dns(monkeypatch):
     monkeypatch.setattr(socket, "getaddrinfo", never_resolve)
     with pytest.raises(ValueError, match="allowlisted"):
         fetch_verified_html("https://untrusted.example.org/case", allowed_hosts=frozenset({"court.example.org"}))
+
+
+def test_html_extractor_ignores_scripts_but_preserves_body():
+    from app.services.secure_judgment_retrieval import _Text
+    parser = _Text()
+    parser.feed("<html><body>Before<script>ignore <b>this</b></script>After</body></html>")
+    assert "Before" in "".join(parser.parts)
+    assert "After" in "".join(parser.parts)
+    assert "ignore" not in "".join(parser.parts)
