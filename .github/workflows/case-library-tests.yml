@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements.txt pytest
-      - run: python -m pytest tests/test_judgment_discovery.py tests/test_judgment_publication_policy.py tests/test_judgment_public_visibility.py tests/test_judgment_review_urls.py tests/test_judgment_evidence.py tests/test_judgment_review_evidence.py tests/test_judgment_evidence_checks.py tests/test_independent_judgment_verification.py tests/test_secure_judgment_retrieval.py tests/test_judgment_approval_integration.py -q
+      - run: python -m pytest tests/test_judgment_discovery.py tests/test_judgment_publication_policy.py tests/test_judgment_public_visibility.py tests/test_judgment_review_urls.py tests/test_judgment_evidence.py tests/test_judgment_review_evidence.py tests/test_judgment_evidence_checks.py tests/test_independent_judgment_verification.py tests/test_secure_judgment_retrieval.py tests/test_judgment_approval_integration.py tests/test_judgment_source_rights.py -q
       - name: Verify fresh-database migration chain
         env:
           DATABASE_URL: sqlite:///./phase1_migration_test.db
