@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "publication_enabled": false,
+  "sources": [
+    {
+      "id": "cassation",
+      "name_ar": "محكمة النقض المصرية",
+      "index_url": "https://cc.gov.eg/judgments_search/",
+      "allowed_hosts": ["cc.gov.eg"],
+      "category": "judgments",
+      "priority": 1,
+      "enabled": false,
+      "rights_review_required": true,
+      "notes": "Official judgments search; assess robots/terms and dynamic result navigation before automated retrieval."
+    },
+    {
+      "id": "constitutional",
+      "name_ar": "المحكمة الدستورية العليا",
+      "index_url": "https://www.sccourt.gov.eg/newportal/",
+      "allowed_hosts": ["www.sccourt.gov.eg"],
+      "category": "judgments",
+      "priority": 1,
+      "enabled": false,
+      "rights_review_required": true,
+      "notes": "Official judgment and principle search; determine canonical judgment detail links."
+    },
+    {
+      "id": "state_council",
+      "name_ar": "مجلس الدولة المصري",
+      "index_url": "https://esc.gov.eg/",
+      "allowed_hosts": ["esc.gov.eg"],
+      "category": "judgments",
+      "priority": 2,
+      "enabled": false,
+      "rights_review_required": true,
+      "notes": "Official institutional site; public bulk judgment coverage not established."
+    },
+    {
+      "id": "mksegypt",
+      "name_ar": "مؤسسة دعم العدالة والمساواة",
+      "index_url": "https://www.mksegypt.org/ar/documents/section/judgments-of-the-supreme-constitutional-court",
+      "allowed_hosts": ["www.mksegypt.org"],
+      "category": "secondary_crosscheck",
+      "priority": 3,
+      "enabled": false,
+      "rights_review_required": true,
+      "notes": "Secondary repository; cross-check against constitutional court originals; reproduction permissions unverified."
+    }
+  ]
+}
