@@ -105,7 +105,11 @@ def stage_judgment(
         summary=payload.summary, status="draft",
     )
     db.add(judgment)
-    db.flush()
+    try:
+        db.flush()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Judgment already exists for this court, number and year")
     _audit(db, admin, judgment, "judgment_draft_created", {"source_id": source.id, "court_id": court.id, "text_sha256": sha256(payload.full_text.encode("utf-8")).hexdigest()})
     try:
         db.commit()
@@ -219,5 +223,9 @@ def unpublish_judgment(
     prior = judgment.status
     judgment.status = "unpublished"
     _audit(db, admin, judgment, "judgment_unpublished", {"prior_status": prior, "reason": reason})
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     return {"id": judgment.id, "status": "unpublished"}
