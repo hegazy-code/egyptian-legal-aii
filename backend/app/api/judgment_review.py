@@ -133,7 +133,7 @@ def approve_judgment(
         raise HTTPException(404, "Judgment not found")
     if judgment.status != "draft":
         raise HTTPException(409, "Only draft judgments can be approved")
-    if not judgment.full_text or not judgment.source_id or not judgment.court_id:
+    if not judgment.full_text or not judgment.source_id or not judgment.court_id or not judgment.judgment_date:
         raise HTTPException(422, "Judgment text and source required")
     if not payload.citation_verified or not payload.personal_data_cleared or not payload.source_authenticity_verified:
         raise HTTPException(422, "Citation and privacy checks must pass")
@@ -158,7 +158,11 @@ def approve_judgment(
     ))
     judgment.status = "approved"
     _audit(db, admin, judgment, "judgment_approved", {**payload.model_dump(), "court_id": judgment.court_id, "text_sha256": sha256(judgment.full_text.encode("utf-8")).hexdigest()})
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     return {"id": judgment.id, "status": "approved", "published": False}
 
 
