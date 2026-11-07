@@ -72,7 +72,7 @@ def _host_allowed(url: str, hosts: tuple[str, ...]) -> bool:
         return False
     except ValueError:
         pass
-    return p.hostname.lower().rstrip(".") in {h.lower().rstrip(".") for h in hosts}
+    return p.hostname.lower() in {h.lower() for h in hosts}
 
 
 def _bounded_html(url: str, client: httpx.Client) -> tuple[str, bytes]:
