@@ -62,16 +62,33 @@ def _host_allowed(url: str, hosts: tuple[str, ...]) -> bool:
     return p.scheme == "https" and bool(p.hostname) and p.hostname.lower() in hosts and not p.username and not p.password
 
 
+def _bounded_html(url: str, client: httpx.Client) -> tuple[str, bytes]:
+    """Read no more than 2 MB from the network; reject redirects and non-HTML."""
+    chunks = []
+    total = 0
+    with client.stream("GET", url, follow_redirects=False, timeout=15) as response:
+        response.raise_for_status()
+        if response.is_redirect:
+            raise ValueError("Redirect rejected")
+        if "text/html" not in response.headers.get("content-type", "").lower():
+            raise ValueError("HTML response required")
+        for chunk in response.iter_bytes():
+            total += len(chunk)
+            if total > 2_000_000:
+                raise ValueError("Oversized source rejected")
+            chunks.append(chunk)
+        encoding = response.encoding or "utf-8"
+    raw = b"".join(chunks)
+    return raw.decode(encoding, errors="replace"), raw
+
+
 def discover(source: SourceConfig, client: httpx.Client, max_links: int = 25) -> list[str]:
     """Discover links only from explicitly enabled, HTTPS allowlisted indexes."""
     if not source.enabled or not _host_allowed(source.index_url, source.allowed_hosts):
         return []
-    response = client.get(source.index_url, follow_redirects=False, timeout=15)
-    response.raise_for_status()
-    if response.is_redirect or len(response.content) > 2_000_000:
-        raise ValueError("Redirect or oversized source rejected")
+    html, _ = _bounded_html(source.index_url, client)
     parser = _HTMLText()
-    parser.feed(response.text)
+    parser.feed(html)
     links = []
     for _, href in parser.links:
         url = urljoin(source.index_url, href).split("#")[0]
@@ -85,16 +102,11 @@ def discover(source: SourceConfig, client: httpx.Client, max_links: int = 25) ->
 def retrieve(url: str, source: SourceConfig, client: httpx.Client) -> Evidence:
     if not source.enabled or not _host_allowed(url, source.allowed_hosts):
         raise ValueError("Source not enabled or URL outside allowlist")
-    response = client.get(url, follow_redirects=False, timeout=15)
-    response.raise_for_status()
-    if response.is_redirect or len(response.content) > 2_000_000:
-        raise ValueError("Redirect or oversized document rejected")
-    if "text/html" not in response.headers.get("content-type", "").lower():
-        raise ValueError("Only HTML supported in milestone 1; PDF/OCR pending")
+    html, raw = _bounded_html(url, client)
     parser = _HTMLText()
-    parser.feed(response.text)
+    parser.feed(html)
     text = re.sub(r"\s+", " ", " ".join(parser.parts)).strip()
-    return Evidence(url, text, sha256(response.content).hexdigest())
+    return Evidence(url, text, sha256(raw).hexdigest())
 
 
 def normalize(text: str) -> str:
