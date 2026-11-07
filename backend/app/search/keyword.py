@@ -178,12 +178,13 @@ def keyword_search_judgments(db: Session, query: str, limit: int = 10) -> List[S
     normalized = simple_normalize(query)
     if not normalized:
         return []
-    like_pattern = f"%{normalized}%"
+    escaped = normalized.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    like_pattern = f"%{escaped}%"
     rows = (
         db.query(Judgment)
         .filter(
             Judgment.status == "published",
-            or_(Judgment.summary.ilike(like_pattern), Judgment.full_text.ilike(like_pattern)),
+            or_(Judgment.summary.ilike(like_pattern, escape="\\"), Judgment.full_text.ilike(like_pattern, escape="\\")),
         )
         .limit(limit)
         .all()
