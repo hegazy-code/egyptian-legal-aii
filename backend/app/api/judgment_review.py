@@ -164,6 +164,20 @@ def approve_judgment(
     independent_host = urlparse(payload.independent_source_url).hostname.lower()
     if primary_host not in approved_hosts or independent_host not in approved_hosts:
         raise HTTPException(422, "Both publishers must be configured as trusted evidence hosts")
+    # Distinct hostnames do not establish independent ownership. The operator
+    # must explicitly map each trusted host to its verified publisher identity.
+    try:
+        publishers = json.loads(os.environ.get("JUDGMENT_EVIDENCE_PUBLISHER_IDS", "{}"))
+    except (ValueError, TypeError):
+        raise HTTPException(422, "Invalid publisher identity configuration")
+    if not isinstance(publishers, dict):
+        raise HTTPException(422, "Invalid publisher identity configuration")
+    primary_publisher = publishers.get(primary_host)
+    secondary_publisher = publishers.get(independent_host)
+    if (not isinstance(primary_publisher, str) or not primary_publisher.strip()
+            or not isinstance(secondary_publisher, str) or not secondary_publisher.strip()
+            or primary_publisher.strip().casefold() == secondary_publisher.strip().casefold()):
+        raise HTTPException(422, "Verified independent publisher identities required")
     # Server retrieves both documents independently; client-provided trust flags
     # and excerpts cannot bypass these network and content checks.
     try:
