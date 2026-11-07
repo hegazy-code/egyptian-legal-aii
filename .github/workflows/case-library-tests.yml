@@ -1,0 +1,40 @@
+name: Case Library Safety Tests
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/case-library-ingestion-m1]
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/case-library-tests.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pytest tests/test_judgment_discovery.py tests/test_judgment_publication_policy.py tests/test_judgment_public_visibility.py tests/test_judgment_review_urls.py tests/test_judgment_evidence.py tests/test_judgment_review_evidence.py tests/test_judgment_evidence_checks.py tests/test_independent_judgment_verification.py tests/test_secure_judgment_retrieval.py tests/test_judgment_approval_integration.py tests/test_judgment_source_rights.py -q
+      - name: Verify fresh-database migration chain
+        env:
+          DATABASE_URL: sqlite:///./phase1_migration_test.db
+        run: |
+          python -m alembic upgrade head
+          python -m alembic current
+          python - <<'PY'
+          from sqlalchemy import create_engine, inspect
+          engine = create_engine("sqlite:///./phase1_migration_test.db")
+          inspector = inspect(engine)
+          assert "judgment_evidence" in inspector.get_table_names()
+          columns = {c["name"] for c in inspector.get_columns("judgment_evidence")}
+          assert {"primary_sha256", "independent_sha256", "verification_outcome"} <= columns
+          indexes = inspector.get_indexes("judgments")
+          assert any(i["name"] == "uq_judgment_court_case_year" and i["unique"] for i in indexes)
+          PY
+      - run: python -m compileall -q app/api/judgment_review.py app/services/judgment_discovery.py app/services/judgment_publication_policy.py scripts/inspect_scc_candidates.py
+      - run: python scripts/inspect_scc_candidates.py --offline
