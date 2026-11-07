@@ -21,6 +21,7 @@ from app.models.judgment_evidence import JudgmentEvidence
 from app.models.legal import Source
 from app.models.system import AuditLog
 from app.models.users import User
+from app.services.judgment_evidence_checks import check_review_evidence
 
 router = APIRouter(prefix="/admin/judgments", tags=["admin-judgments"])
 
@@ -144,8 +145,9 @@ def approve_judgment(
     source = db.query(Source).filter(Source.id == judgment.source_id).first()
     if not source or source.url != payload.verified_source_url:
         raise HTTPException(422, "Source URL must match registered provenance")
-    if payload.verified_excerpt.strip() not in judgment.full_text:
-        raise HTTPException(422, "Primary evidence excerpt must appear verbatim in judgment text")
+    evidence_ok, issues = check_review_evidence(judgment.full_text, payload.verified_excerpt, payload.independent_excerpt)
+    if not evidence_ok:
+        raise HTTPException(422, {"evidence_issues": issues})
     db.add(JudgmentEvidence(
         judgment_id=judgment.id,
         reviewer_id=admin.id,
