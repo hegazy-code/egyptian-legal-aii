@@ -18,7 +18,7 @@ def prepared(monkeypatch):
     monkeypatch.setenv("JUDGMENT_VERIFIED_EVIDENCE_HOSTS", "court.example.org,publisher.example.org")
     with Session(engine) as db:
         court = Court(name="Test Court")
-        source = Source(name="Court", url="https://court.example.org/case")
+        source = Source(name="Court", source_type="court", url="https://court.example.org/case")
         admin = User(email="review@example.org", hashed_password="!", role="admin")
         db.add_all([court, source, admin])
         db.flush()
