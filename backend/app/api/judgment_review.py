@@ -6,6 +6,7 @@ is recorded in the existing audit_logs table in the same DB transaction.
 import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from urllib.parse import urlparse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -33,6 +34,7 @@ class ReviewDecision(BaseModel):
     independent_source_url: str = Field(min_length=8, max_length=1000)
     citation_verified: bool
     personal_data_cleared: bool
+    source_authenticity_verified: bool = False
 
 
 def _audit(db, admin, judgment, action, details):
@@ -92,8 +94,13 @@ def approve_judgment(
         raise HTTPException(409, "Only draft judgments can be approved")
     if not judgment.full_text or not judgment.source_id:
         raise HTTPException(422, "Judgment text and source required")
-    if not payload.citation_verified or not payload.personal_data_cleared:
+    if not payload.citation_verified or not payload.personal_data_cleared or not payload.source_authenticity_verified:
         raise HTTPException(422, "Citation and privacy checks must pass")
+    if (urlparse(payload.verified_source_url).scheme != 'https' or
+        urlparse(payload.independent_source_url).scheme != 'https' or
+        not urlparse(payload.verified_source_url).hostname or
+        not urlparse(payload.independent_source_url).hostname):
+        raise HTTPException(422, 'HTTPS evidence URLs required')
     if payload.verified_source_url == payload.independent_source_url:
         raise HTTPException(422, "Independent corroborating source required")
     source = db.query(Source).filter(Source.id == judgment.source_id).first()
