@@ -35,16 +35,23 @@ class _HTMLText(HTMLParser):
         self.parts = []
         self.links = []
         self.href = None
+        self.skip_depth = 0
 
     def handle_starttag(self, tag, attrs):
-        if tag == "a":
+        if tag in ("script", "style", "noscript"):
+            self.skip_depth += 1
+        if tag == "a" and not self.skip_depth:
             self.href = dict(attrs).get("href")
 
     def handle_endtag(self, tag):
+        if tag in ("script", "style", "noscript") and self.skip_depth:
+            self.skip_depth -= 1
         if tag == "a":
             self.href = None
 
     def handle_data(self, data):
+        if self.skip_depth:
+            return
         self.parts.append(data)
         if self.href and data.strip():
             self.links.append((data.strip(), self.href))
@@ -141,7 +148,7 @@ def prepare_draft(evidence: Evidence, comparisons: list[dict] | None = None) -> 
     return {
         "judgment_schema": {
             "case_number": fields["case_number"],
-            "year": int(fields["year"]) if fields["year"] and fields["year"].isascii() else None,
+            "year": int(fields["year"]) if fields["year"] and fields["year"].isdecimal() else None,
             "summary": None,
             "full_text": evidence.text,
             "status": "draft",
