@@ -215,7 +215,7 @@ def approve_judgment(
         verification_outcome="passed",
     ))
     judgment.status = "approved"
-    _audit(db, admin, judgment, "judgment_approved", {**payload.model_dump(), "court_id": judgment.court_id, "text_sha256": sha256(judgment.full_text.encode("utf-8")).hexdigest()})
+    _audit(db, admin, judgment, "judgment_approved", {"court_id": judgment.court_id, "text_sha256": sha256(judgment.full_text.encode("utf-8")).hexdigest(), "primary_sha256": verification.primary_sha256, "independent_sha256": verification.independent_sha256, "reviewer_id": admin.id})
     try:
         db.commit()
     except Exception:
