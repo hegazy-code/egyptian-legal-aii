@@ -39,14 +39,19 @@ class _HTMLText(HTMLParser):
         self.skip_depth = 0
 
     def handle_starttag(self, tag, attrs):
-        if tag in ("script", "style", "noscript"):
+        if self.skip_depth:
             self.skip_depth += 1
+            return
+        if tag in ("script", "style", "noscript"):
+            self.skip_depth = 1
+            return
         if tag == "a" and not self.skip_depth:
             self.href = dict(attrs).get("href")
 
     def handle_endtag(self, tag):
-        if tag in ("script", "style", "noscript") and self.skip_depth:
+        if self.skip_depth:
             self.skip_depth -= 1
+            return
         if tag == "a":
             self.href = None
 
