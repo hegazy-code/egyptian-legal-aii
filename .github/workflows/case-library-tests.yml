@@ -1,5 +1,6 @@
 name: Case Library Safety Tests
 on:
+  workflow_dispatch:
   push:
     branches: [feature/case-library-ingestion-m1]
   pull_request:
