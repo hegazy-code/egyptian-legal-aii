@@ -96,3 +96,37 @@ def test_same_publisher_operating_two_hosts_is_not_independent(prepared, monkeyp
         judgment_review.approve_judgment(judgment.id, decision, db, admin)
     assert exc.value.status_code == 422
     assert db.query(JudgmentEvidence).count() == 0
+
+
+def test_public_search_only_after_explicit_verified_publication(prepared, monkeypatch):
+    from app.search.keyword import keyword_search_judgments
+    db, judgment, admin, decision = prepared
+    def fake_fetch(url, *, allowed_hosts):
+        return RetrievedDocument(url, QUOTE.encode(), QUOTE, datetime.now(timezone.utc), True)
+    monkeypatch.setattr(judgment_review, "fetch_verified_html", fake_fetch)
+    judgment_review.approve_judgment(judgment.id, decision, db, admin)
+    assert keyword_search_judgments(db, "authentic passage") == []
+    payload = judgment_review.PublishDecision(reason="Approved for public legal reference", confirm_public_release=True)
+    with pytest.raises(HTTPException) as disabled:
+        judgment_review.publish_judgment(judgment.id, payload, db, admin)
+    assert disabled.value.status_code == 403
+    monkeypatch.setenv("JUDGMENT_MANUAL_PUBLICATION_ENABLED", "true")
+    assert judgment_review.publish_judgment(judgment.id, payload, db, admin)["status"] == "published"
+    assert len(keyword_search_judgments(db, "authentic passage")) == 1
+    judgment_review.unpublish_judgment(judgment.id, reason="Emergency withdrawal for review", db=db, admin=admin)
+    assert keyword_search_judgments(db, "authentic passage") == []
+
+
+def test_publish_requires_matching_verified_evidence(prepared, monkeypatch):
+    db, judgment, admin, decision = prepared
+    monkeypatch.setenv("JUDGMENT_MANUAL_PUBLICATION_ENABLED", "true")
+    payload = judgment_review.PublishDecision(reason="Approved for public legal reference", confirm_public_release=True)
+    with pytest.raises(HTTPException) as draft:
+        judgment_review.publish_judgment(judgment.id, payload, db, admin)
+    assert draft.value.status_code == 409
+    judgment.status = "approved"
+    db.commit()
+    with pytest.raises(HTTPException) as missing:
+        judgment_review.publish_judgment(judgment.id, payload, db, admin)
+    assert missing.value.status_code == 422
+    assert db.get(Judgment, judgment.id).status == "approved"
