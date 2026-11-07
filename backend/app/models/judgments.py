@@ -39,7 +39,7 @@ class Judgment(BaseModel):
     judgment_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     full_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    status: Mapped[str] = mapped_column(String(30), default="published")
+    status: Mapped[str] = mapped_column(String(30), default="draft")
 
     court: Mapped[Optional["Court"]] = relationship(back_populates="judgments")
     source: Mapped[Optional["Source"]] = relationship()
