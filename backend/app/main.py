@@ -4,7 +4,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import admin, auth, cases, chat, documents, explanations, search, sources
+from app.api import admin, auth, cases, chat, documents, explanations, search, sources, judgment_library
 from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +26,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(chat.router)
 app.include_router(cases.router)
+app.include_router(judgment_library.router)
 app.include_router(documents.router)
 app.include_router(search.router)
 app.include_router(sources.router)
