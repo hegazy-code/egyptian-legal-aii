@@ -9,6 +9,8 @@ Network access must be authorized by operator after rights and access review.
 import argparse
 import json
 import sys
+import time
+import socket
 from collections import Counter
 from pathlib import Path
 
@@ -44,10 +46,31 @@ def main():
         enabled=True,
     )
     results = []
+    # Diagnose name resolution before repeatedly requesting the same unreachable host.
+    host = "www.sccourt.gov.eg"
+    try:
+        resolved = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+        print(json.dumps({"network_probe": "dns_ok", "host": host, "address_count": len(resolved)}))
+    except OSError as exc:
+        results = [{"candidate_id": candidate["id"], "status": "retrieval_failed",
+                    "error_type": "DNSResolutionError", "reason": str(exc)[:300]}
+                   for candidate in manifest["documents"]]
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps({"published": 0, "results": results}, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(json.dumps({"checked": len(results), "retrieved": 0, "published": 0,
+                          "failure_types": {"DNSResolutionError": len(results)}}, ensure_ascii=False))
+        raise SystemExit("Official court hostname DNS unavailable; no content fetched or published")
     with httpx.Client(headers={"User-Agent": "EgyptianLegalAI-Research/0.1 (manual review)"}) as client:
         for candidate in manifest["documents"]:
             try:
-                evidence = retrieve(candidate["url"], source, client)
+                for attempt in range(2):
+                    try:
+                        evidence = retrieve(candidate["url"], source, client)
+                        break
+                    except (httpx.ConnectError, httpx.ConnectTimeout):
+                        if attempt:
+                            raise
+                        time.sleep(1)
                 draft = prepare_draft(evidence)
                 results.append({"candidate_id": candidate["id"], "status": "retrieved", "text_length": len(evidence.text), "result": draft})
             except (httpx.HTTPError, ValueError, UnicodeError) as exc:
