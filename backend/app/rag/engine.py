@@ -128,7 +128,12 @@ def _get_client():
         raise GeminiUnavailableError("GEMINI_API_KEY is not configured.")
     from google import genai
 
-    # The deployed google-genai client defaulted to v1; the configured model\n    # aliases are exposed on v1beta for this key (v1 returned 404 for all).\n    from google.genai import types\n    return genai.Client(\n        api_key=settings.GEMINI_API_KEY,\n        http_options=types.HttpOptions(api_version="v1beta"),\n    )
+    # Use v1beta: Render previously returned 404 for the configured models on v1.
+    from google.genai import types
+    return genai.Client(
+        api_key=settings.GEMINI_API_KEY,
+        http_options=types.HttpOptions(api_version="v1beta"),
+    )
 
 
 def call_gemini_with_retry(
