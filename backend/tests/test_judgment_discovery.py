@@ -108,3 +108,27 @@ def test_persian_digits_are_normalized():
     draft = prepare_draft(sample("محكمة النقض الطعن رقم ۱۲۳ لسنة ۹۰ جلسة 01/02/2020"))
     assert draft["judgment_schema"]["year"] == 90
     assert draft["evidence"]["case_number"] == "123"
+
+
+def test_source_registry_is_fail_closed_and_https_allowlisted():
+    """Registry changes must not silently enable crawling or publication."""
+    import json
+    from pathlib import Path
+    from urllib.parse import urlparse
+
+    registry = json.loads((Path(__file__).resolve().parents[1] / "data" / "judgment_source_registry.json").read_text(encoding="utf-8"))
+    assert registry["publication_enabled"] is False
+    assert registry["sources"]
+    ids = [source["id"] for source in registry["sources"]]
+    assert len(ids) == len(set(ids))
+    for source in registry["sources"]:
+        assert source["enabled"] is False
+        assert source["rights_review_required"] is True
+        parsed = urlparse(source["index_url"])
+        assert parsed.scheme == "https"
+        assert parsed.hostname in source["allowed_hosts"]
+        assert parsed.username is None and parsed.password is None
+        assert parsed.port in (None, 443)
+        assert all(host and "/" not in host and ":" not in host for host in source["allowed_hosts"])
+        if source.get("automated_retrieval_permitted") is False:
+            assert source["enabled"] is False
