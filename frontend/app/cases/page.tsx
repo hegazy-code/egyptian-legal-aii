@@ -112,6 +112,7 @@ export default function CasesPage() {
   const categories = ["الكل", ...Array.from(new Set(cases.map(c => c.category)))];
   const filtered = useMemo(() => cases.filter(c => (category === "الكل" || c.category === category) && [c.title, c.story, c.number, c.category].join(" ").includes(query.trim())), [query, category]);
   const active = cases.find(c => c.id === selected);
+  const docket = active?.number.match(/^([0-9]+) لسنة ([0-9]+) قضائية (.+)$/);
   return <div dir="rtl" className="min-h-screen bg-paper text-ink"><div className="mx-auto max-w-5xl px-6 py-12">
     <header className="border-b-[1.5px] border-ink pb-7">
       <p className="text-sm font-bold text-seal">حجازي للتقنية القانونية · مكتبة القضايا</p>
@@ -124,7 +125,16 @@ export default function CasesPage() {
       <div className="border-[1.5px] border-sand bg-white p-6 md:p-10">
         <p className="text-sm font-semibold text-seal">{active.category} · المحكمة الدستورية العليا</p>
         <h2 className="mt-3 font-legal text-3xl font-bold leading-relaxed">{active.title}</h2>
-        <dl className="mt-5 grid gap-4 border-y border-sand py-4 text-sm sm:grid-cols-2"><div><dt className="text-muted">رقم القضية</dt><dd className="mt-1 font-semibold">{active.number}</dd></div><div><dt className="text-muted">تاريخ الحكم</dt><dd className="mt-1 font-semibold">{active.date}</dd></div></dl>
+        <dl className="mt-5 grid gap-4 border-y border-sand py-4 text-sm sm:grid-cols-2">
+<div><dt className="text-muted">المحكمة</dt><dd className="font-semibold">المحكمة الدستورية العليا</dd></div>
+<div><dt className="text-muted">رقم الدعوى / الطعن</dt><dd className="font-semibold">{docket?.[1] ?? active.number}</dd></div>
+<div><dt className="text-muted">السنة القضائية</dt><dd className="font-semibold">{docket?.[2] ?? "غير متاحة"}</dd></div>
+<div><dt className="text-muted">نوع الدعوى</dt><dd className="font-semibold">{docket?.[3] ?? "غير متاح"}</dd></div>
+<div><dt className="text-muted">تاريخ الحكم</dt><dd className="font-semibold">{active.date}</dd></div>
+<div><dt className="text-muted">رقم القضية كاملًا</dt><dd className="font-semibold">{active.number}</dd></div>
+<div><dt className="text-muted">أسماء الخصوم</dt><dd>قيد التحقق من الحكم الأصلي</dd></div>
+<div><dt className="text-muted">توثيق المصدر</dt><dd className="text-seal">مصدر ثانوي — مراجعة الأصل الرسمي لم تكتمل</dd></div>
+</dl>
         <section className="mt-9"><h3 className="font-legal text-2xl font-bold text-seal">١. بداية الحكاية — إيه اللي حصل؟</h3><p className="mt-3 whitespace-pre-line text-lg leading-[2.1]">{active.story}</p></section>
         <section className="mt-9 border-r-[3px] border-seal bg-paper-deep p-5"><h3 className="font-legal text-2xl font-bold">٢. النزاع وصل للمحكمة ليه؟</h3><p className="mt-3 leading-9">المسألة القانونية المطروحة ترتبط بالوقائع المذكورة أعلاه. لا تتوافر في السجل الحالي تفاصيل موثقة كافية لعرض دفوع الخصوم أو تسلسل الإجراءات كاملة، ولذلك لن ننسب للمحكمة أو للأطراف أقوالًا غير متحقق منها.</p></section>
         <section className="mt-9"><h3 className="font-legal text-2xl font-bold text-seal">٣. الحكم والدرس القانوني</h3><p className="mt-3 whitespace-pre-line text-lg leading-[2.1]">{active.takeaway}</p><p className="mt-3 text-sm leading-7 text-muted">الشرح أعلاه ملخص تحريري وليس اقتباسًا حرفيًا من منطوق الحكم. تفاصيل المنطوق غير المؤكدة لا تُعرض كحقيقة قضائية.</p></section>
