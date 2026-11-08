@@ -106,14 +106,47 @@ const cases = [
 ];
 
 export default function CasesPage() {
- const [query,setQuery]=useState("");
- const [category,setCategory]=useState("الكل");
- const [selected,setSelected]=useState<number|null>(null);
- const categories=["الكل",...Array.from(new Set(cases.map(c=>c.category)))];
- const filtered=useMemo(()=>cases.filter(c=>(category==="الكل"||c.category===category)&&[c.title,c.story,c.number,c.category].join(" ").includes(query.trim())),[query,category]);
- const active=cases.find(c=>c.id===selected);
- return <div dir="rtl" className="min-h-screen bg-[#FCFBF9] text-[#141C26]"><div className="mx-auto max-w-6xl px-5 py-12">
- <div className="border-b border-[#E2DCD0] pb-8"><p className="font-bold text-[#8A2434]">حجازي للتقنية القانونية</p><h1 className="mt-3 font-serif text-4xl font-bold">{active?"تفاصيل القضية":"مكتبة القضايا والأحكام"}</h1><p className="mt-4 max-w-3xl leading-8 text-[#4A5461]">عشر قضايا مصرية، حكاياتها بلغة بسيطة، مع شرح قانوني وروابط للأحكام المنشورة.</p><p role="note" className="mt-4 rounded-md border-r-4 border-[#8A2434] bg-[#F4F1EC] p-4 text-sm leading-7">هذه ملخصات تحريرية وليست النصوص الرسمية للأحكام. بعض تفاصيل الوقائع والمنطوق لم تكتمل مراجعتها بعد، فلا تعتمد عليها وحدها لاتخاذ إجراء قانوني.</p></div>
- {active?<article className="mt-8 max-w-4xl"><button onClick={()=>setSelected(null)} className="mb-6 font-bold text-[#8A2434]">← العودة إلى كل القضايا</button><div className="rounded-xl border border-[#E2DCD0] bg-white p-6 md:p-10"><span className="text-sm text-[#8A2434]">{active.category} · {active.date}</span><h2 className="mt-3 text-3xl font-bold leading-relaxed">{active.title}</h2><p className="mt-2 text-sm text-[#4A5461]">رقم القضية: {active.number}</p><section className="mt-10"><h3 className="text-2xl font-bold">القصة الكاملة — ببساطة</h3><p className="mt-4 text-lg leading-[2.2]">{active.story}</p></section><section className="mt-10"><h3 className="text-2xl font-bold">المحكمة قالت إيه؟ وإيه اللي نتعلمه؟</h3><p className="mt-4 text-lg leading-[2.2]">{active.takeaway}</p></section><section className="mt-10 border-t border-[#E2DCD0] pt-6"><h3 className="text-xl font-bold">المصدر المنشور</h3><p className="my-3 text-sm text-[#4A5461]">راجع نص الحكم كاملًا قبل الاعتماد على الملخص.</p><a href={active.source} target="_blank" rel="noopener noreferrer" className="font-bold text-[#8A2434] underline">قراءة الحكم المنشور ↗</a></section></div></article>:<><div className="mt-8 flex flex-wrap gap-3"><input aria-label="ابحث عن قضية" placeholder="ابحث بالعنوان أو رقم القضية..." value={query} onChange={e=>setQuery(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-[#E2DCD0] bg-white p-3 outline-[#8A2434]"/><select aria-label="تصنيف القضية" value={category} onChange={e=>setCategory(e.target.value)} className="rounded-lg border border-[#E2DCD0] bg-white p-3">{categories.map(c=><option key={c}>{c}</option>)}</select></div><p className="my-5 text-sm text-[#4A5461]">{filtered.length} قضايا</p><div className="grid gap-5 md:grid-cols-2">{filtered.map(c=><button key={c.id} onClick={()=>{setSelected(c.id);window.scrollTo({top:0,behavior:"smooth"});}} className="rounded-xl border border-[#E2DCD0] bg-white p-6 text-right transition hover:border-[#8A2434] hover:shadow-md"><p className="text-sm font-semibold text-[#8A2434]">{c.category} · {c.date}</p><h2 className="mt-3 text-xl font-bold leading-relaxed">{c.title}</h2><p className="mt-3 line-clamp-3 leading-8 text-[#4A5461]">{c.story}</p><p className="mt-5 text-sm font-bold text-[#8A2434]">اقرأ القصة ←</p></button>)}</div>{filtered.length===0&&<p className="py-12 text-center">مفيش قضايا مطابقة للبحث.</p>}</>}
- </div></div>;
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("الكل");
+  const [selected, setSelected] = useState<number | null>(null);
+  const categories = ["الكل", ...Array.from(new Set(cases.map(c => c.category)))];
+  const filtered = useMemo(() => cases.filter(c =>
+    (category === "الكل" || c.category === category) &&
+    [c.title, c.story, c.number, c.category].join(" ").includes(query.trim())
+  ), [query, category]);
+  const active = cases.find(c => c.id === selected);
+  const back = () => { setSelected(null); window.scrollTo({top: 0, behavior: "smooth"}); };
+  const open = (id: number) => { setSelected(id); window.scrollTo({top: 0, behavior: "smooth"}); };
+  return <main dir="rtl" className="min-h-screen bg-[#F8F6F1] text-[#192337]">
+    <div className="mx-auto max-w-6xl px-5 pb-24 pt-10">
+      <header className="rounded-3xl bg-[#172338] px-7 py-10 text-white shadow-xl md:px-12 md:py-14">
+        <p className="mb-4 text-sm font-bold tracking-wide text-[#D8B47B]">حجازي للتقنية القانونية · مكتبة الأحكام</p>
+        <h1 className="max-w-3xl text-3xl font-black leading-relaxed md:text-5xl">{active ? active.title : "وراء كل حكم… حكاية تستحق أن تُروى"}</h1>
+        <p className="mt-5 max-w-3xl text-base leading-9 text-[#D9E0EA]">{active ? "اقرأ خلفية النزاع، والسؤال القانوني، وما يمكن استخلاصه من الحكم." : "اكتشف القضايا المصرية من خلال حكايات قانونية مبسطة، ومراجع يمكنك الرجوع إليها."}</p>
+        <div className="mt-7 flex flex-wrap gap-3 text-xs"><span className="rounded-full border border-white/25 px-4 py-2">10 حكايات قانونية</span><span className="rounded-full border border-[#D8B47B]/50 px-4 py-2 text-[#F1D8B1]">ملخصات تحريرية · التحقق جارٍ</span></div>
+      </header>
+      <div role="note" className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-8 text-amber-950">تنبيه مهني: هذه حكايات وملخصات تحريرية وليست نسخًا رسمية أو أحكامًا موثقة نهائيًا. لا يُعتمد عليها منفردة في اتخاذ إجراء قانوني. راجع المصدر الأصلي وحالة القانون الحالية.</div>
+      {active ? <div className="mt-8">
+        <button onClick={back} className="mb-6 rounded-xl border border-[#D7D5D0] bg-white px-5 py-3 font-bold text-[#8A2434] hover:bg-[#F2E9E8]">→ العودة إلى مكتبة القضايا</button>
+        <article className="overflow-hidden rounded-3xl border border-[#E6E0D7] bg-white shadow-sm">
+          <div className="border-b border-[#EEE8E0] bg-[#FCFAF7] p-7 md:p-10">
+            <div className="mb-5 flex flex-wrap gap-2 text-sm"><span className="rounded-full bg-[#8A2434] px-4 py-2 font-bold text-white">{active.category}</span><span className="rounded-full bg-[#EDE7DE] px-4 py-2">المحكمة الدستورية العليا</span><span className="rounded-full bg-amber-100 px-4 py-2 text-amber-900">قيد التحقق</span></div>
+            <h2 className="text-2xl font-black leading-relaxed md:text-4xl">{active.title}</h2>
+            <dl className="mt-7 grid gap-4 rounded-2xl border border-[#E9E1D7] bg-white p-5 text-sm md:grid-cols-2"><div><dt className="text-slate-500">رقم الدعوى</dt><dd className="mt-1 font-bold">{active.number}</dd></div><div><dt className="text-slate-500">تاريخ الحكم</dt><dd className="mt-1 font-bold">{active.date}</dd></div></dl>
+          </div>
+          <div className="space-y-10 p-7 md:p-12">
+            <section className="relative border-r-4 border-[#D8B47B] pr-6"><p className="mb-2 text-sm font-bold text-[#8A2434]">الفصل الأول · بداية الحكاية</p><h3 className="text-2xl font-black">إيه اللي حصل؟</h3><p className="mt-4 text-lg leading-[2.2]">{active.story}</p></section>
+            <section className="rounded-2xl bg-[#F5F2ED] p-6 md:p-8"><p className="mb-2 text-sm font-bold text-[#8A2434]">الفصل الثاني · السؤال القانوني</p><h3 className="text-2xl font-black">فين كانت المشكلة؟</h3><p className="mt-4 text-lg leading-9">القضية بتطرح سؤالًا قانونيًا يحتاج فهم الوقائع والنصوص الحاكمة وقت صدور الحكم. اقرأ خلفية النزاع ثم ارجع إلى الحكم المنشور قبل استخلاص نتيجة قانونية.</p></section>
+            <section className="relative border-r-4 border-[#8A2434] pr-6"><p className="mb-2 text-sm font-bold text-[#8A2434]">الفصل الثالث · القراءة القانونية</p><h3 className="text-2xl font-black">إيه اللي نقدر نتعلمه؟</h3><p className="mt-4 text-lg leading-[2.2]">{active.takeaway}</p><p className="mt-4 text-sm leading-7 text-slate-600">هذه قراءة تحريرية؛ لا يُعرض النص أعلاه باعتباره اقتباسًا حرفيًا من منطوق المحكمة.</p></section>
+            <section className="rounded-2xl border border-[#E6E0D7] p-6 md:p-8"><p className="mb-2 text-sm font-bold text-[#8A2434]">ملف القضية · المصادر والتوثيق</p><h3 className="text-2xl font-black">ارجع للمصدر بنفسك</h3><p className="my-4 leading-8 text-slate-600">المصدر التالي أرشيف منشور للاستدلال، ولم تُستكمل بعد مطابقة الحكم مع نسخة رسمية مستقلة أو مراجعة التطورات التشريعية.</p><a className="inline-flex rounded-xl bg-[#8A2434] px-6 py-3 font-bold text-white hover:bg-[#6D1B29]" href={active.source} target="_blank" rel="noopener noreferrer">قراءة الحكم المنشور ↗</a></section>
+          </div>
+        </article>
+      </div> : <>
+        <div className="mt-10 flex flex-col gap-4 md:flex-row"><input aria-label="ابحث عن قضية" placeholder="ابحث عن قضية أو رقم طعن أو موضوع..." value={query} onChange={e => setQuery(e.target.value)} className="w-full flex-1 rounded-xl border border-[#DDD7CF] bg-white px-5 py-4 outline-[#8A2434]" /><select aria-label="تصنيف القضية" value={category} onChange={e => setCategory(e.target.value)} className="rounded-xl border border-[#DDD7CF] bg-white px-5 py-4">{categories.map(c => <option key={c}>{c}</option>)}</select></div>
+        <div className="my-7 flex items-center justify-between"><h2 className="text-2xl font-black">تصفح الحكايات</h2><span className="text-sm text-slate-500">{filtered.length} قضية</span></div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{filtered.map(c => <button key={c.id} onClick={() => open(c.id)} className="group flex min-h-72 flex-col rounded-2xl border border-[#E5DED5] bg-white p-7 text-right shadow-sm transition hover:-translate-y-1 hover:border-[#8A2434] hover:shadow-lg"><div className="mb-5 flex flex-wrap gap-2"><span className="rounded-full bg-[#F4E8E8] px-3 py-1 text-xs font-bold text-[#8A2434]">{c.category}</span><span className="rounded-full bg-amber-50 px-3 py-1 text-xs text-amber-900">قيد التحقق</span></div><h3 className="text-xl font-black leading-relaxed group-hover:text-[#8A2434]">{c.title}</h3><p className="mt-3 line-clamp-3 text-sm leading-8 text-slate-600">{c.story}</p><div className="mt-auto flex items-center justify-between border-t border-[#F0EBE5] pt-5 text-xs text-slate-500"><span>{c.number}</span><span className="font-bold text-[#8A2434]">اقرأ الحكاية ←</span></div></button>)}</div>
+        {filtered.length === 0 && <p className="rounded-2xl bg-white p-10 text-center text-slate-600">لا توجد قضايا مطابقة للبحث.</p>}
+      </>}
+    </div>
+  </main>;
 }
