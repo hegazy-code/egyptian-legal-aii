@@ -26,6 +26,8 @@ type Expl = { loading?: boolean; explanation?: string; example?: string; error?:
 
 export default function LawsPage() {
   const [laws, setLaws] = useState<Law[] | null>(null);
+  const [lawsError, setLawsError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [law, setLaw] = useState<Law | null>(null);
   const [arts, setArts] = useState<Article[] | null>(null);
   const [loadingArts, setLoadingArts] = useState(false);
@@ -34,8 +36,27 @@ export default function LawsPage() {
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    fetch(`${API}/laws`).then((r) => r.json()).then(setLaws).catch(() => setLaws([]));
-  }, []);
+    let cancelled = false;
+    const timer = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    async function loadLaws() {
+      setLaws(null); setLawsError(false);
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const response = await fetch(`${API}/laws`, { cache: "no-store" });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          if (!Array.isArray(data)) throw new Error("Invalid laws response");
+          if (!cancelled) setLaws(data);
+          return;
+        } catch {
+          if (attempt < 2) await timer((attempt + 1) * 1500);
+        }
+      }
+      if (!cancelled) { setLaws([]); setLawsError(true); }
+    }
+    void loadLaws();
+    return () => { cancelled = true; };
+  }, [reloadKey]);
 
   // group laws by category
   const grouped = useMemo(() => {
@@ -49,13 +70,15 @@ export default function LawsPage() {
     setLaw(l); setArts(null); setLoadingArts(true); setOpen(null); setQ("");
     window.scrollTo({ top: 0 });
     try {
-      const d = await fetch(`${API}/laws/${l.id}`).then((r) => r.json());
+      const response = await fetch(`${API}/laws/${l.id}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const d = await response.json();
       const a: Article[] = (d.articles || []).slice().sort(
         (x: Article, y: Article) => (parseInt(x.article_number) || 0) - (parseInt(y.article_number) || 0)
       );
       setArts(a);
     } catch {
-      setArts([]);
+      setArts(null);
     } finally {
       setLoadingArts(false);
     }
@@ -101,6 +124,7 @@ export default function LawsPage() {
 
         {loadingArts && <p className="text-muted">جاري تحميل المواد...</p>}
         {arts && arts.length === 0 && <p className="text-muted">لا توجد مواد لهذا القانون.</p>}
+        {!loadingArts && arts === null && <div role="alert" className="border border-sand bg-paper-deep p-4 text-seal">تعذّر تحميل المواد مؤقتًا. <button onClick={() => openLaw(law)} className="font-bold underline">إعادة المحاولة</button></div>}
 
         <div className="flex flex-col gap-4">
           {(shownArts || []).map((a) => {
@@ -151,7 +175,8 @@ export default function LawsPage() {
       </div>
 
       {!laws && <p className="text-muted">جاري التحميل...</p>}
-      {laws && laws.length === 0 && <p className="text-muted">تعذّر تحميل القوانين. تأكد أن الخادم يعمل.</p>}
+      {lawsError && <div role="alert" className="border border-sand bg-paper-deep p-4 text-seal">تعذّر الاتصال بقاعدة القوانين مؤقتًا. <button onClick={() => setReloadKey(k => k + 1)} className="font-bold underline">إعادة المحاولة</button></div>}
+      {laws && laws.length === 0 && !lawsError && <p className="text-muted">لا توجد قوانين متاحة حاليًا.</p>}
 
       <div className="flex flex-col gap-8">
         {cats.map((c) => (
