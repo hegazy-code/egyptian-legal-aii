@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "status": "editorial_review_only",
+  "publication_enabled": false,
+  "goal": "10 verified initial case stories, then 30 across criminal, criminal procedure, civil and constitutional",
+  "requirements": [
+    "Exact court, case/docket type, number, judicial year and judgment date",
+    "Official primary document and independently verified secondary provenance",
+    "Verified operative holding and procedural history",
+    "Current legal status and subsequent reversal or developments checked",
+    "Rights/privacy review and human editorial approval",
+    "No assertion of miscarriage of justice without documentary proof"
+  ],
+  "candidates": [
+    {
+      "case_id": "scc-44-17",
+      "court": "المحكمة الدستورية العليا",
+      "case_number": "44",
+      "judicial_year": 17,
+      "case_type": "دستورية",
+      "judgment_date": "1997-02-22",
+      "category": "مدني/إيجارات",
+      "story_hook": "هل يستمر عقد إيجار المحل التجاري بعد وفاة المستأجر؟",
+      "secondary_url": "https://www.mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/15606",
+      "editorial_status": "secondary_text_checked_primary_pending",
+      "note": "الحكم بعدم دستورية الامتداد المطلق لورثة المستأجر وفق منطوق الحكم؛ راجع التطورات التشريعية قبل النشر."
+    },
+    {
+      "case_id": "scc-38-17",
+      "court": "المحكمة الدستورية العليا",
+      "case_number": "38",
+      "judicial_year": 17,
+      "case_type": "دستورية",
+      "judgment_date": "1996-05-18",
+      "category": "حقوق/مهنة المحاماة",
+      "story_hook": "هل يمنع السن شخصًا مؤهلًا من بدء ممارسة المحاماة؟",
+      "secondary_url": "https://mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/15255",
+      "editorial_status": "secondary_text_checked_primary_pending"
+    },
+    {
+      "case_id": "scc-1-11",
+      "court": "المحكمة الدستورية العليا",
+      "case_number": "1",
+      "judicial_year": 11,
+      "case_type": "تنازع",
+      "judgment_date": "1991-03-02",
+      "category": "إجراءات/تنازع أحكام",
+      "story_hook": "براءة جنائية وحكم مدني وحراسة أموال: هل تتعارض الأحكام فعلًا؟",
+      "secondary_url": "https://mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/3630",
+      "editorial_status": "secondary_text_checked_primary_pending",
+      "note": "منطوق الحكم عدم قبول الدعوى؛ لا توصف القضية بإثبات خطأ قضائي."
+    }
+  ],
+  "other_prior_candidate_urls": [
+    "https://www.mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/15545",
+    "https://mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/4032",
+    "https://mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/15610",
+    "https://mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/6183",
+    "https://mksegypt.org/public/ar/judgments-of-the-supreme-constitutional-court/15407",
+    "https://mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/6163",
+    "https://mksegypt.org/ar/judgments-of-the-supreme-constitutional-court/15481"
+  ],
+  "next_focus": "Source authentic criminal cassation judgments with docket numbers and operative holdings; no fabricated narratives."
+}
