@@ -1,0 +1,78 @@
+{
+  "dataset": "scc_official_10_candidate_judgments",
+  "status": "candidate_urls_only_not_downloaded_or_verified",
+  "auto_publish": false,
+  "source": "Supreme Constitutional Court of Egypt",
+  "documents": [
+    {
+      "id": "scc-01",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/8160_36_227_1_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-02",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/293_5_2_6_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-03",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/8976_36_196_1_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-04",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/7968_37_37_6_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-05",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/3849_11_24_1_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-06",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/7448_19_36_1_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-07",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/7989_34_28_1_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-08",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/9231_38_12_6_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-09",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/8129_33_153_1_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    },
+    {
+      "id": "scc-10",
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/2544_24_115_1_2.html",
+      "verified_document": false,
+      "extraction_status": "not_run",
+      "publication_status": "blocked"
+    }
+  ]
+}

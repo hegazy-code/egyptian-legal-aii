@@ -4,7 +4,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import admin, auth, cases, chat, documents, explanations, search, sources
+from app.api import admin, auth, cases, chat, documents, explanations, search, sources, judgment_review
 from app.config import settings
 
 logging.basicConfig(level=logging.INFO)
@@ -30,6 +30,7 @@ app.include_router(documents.router)
 app.include_router(search.router)
 app.include_router(sources.router)
 app.include_router(explanations.router)
+app.include_router(judgment_review.router)
 
 
 @app.get("/health", tags=["health"])
