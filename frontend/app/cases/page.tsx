@@ -134,14 +134,14 @@ const cases = [
   }
 ];
 
-const plannedCases = [
-  ["جنائي","الدفاع الشرعي"],["جنائي","بطلان الاعتراف بالإكراه"],["جنائي","القتل الخطأ"],["جنائي","التزوير"],["جنائي","النصب والاحتيال"],
-  ["مدني","التعويض عن الضرر"],["مدني","فسخ العقود"],["مدني","صحة ونفاذ البيع"],["مدني","المسؤولية التقصيرية"],
-  ["تجاري","منازعات الشركات"],["تجاري","الشيكات التجارية"],["تجاري","الإفلاس"],
-  ["عمل","الفصل التعسفي"],["عمل","مستحقات العامل"],["عمل","إصابات العمل"],
-  ["أحوال شخصية","النفقة"],["أحوال شخصية","الحضانة"],["أحوال شخصية","الرؤية والاستضافة"],
-  ["إيجارات","الإخلاء"],["إيجارات","الامتداد القانوني لعقد الإيجار"]
-] as const;
+function explainLegalIdea(category: string) {
+  if (category.includes("دستور")) return "المحكمة الدستورية لا تفصل عادةً في ذنب شخص أو ملكية عقار؛ وظيفتها هنا فحص مدى اتفاق النص التشريعي المطعون فيه مع الدستور.";
+  if (category.includes("إيجار")) return "في منازعات الإيجار، يختلف الحكم بحسب نوع العين وتاريخ العقد والقانون الذي ينطبق عليه؛ لذلك لا يكفي تشابه الواقعتين للحكم بالنتيجة نفسها.";
+  if (category.includes("عمل") || category.includes("وظيف")) return "في نزاعات العمل، يجب التمييز بين الحق الذي ينظمه القانون وبين إثبات أن ظروف العامل نفسه تحقق شروط استحقاق هذا الحق.";
+  if (category.includes("جنائي") || category.includes("عقوبات") || category.includes("مخدرات")) return "الطعن على دستورية نص عقابي ليس حكمًا ببراءة المتهم أو إدانته؛ فذلك يتوقف على إجراءات الدعوى الجنائية والأدلة.";
+  if (category.includes("أحوال")) return "في قضايا الأسرة، لا يكفي عنوان النزاع لتحديد النتيجة؛ يجب فهم النص القانوني المطعون فيه وحدود ما فصلت فيه المحكمة.";
+  return "للاستفادة من الحكم، فرّق بين الوقائع التي بدأت بها الخصومة والسؤال القانوني الذي عرض على المحكمة والنتيجة التي انتهت إليها.";
+}
 
 export default function CasesPage() {
   const [query, setQuery] = useState("");
@@ -150,6 +150,8 @@ export default function CasesPage() {
   const categories = ["الكل", ...Array.from(new Set(cases.map(c => c.category)))];
   const filtered = useMemo(() => cases.filter(c => (category === "الكل" || c.category === category) && [c.title, c.story, c.number, c.category].join(" ").includes(query.trim())), [query, category]);
   const active = cases.find(c => c.id === selected);
+  const isKnownDate = (date: string) => /^\\d{4}-\\d{2}-\\d{2}$/.test(date);
+  const isOfficialSource = (url: string) => { try { return new URL(url).hostname === "sccourt.gov.eg" || new URL(url).hostname === "www.sccourt.gov.eg"; } catch { return false; } };
   const docket = active?.number.match(/^([0-9]+) لسنة ([0-9]+) قضائية (.+)$/);
   return <div dir="rtl" className="min-h-screen bg-paper text-ink"><div className="mx-auto max-w-5xl px-6 py-12">
     <header className="border-b-[1.5px] border-ink pb-7">
@@ -157,7 +159,7 @@ export default function CasesPage() {
       <h1 className="mt-3 font-legal text-4xl font-bold leading-[1.4] md:text-5xl">{active ? active.title : "وراء كل حكم حكاية… والقانون له الكلمة الأخيرة"}</h1>
       <p className="mt-3 max-w-3xl text-lg leading-9 text-muted">حكايات قانونية مصرية بلغة واضحة، مع بيانات الحكم ومصدره المنشور.</p>
     </header>
-    <p role="note" className="my-6 border-r-4 border-seal bg-paper-deep px-5 py-4 text-sm leading-8 text-muted">ملخصات تحريرية للتثقيف القانوني، وليست نصوص أحكام رسمية. لم تكتمل مطابقة بعض الوقائع والمنطوق مع المصدر الأصلي؛ راجع الحكم قبل الاعتماد عليه.</p>
+    <p role="note" className="my-6 border-r-4 border-seal bg-paper-deep px-5 py-4 text-sm leading-8 text-muted">قصص وأحكام مصرية مشروحة بلغة بسيطة للتثقيف القانوني. الشرح ليس بديلًا عن نص الحكم أو المشورة القانونية في واقعة بعينها.</p>
     {active ? <article className="max-w-4xl">
       <button onClick={() => {setSelected(null);window.scrollTo({top:0,behavior:"smooth"});}} className="my-5 font-semibold text-seal hover:underline">→ العودة لكل القضايا</button>
       <div className="border-[1.5px] border-sand bg-white p-6 md:p-10">
@@ -166,33 +168,25 @@ export default function CasesPage() {
         <dl className="mt-5 grid gap-4 border-y border-sand py-4 text-sm sm:grid-cols-2">
 <div><dt className="text-muted">المحكمة</dt><dd className="font-semibold">المحكمة الدستورية العليا</dd></div>
 <div><dt className="text-muted">رقم الدعوى / الطعن</dt><dd className="font-semibold">{docket?.[1] ?? active.number}</dd></div>
-<div><dt className="text-muted">السنة القضائية</dt><dd className="font-semibold">{docket?.[2] ?? "غير متاحة"}</dd></div>
-<div><dt className="text-muted">نوع الدعوى</dt><dd className="font-semibold">{docket?.[3] ?? "غير متاح"}</dd></div>
-<div><dt className="text-muted">تاريخ الحكم</dt><dd className="font-semibold">{active.date}</dd></div>
+{docket?.[2] && <div><dt className="text-muted">السنة القضائية</dt><dd className="font-semibold">{docket[2]}</dd></div>}
+{docket?.[3] && <div><dt className="text-muted">نوع الدعوى</dt><dd className="font-semibold">{docket[3]}</dd></div>}
+{isKnownDate(active.date) && <div><dt className="text-muted">تاريخ الحكم</dt><dd className="font-semibold">{active.date}</dd></div>}
 <div><dt className="text-muted">رقم القضية كاملًا</dt><dd className="font-semibold">{active.number}</dd></div>
-<div><dt className="text-muted">أسماء الخصوم</dt><dd>قيد التحقق من الحكم الأصلي</dd></div>
-<div><dt className="text-muted">توثيق المصدر</dt><dd className="text-seal">مصدر ثانوي — مراجعة الأصل الرسمي لم تكتمل</dd></div>
+
+
 </dl>
         <section className="mt-9"><h3 className="font-legal text-2xl font-bold text-seal">١. بداية الحكاية — إيه اللي حصل؟</h3><p className="mt-3 whitespace-pre-line text-lg leading-[2.1]">{active.story}</p></section>
-        <section className="mt-9 border-r-[3px] border-seal bg-paper-deep p-5"><h3 className="font-legal text-2xl font-bold">٢. النزاع وصل للمحكمة ليه؟</h3><p className="mt-3 leading-9">المسألة القانونية المطروحة ترتبط بالوقائع المذكورة أعلاه. لا تتوافر في السجل الحالي تفاصيل موثقة كافية لعرض دفوع الخصوم أو تسلسل الإجراءات كاملة، ولذلك لن ننسب للمحكمة أو للأطراف أقوالًا غير متحقق منها.</p></section>
-        <section className="mt-9"><h3 className="font-legal text-2xl font-bold text-seal">٣. الحكم والدرس القانوني</h3><p className="mt-3 whitespace-pre-line text-lg leading-[2.1]">{active.takeaway}</p><p className="mt-3 text-sm leading-7 text-muted">الشرح أعلاه ملخص تحريري وليس اقتباسًا حرفيًا من منطوق الحكم. تفاصيل المنطوق غير المؤكدة لا تُعرض كحقيقة قضائية.</p></section>
-        <section className="mt-9 border-t border-sand pt-6"><h3 className="font-legal text-2xl font-bold">٤. ملف القضية والمصدر</h3><p className="mt-3 text-sm leading-8 text-muted">حالة التحقق: مراجعة المصدر الأصلي مستقلة لم تكتمل بعد. المصدر أدناه أرشيف منشور للاستدلال.</p><a href={active.source} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block border border-seal px-5 py-3 font-semibold text-seal hover:bg-paper-deep">قراءة الحكم المنشور ↗</a></section>
+        <section className="mt-9 border-r-[3px] border-seal bg-paper-deep p-5"><h3 className="font-legal text-2xl font-bold">٢. إيه السؤال القانوني المهم؟</h3><p className="mt-3 text-lg leading-[2.1]">{explainLegalIdea(active.category)}</p><p className="mt-4 text-base leading-9">اقرأ القصة السابقة وحدد النص أو الحق المختلف عليه: المحكمة لا تحسم كل تفاصيل حياة الأطراف، وإنما تفصل في المسألة المعروضة عليها ضمن حدود اختصاصها.</p></section>
+        <section className="mt-9"><h3 className="font-legal text-2xl font-bold text-seal">٣. الحكم والدرس القانوني</h3><p className="mt-3 whitespace-pre-line text-lg leading-[2.1]">{active.takeaway}</p></section>
+        <section className="mt-9 border-r-[3px] border-seal bg-paper-deep p-5"><h3 className="font-legal text-2xl font-bold">٤. تستفيد إيه من القضية دي؟</h3><p className="mt-3 text-lg leading-[2.1]">لو واجهت موقفًا مشابهًا، ابدأ بتحديد النص القانوني المطبق وتاريخ الواقعة، ثم قارن بين السؤال الذي فصلت فيه المحكمة وبين مشكلتك. لا تعتبر التشابه في العنوان وحده ضمانًا لنفس النتيجة.</p><p className="mt-4 text-base leading-9">اسأل نفسك: هل الحكم يتعلق بدستورية نص، أم بفصل في وقائع النزاع؟ وهل صدر تشريع لاحق غيّر القاعدة؟ هذه الأسئلة تمنع فهم الحكم خارج سياقه.</p></section>
+        <section className="mt-9 border-t border-sand pt-6"><h3 className="font-legal text-2xl font-bold">٥. اقرأ الحكم المنشور</h3><p className="mt-3 text-sm leading-8 text-muted">{isOfficialSource(active.source) ? "المصدر: المحكمة الدستورية العليا." : "المصدر: أرشيف أحكام منشور."} النص الأصلي هو المرجع عند الاستشهاد القانوني.</p><a href={active.source} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block border border-seal px-5 py-3 font-semibold text-seal hover:bg-paper-deep">قراءة الحكم المنشور ↗</a></section>
       </div>
     </article> : <>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row"><input aria-label="ابحث عن قضية" placeholder="ابحث بالعنوان أو رقم القضية..." value={query} onChange={e=>setQuery(e.target.value)} className="min-w-0 flex-1 border-[1.5px] border-[#C9C1B2] bg-white px-4 py-3 outline-seal"/><select aria-label="تصنيف القضية" value={category} onChange={e=>setCategory(e.target.value)} className="border-[1.5px] border-[#C9C1B2] bg-white px-4 py-3">{categories.map(c=><option key={c}>{c}</option>)}</select></div>
       <p className="my-5 text-sm text-muted">{filtered.length} قضايا</p>
-      <div className="grid gap-4 sm:grid-cols-2">{filtered.map(c=><button key={c.id} onClick={()=>{setSelected(c.id);window.scrollTo({top:0,behavior:"smooth"});}} className="border-[1.5px] border-sand bg-white p-6 text-right transition hover:border-seal hover:bg-paper-deep"><p className="text-sm font-semibold text-seal">{c.category} · {c.date}</p><h2 className="mt-3 font-legal text-2xl font-bold leading-relaxed">{c.title}</h2><p className="mt-3 line-clamp-3 leading-8 text-muted">{c.story}</p><p className="mt-5 border-t border-sand pt-4 text-sm font-semibold text-seal">اقرأ الحكاية ←</p></button>)}</div>
+      <div className="grid gap-4 sm:grid-cols-2">{filtered.map(c=><button key={c.id} onClick={()=>{setSelected(c.id);window.scrollTo({top:0,behavior:"smooth"});}} className="border-[1.5px] border-sand bg-white p-6 text-right transition hover:border-seal hover:bg-paper-deep"><p className="text-sm font-semibold text-seal">{c.category}{isKnownDate(c.date) ? ` · ${c.date}` : ""}</p><h2 className="mt-3 font-legal text-2xl font-bold leading-relaxed">{c.title}</h2><p className="mt-3 line-clamp-3 leading-8 text-muted">{c.story}</p><p className="mt-5 border-t border-sand pt-4 text-sm font-semibold text-seal">اقرأ الحكاية ←</p></button>)}</div>
       {filtered.length===0 && <p className="p-8 text-muted">لا توجد قضايا مطابقة للبحث.</p>}
-      <section className="mt-12 border-t border-sand pt-8" aria-labelledby="research-heading">
-        <h2 id="research-heading" className="font-legal text-3xl font-bold">القضايا الجاري البحث عن أحكامها</h2>
-        <p className="mt-3 text-base leading-8 text-muted">٢٠ موضوعًا ضمن خطة الوصول إلى ٣٠ قضية. هذه موضوعات بحث فقط، وليست أحكامًا قضائية موثقة أو قضايا منشورة. لن تُعرض تفاصيل حكم قبل مراجعة مصدره الأصلي.</p>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {plannedCases.map(([area, topic], index) => <div key={topic} className="border border-sand bg-paper-deep p-4">
-            <p className="text-xs font-semibold text-muted">بحث رقم {index + 11} · {area} · قيد التوثيق</p>
-            <p className="mt-2 font-legal text-xl font-bold">{topic}</p>
-          </div>)}
-        </div>
-      </section>
+
 
     </>}
   </div></div>;
