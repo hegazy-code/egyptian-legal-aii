@@ -1,0 +1,26 @@
+name: Real-world story content checks
+on:
+  pull_request:
+    paths:
+      - 'frontend/app/real-world/**'
+      - 'frontend/scripts/check-real-world-stories.mjs'
+      - 'frontend/package.json'
+      - '.github/workflows/real-world-content.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/app/real-world/**'
+      - 'frontend/scripts/check-real-world-stories.mjs'
+      - 'frontend/package.json'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check:real-world
