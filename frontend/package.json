@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check:real-world": "node scripts/check-real-world-stories.mjs"
   },
   "dependencies": {
     "@fontsource/amiri": "^5.3.0",
