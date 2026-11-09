@@ -5,6 +5,7 @@ const LINKS = [
   { href: "/how-it-works", label: "كيف نعمل" },
   { href: "/laws", label: "ثقف نفسك" },
   { href: "/cases", label: "القضايا" },
+  { href: "/real-world", label: "القانون على أرض الواقع" },
   { href: "/documents", label: "المستندات" },
   { href: "/about", label: "من نحن" },
   { href: "/profile", label: "حسابي" },
