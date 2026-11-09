@@ -26,7 +26,7 @@ for (const story of stories) {
     sourceCount++;
   }
   assert(story.verification && typeof story.verification.primaryJudgmentAvailable === "boolean", "Missing verification status");
-  assert(/^\\d{4}-\\d{2}-\\d{2}$/.test(story.verification.reviewedAt), "Invalid review date");
+  assert(/^\d{4}-\d{2}-\d{2}$/.test(story.verification.reviewedAt), "Invalid review date");
   assert(story.verification.editorialNote?.trim(), "Missing editorial note");
   if (story.verification.primaryJudgmentAvailable) {
     assert(story.verification.primaryJudgmentUrl?.startsWith("https://"), "Official judgment link required before primary verification");
