@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 const newlySourcedCases = [
   {"id":31,"number":"12 لسنة 39 قضائية تنازع","date":"2018-03-03","category":"تنازع الأحكام","title":"تيران وصنافير: إزاي قضية واحدة وصلت لأحكام قضائية متعارضة؟","story":"بدأت الحكاية في أبريل 2016، بعد توقيع اتفاقية تعيين الحدود البحرية بين مصر والسعودية. رُفعت دعويان أمام محكمة القضاء الإداري، برقمي 43709 و43866 لسنة 70 قضائية، للطعن على توقيع الاتفاقية. قضى القضاء الإداري ببطلان التوقيع، وأيّدت المحكمة الإدارية العليا الحكم في الطعن رقم 74236 لسنة 62 قضائية عليا. في المقابل، صدر حكم من القضاء المستعجل يتعلق بعدم الاعتداد بحكم القضاء الإداري، وأُيّد في الاستئناف رقم 157 لسنة 2017. وهكذا أصبح هناك مساران قضائيان مختلفان بشأن الاتفاقية، فطُرحت المسألة أمام المحكمة الدستورية العليا في دعوى تنازع الأحكام.","takeaway":"في 3 مارس 2018 قضت المحكمة الدستورية العليا بعدم الاعتداد بالأحكام المتعارضة الصادرة في النزاع. وركزت على حدود اختصاص جهات القضاء وطبيعة أعمال السيادة المرتبطة بالمعاهدات الدولية. الدرس هنا أن وجود حكمين مختلفين لا يعني اختيار أحدهما تلقائيًا؛ فقد يكون أصل المشكلة أن جهة قضائية تجاوزت حدود اختصاصها.","source":"https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/9134_39_12_3_2.html"},
@@ -158,7 +159,7 @@ export default function CasesPage() {
     <header className="border-b-[1.5px] border-ink pb-7">
       <p className="text-sm font-bold text-seal">حجازي للتقنية القانونية · مكتبة القضايا</p>
       <h1 className="mt-3 font-legal text-4xl font-bold leading-[1.4] md:text-5xl">{active ? active.title : "وراء كل حكم حكاية… والقانون له الكلمة الأخيرة"}</h1>
-      <p className="mt-3 max-w-3xl text-lg leading-9 text-muted">حكايات قانونية مصرية بلغة واضحة، مع بيانات الحكم ومصدره المنشور.</p>
+      <p className="mt-3 max-w-3xl text-lg leading-9 text-muted">حكايات قانونية مصرية بلغة واضحة، مع بيانات الحكم ومصدره المنشور.</p><Link href="/real-world" className="mt-5 inline-block border border-seal px-5 py-3 font-semibold text-seal hover:bg-paper-deep">القانون على أرض الواقع: اقرأ القصص القضائية ←</Link>
     </header>
     <p role="note" className="my-6 border-r-4 border-seal bg-paper-deep px-5 py-4 text-sm leading-8 text-muted">قصص وأحكام مصرية مشروحة بلغة بسيطة للتثقيف القانوني. الشرح ليس بديلًا عن نص الحكم أو المشورة القانونية في واقعة بعينها.</p>
     {active ? <article className="max-w-4xl">
