@@ -1,0 +1,23 @@
+{
+  "status": "source_discovery_only_not_verified",
+  "date": "2026-11-09",
+  "purpose": "Official-source discovery for diverse 30-case project; do not auto-publish.",
+  "findings": [
+    {
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/3849_11_24_1_2.html",
+      "topic": "Emergency-law arrest/search powers; official text includes disposition الخصومة منتهية",
+      "verification": "official indexed text excerpt accessible; full metadata and document retrieval pending"
+    },
+    {
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/8256_33_59_1_2.html",
+      "topic": "Family courts and constitutional challenge procedure; official excerpt includes عدم قبول الدعوى",
+      "verification": "official indexed text excerpt accessible; full metadata and document retrieval pending"
+    },
+    {
+      "url": "https://www.sccourt.gov.eg/DjangoPortalResources/Rules_Html/3735_21_143_1_2.html",
+      "topic": "Civil Code lease provisions articles 558 and 563; official excerpt",
+      "verification": "official indexed text excerpt accessible; full metadata and document retrieval pending"
+    }
+  ],
+  "note": "These are official constitutional court decisions touching multiple subject matters, NOT substitute criminal/civil/family trial judgments. Do not count as verified additions to the 20 diverse slots."
+}
