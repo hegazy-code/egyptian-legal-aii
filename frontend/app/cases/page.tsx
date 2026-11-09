@@ -105,6 +105,15 @@ const cases = [
   }
 ];
 
+const plannedCases = [
+  ["جنائي","الدفاع الشرعي"],["جنائي","بطلان الاعتراف بالإكراه"],["جنائي","القتل الخطأ"],["جنائي","التزوير"],["جنائي","النصب والاحتيال"],
+  ["مدني","التعويض عن الضرر"],["مدني","فسخ العقود"],["مدني","صحة ونفاذ البيع"],["مدني","المسؤولية التقصيرية"],
+  ["تجاري","منازعات الشركات"],["تجاري","الشيكات التجارية"],["تجاري","الإفلاس"],
+  ["عمل","الفصل التعسفي"],["عمل","مستحقات العامل"],["عمل","إصابات العمل"],
+  ["أحوال شخصية","النفقة"],["أحوال شخصية","الحضانة"],["أحوال شخصية","الرؤية والاستضافة"],
+  ["إيجارات","الإخلاء"],["إيجارات","الامتداد القانوني لعقد الإيجار"]
+] as const;
+
 export default function CasesPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("الكل");
@@ -145,6 +154,17 @@ export default function CasesPage() {
       <p className="my-5 text-sm text-muted">{filtered.length} قضايا</p>
       <div className="grid gap-4 sm:grid-cols-2">{filtered.map(c=><button key={c.id} onClick={()=>{setSelected(c.id);window.scrollTo({top:0,behavior:"smooth"});}} className="border-[1.5px] border-sand bg-white p-6 text-right transition hover:border-seal hover:bg-paper-deep"><p className="text-sm font-semibold text-seal">{c.category} · {c.date}</p><h2 className="mt-3 font-legal text-2xl font-bold leading-relaxed">{c.title}</h2><p className="mt-3 line-clamp-3 leading-8 text-muted">{c.story}</p><p className="mt-5 border-t border-sand pt-4 text-sm font-semibold text-seal">اقرأ الحكاية ←</p></button>)}</div>
       {filtered.length===0 && <p className="p-8 text-muted">لا توجد قضايا مطابقة للبحث.</p>}
+      <section className="mt-12 border-t border-sand pt-8" aria-labelledby="research-heading">
+        <h2 id="research-heading" className="font-legal text-3xl font-bold">القضايا الجاري البحث عن أحكامها</h2>
+        <p className="mt-3 text-base leading-8 text-muted">٢٠ موضوعًا ضمن خطة الوصول إلى ٣٠ قضية. هذه موضوعات بحث فقط، وليست أحكامًا قضائية موثقة أو قضايا منشورة. لن تُعرض تفاصيل حكم قبل مراجعة مصدره الأصلي.</p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {plannedCases.map(([area, topic], index) => <div key={topic} className="border border-sand bg-paper-deep p-4">
+            <p className="text-xs font-semibold text-muted">بحث رقم {index + 11} · {area} · قيد التوثيق</p>
+            <p className="mt-2 font-legal text-xl font-bold">{topic}</p>
+          </div>)}
+        </div>
+      </section>
+
     </>}
   </div></div>;
 }
