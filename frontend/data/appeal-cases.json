@@ -144,5 +144,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-434-59-1993",
+    "status": "research_only",
+    "appealNumber": "434 لسنة 59 قضائية",
+    "appealDate": "1993-11-14",
+    "firstJudgment": "محكمة الجيزة الابتدائية رفضت دعوى إخلاء شقة وإلزام المالك بتنفيذ وعد بالتأجير",
+    "challengedJudgment": "محكمة استئناف القاهرة ألغت الرفض يوم 17 ديسمبر 1988 وقضت بإخلاء المستأجر وبصحة ونفاذ الوعد بالتأجير",
+    "appealOutcome": "محكمة النقض نقضت حكم الاستئناف لعدم بحث دفاع جوهري بوجود خصومة قضائية بين المستأجر وأحد شهود خصمه؛ النص المنشور لا يثبت صدور حكم نهائي في موضوع الإخلاء بعد النقض",
+    "secondarySources": [
+      "https://mksegypt.org/ar/court-of-cassation-rulings/22328"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
