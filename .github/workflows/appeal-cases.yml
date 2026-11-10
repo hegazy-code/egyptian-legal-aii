@@ -1,0 +1,26 @@
+name: Appeal case evidence gate
+on:
+  pull_request:
+    paths:
+      - 'frontend/data/appeal-cases.json'
+      - 'frontend/scripts/check-appeal-cases.mjs'
+      - 'frontend/package.json'
+      - '.github/workflows/appeal-cases.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/data/appeal-cases.json'
+      - 'frontend/scripts/check-appeal-cases.mjs'
+      - 'frontend/package.json'
+jobs:
+  verify-evidence:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check:appeal-cases

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:real-world": "node scripts/check-real-world-stories.mjs"
+    "check:real-world": "node scripts/check-real-world-stories.mjs",
+    "check:appeal-cases": "node scripts/check-appeal-cases.mjs"
   },
   "dependencies": {
     "@fontsource/amiri": "^5.3.0",
