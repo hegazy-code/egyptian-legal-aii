@@ -64,5 +64,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-630-59-1993",
+    "status": "research_only",
+    "appealNumber": "630 لسنة 59 قضائية",
+    "appealDate": "1993-10-18",
+    "firstJudgment": "محكمة الإسكندرية الابتدائية قضت بإخلاء الصيدلية وتسليمها لمالكتها بسبب تأجيرها من الباطن دون موافقة",
+    "challengedJudgment": "محكمة استئناف الإسكندرية ألغت الإخلاء بتاريخ 14 ديسمبر 1988",
+    "appealOutcome": "محكمة النقض نقضت حكم الاستئناف وفصلت في الموضوع برفض الاستئناف وتأييد حكم الإخلاء",
+    "secondarySources": [
+      "https://mksegypt.org/ar/court-of-cassation-rulings/22335"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
