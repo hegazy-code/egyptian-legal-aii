@@ -1,6 +1,5 @@
 import Link from "next/link";
 import caseRecords from "../../data/appeal-cases.json";
-import intakeCandidates from "../../data/appeal-case-intake-candidates.json";
 
 type CaseRecord = {
   id: string;
@@ -16,22 +15,6 @@ type CaseRecord = {
   reviewedBy: string | null;
   secondarySources?: string[];
 };
-
-type IntakeCandidate = {
-  id: string;
-  docket: string;
-  hearingDate: string;
-  reportedOutcome: string;
-  sourceUrl: string;
-  sourceType: string;
-  missing: string[];
-  publishable: boolean;
-  sourceEvidence?: { reportedCharge?: string; reportedChallengedJudgment?: string; evidenceScope?: string };
-};
-
-const visibleResearchLeads = (intakeCandidates as IntakeCandidate[]).filter(c =>
-  c.publishable === false && c.sourceUrl.startsWith("https://")
-);
 
 const isOfficialCourtSource = (value: string | null) => {
   if (!value) return false;
@@ -103,21 +86,6 @@ export default function CasesPage() {
             <div className="mt-4 flex flex-wrap gap-3">{c.secondarySources?.map((url, i) =>
               <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="border border-seal px-4 py-2 font-semibold text-seal">المصدر {i + 1} ↗</a>
             )}</div>
-          </article>)}
-        </div>
-      </section>}
-      {visibleResearchLeads.length > 0 && false && <section className="mt-12" aria-label="مرشحات طعون لم تستكمل المراجعة">
-        <h2 className="font-legal text-3xl font-bold">مرشحات طعون للبحث — ليست قضايا مكتملة</h2>
-        <p className="mt-3 leading-8 text-muted">هذه سجلات أولية من فهارس قانونية غير رسمية. لم نتحقق من الحكم السابق أو نطابق منطوق الحكم النهائي كاملًا؛ لذلك لا نعدّها ضمن القضايا المنشورة أو الأحكام الموثقة.</p>
-        <div className="mt-5 grid gap-5 md:grid-cols-2">
-          {visibleResearchLeads.map(c => <article key={c.id} className="border border-sand bg-white p-6">
-            <p className="text-sm font-semibold text-seal">مرشح غير معتمد · {c.hearingDate}</p>
-            <h3 className="mt-3 font-legal text-2xl font-bold">الطعن {c.docket}</h3><Link href={`/cases/${c.id}`} className="mt-3 inline-block font-bold text-seal underline">افتح ملف القضية وقصتها ←</Link>
-            {c.sourceEvidence?.reportedCharge && <p className="mt-3 leading-8"><strong>موضوع القضية بحسب المقتطف:</strong> {c.sourceEvidence.reportedCharge}</p>}
-            <p className="mt-3 leading-8"><strong>النتيجة المذكورة في الفهرس:</strong> {c.reportedOutcome}</p>
-            <p className="mt-3 leading-8"><strong>ما لم يثبت بعد:</strong> {c.missing.join("؛ ")}</p>
-            <p className="mt-2 text-sm text-muted">المصدر: {c.sourceType}. هذه بيانات بحثية وليست توصيفًا قضائيًا نهائيًا.</p>
-            <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block border border-seal px-4 py-2 font-semibold text-seal">افتح الفهرس المصدر ↗</a>
           </article>)}
         </div>
       </section>}
