@@ -44,7 +44,7 @@ export default function CasesPage() {
       <header className="border-b-[1.5px] border-ink pb-8">
         <p className="text-sm font-bold text-seal">حجازي للتقنية القانونية · القضايا</p>
         <h1 className="mt-4 font-legal text-4xl font-bold leading-relaxed md:text-5xl">لما الطعن يغيّر الحكم</h1>
-        <p className="mt-4 max-w-3xl text-lg leading-9 text-muted">قضايا مصرية صدر فيها حكم، ثم أدى الطعن إلى نقضه أو تعديله أو تغيّر نتيجته بعد إعادة المحاكمة. بنوضح الحكم الأول، وسبب الطعن، والنقطة القانونية الفاصلة، والنتيجة الموثقة.</p>
+        <p className="mt-4 max-w-3xl text-lg leading-9 text-muted">قصص من أحكام مصرية منشورة تغيّرت نتائجها بالطعن أو بعد إعادة المحاكمة. بنحكي الوقائع والحكم الأول وأسباب الطعن والنتيجة، مع إتاحة المصادر الأصلية للقراءة.</p>
       </header>
       <section className="mt-8 grid gap-4 md:grid-cols-3" aria-label="مراحل القضية">
         {[
@@ -75,7 +75,7 @@ export default function CasesPage() {
         <h2 className="font-legal text-3xl font-bold">قصص القضايا</h2>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           {pressCases.map(c => <article key={c.id} className="border border-sand bg-white p-6">
-            <p className="text-sm font-semibold text-seal">{c.appealDate}</p>
+            <p className="text-sm font-semibold text-seal">{c.appealDate} · مصدر منشور قيد المطابقة الرسمية</p>
             <h3 className="mt-3 font-legal text-2xl font-bold">{c.appealNumber}</h3>
             <Link href={`/cases/${c.id}`} className="mt-4 inline-block bg-seal px-5 py-3 font-bold text-white hover:opacity-90">اقرأ القصة كاملة ←</Link>
             <dl className="mt-4 space-y-3 leading-8">
