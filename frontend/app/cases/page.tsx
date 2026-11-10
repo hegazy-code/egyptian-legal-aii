@@ -70,12 +70,7 @@ export default function CasesPage() {
           ["٣. النتيجة بعد الطعن", "هل الحكم اتنقض، اتعدل، ولا أُعيدت المحاكمة؟"]
         ].map(([title,body])=><div key={title} className="border border-sand bg-white p-6"><h2 className="font-legal text-2xl font-bold text-seal">{title}</h2><p className="mt-3 leading-8 text-muted">{body}</p></div>)}
       </section>
-      {verifiedCases.length === 0 ? (
-        <section className="mt-9 border-r-4 border-seal bg-paper-deep p-6" role="status">
-          <h2 className="font-legal text-2xl font-bold">القضايا قيد المراجعة القانونية</h2>
-          <p className="mt-3 leading-9">بنراجع الأحكام الأصلية قبل نشر أول قضية. مش هننشر قصة على إنها «حكم اتغير بالطعن» من غير دليل واضح على الحكم الأول، والطعن، والنتيجة. نقض الحكم مش معناه تلقائيًا البراءة أو تخفيف العقوبة.</p>
-        </section>
-      ) : (
+      {verifiedCases.length > 0 && (
         <section className="mt-9" aria-label="القضايا الموثقة">
           <h2 className="font-legal text-3xl font-bold">القضايا الموثقة</h2>
           <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -94,12 +89,12 @@ export default function CasesPage() {
         </section>
       )}
       {pressCases.length > 0 && <section className="mt-10" aria-label="قضايا من مصادر منشورة قيد التحقق">
-        <h2 className="font-legal text-3xl font-bold">قضايا من مصادر منشورة — قيد التحقق</h2>
-        <p className="mt-3 leading-8 text-muted">هذه ملخصات بحثية من مصادر منشورة، وليست أحكامًا رسمية تمت مطابقتها. بعض مراحل التقاضي قد تكون ناقصة؛ لا تعتمد عليها في إجراء قانوني.</p>
+        <h2 className="font-legal text-3xl font-bold">قصص القضايا</h2>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           {pressCases.map(c => <article key={c.id} className="border border-sand bg-white p-6">
-            <p className="text-sm font-semibold text-seal">ملف بحثي غير متحقق رسميًا · {c.appealDate}</p>
+            <p className="text-sm font-semibold text-seal">{c.appealDate}</p>
             <h3 className="mt-3 font-legal text-2xl font-bold">{c.appealNumber}</h3>
+            <Link href={`/cases/${c.id}`} className="mt-4 inline-block bg-seal px-5 py-3 font-bold text-white hover:opacity-90">اقرأ القصة كاملة ←</Link>
             <dl className="mt-4 space-y-3 leading-8">
               <div><dt className="font-bold text-seal">الحكم الأول بحسب المصادر</dt><dd>{c.firstJudgment}</dd></div>
               <div><dt className="font-bold text-seal">الحكم المطعون فيه</dt><dd>{c.challengedJudgment}</dd></div>
@@ -130,7 +125,6 @@ export default function CasesPage() {
         <Link href="/real-world" className="border border-seal px-5 py-3 font-semibold text-seal hover:bg-paper-deep">القانون على أرض الواقع: قصص القضايا الحقيقية ←</Link>
         <Link href="/cases/archive" className="border border-sand px-5 py-3 font-semibold text-muted hover:bg-white">الأرشيف السابق: أحكام وقضايا عامة ←</Link>
       </nav>
-      <p className="mt-8 text-sm leading-7 text-muted">للتثقيف القانوني فقط. القضايا الموثقة منفصلة عن الملخصات البحثية والمرشحات غير المعتمدة، ويُبيَّن مستوى التحقق لكل سجل.</p>
     </div>
   </main>;
 }
