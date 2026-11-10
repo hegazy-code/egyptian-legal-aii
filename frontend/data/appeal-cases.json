@@ -48,5 +48,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-515-63-1993",
+    "status": "research_only",
+    "appealNumber": "515 لسنة 63 قضائية",
+    "appealDate": "1993-12-19",
+    "firstJudgment": "حكم بإخلاء المستأجر من شقة في أسيوط بدعوى تكرار التأخر في سداد الأجرة",
+    "challengedJudgment": "تأييد الإخلاء استئنافيًا في 2 ديسمبر 1992",
+    "appealOutcome": "نقض الحكم وإلغاء حكم الإخلاء ورفض الدعوى بعد ثبوت سداد الأجرة قبل انعقاد الخصومة",
+    "secondarySources": [
+      "https://mksegypt.org/public/ar/court-of-cassation-rulings/22330"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
