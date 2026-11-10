@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'frontend/data/appeal-cases.json'
+      - 'frontend/data/appeal-case-intake-candidates.json'
+      - 'frontend/scripts/check-appeal-intake.mjs'
       - 'frontend/scripts/check-appeal-cases.mjs'
       - 'frontend/package.json'
       - '.github/workflows/appeal-cases.yml'
@@ -10,6 +12,8 @@ on:
     branches: [main]
     paths:
       - 'frontend/data/appeal-cases.json'
+      - 'frontend/data/appeal-case-intake-candidates.json'
+      - 'frontend/scripts/check-appeal-intake.mjs'
       - 'frontend/scripts/check-appeal-cases.mjs'
       - 'frontend/package.json'
 jobs:
@@ -24,3 +28,4 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check:appeal-cases
+      - run: node scripts/check-appeal-intake.mjs

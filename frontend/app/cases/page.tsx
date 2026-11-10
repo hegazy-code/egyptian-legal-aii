@@ -13,6 +13,7 @@ type CaseRecord = {
   primarySourceChecked: boolean;
   reviewedAt: string | null;
   reviewedBy: string | null;
+  secondarySources?: string[];
 };
 
 const isOfficialCourtSource = (value: string | null) => {
@@ -31,6 +32,10 @@ const verifiedCases = (caseRecords as CaseRecord[]).filter(
   (c) => c.status === "verified" && c.primarySourceChecked === true &&
     isOfficialCourtSource(c.officialJudgmentUrl) &&
     Boolean(c.reviewedAt && c.reviewedBy)
+);
+
+const pressCases = (caseRecords as CaseRecord[]).filter(c =>
+  c.status === "research_only" && (c.secondarySources?.length ?? 0) > 0
 );
 
 export default function CasesPage() {
@@ -71,6 +76,24 @@ export default function CasesPage() {
           </div>
         </section>
       )}
+      {pressCases.length > 0 && <section className="mt-10" aria-label="قضايا من مصادر منشورة قيد التحقق">
+        <h2 className="font-legal text-3xl font-bold">قضايا من مصادر منشورة — قيد التحقق</h2>
+        <p className="mt-3 leading-8 text-muted">هذه ملخصات بحثية من مصادر منشورة، وليست أحكامًا رسمية تمت مطابقتها. بعض مراحل التقاضي قد تكون ناقصة؛ لا تعتمد عليها في إجراء قانوني.</p>
+        <div className="mt-5 grid gap-5 md:grid-cols-2">
+          {pressCases.map(c => <article key={c.id} className="border border-sand bg-white p-6">
+            <p className="text-sm font-semibold text-seal">ملف بحثي غير متحقق رسميًا · {c.appealDate}</p>
+            <h3 className="mt-3 font-legal text-2xl font-bold">{c.appealNumber}</h3>
+            <dl className="mt-4 space-y-3 leading-8">
+              <div><dt className="font-bold text-seal">الحكم الأول بحسب المصادر</dt><dd>{c.firstJudgment}</dd></div>
+              <div><dt className="font-bold text-seal">الحكم المطعون فيه</dt><dd>{c.challengedJudgment}</dd></div>
+              <div><dt className="font-bold text-seal">النتيجة المنقولة</dt><dd>{c.appealOutcome}</dd></div>
+            </dl>
+            <div className="mt-4 flex flex-wrap gap-3">{c.secondarySources?.map((url, i) =>
+              <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="border border-seal px-4 py-2 font-semibold text-seal">المصدر {i + 1} ↗</a>
+            )}</div>
+          </article>)}
+        </div>
+      </section>}
       <nav className="mt-8 flex flex-wrap gap-4" aria-label="أقسام ذات صلة">
         <Link href="/real-world" className="border border-seal px-5 py-3 font-semibold text-seal hover:bg-paper-deep">القانون على أرض الواقع: قصص القضايا الحقيقية ←</Link>
         <Link href="/cases/archive" className="border border-sand px-5 py-3 font-semibold text-muted hover:bg-white">الأرشيف السابق: أحكام وقضايا عامة ←</Link>
