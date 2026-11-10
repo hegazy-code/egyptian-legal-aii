@@ -15,5 +15,22 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-10170-90-2021",
+    "status": "research_only",
+    "appealNumber": "10170 لسنة 90 قضائية",
+    "appealDate": "2021-01-14",
+    "firstJudgment": "براءة مع مصادرة مبلغ نقدي — بحسب المبدأ المنسوب لمنشورات المكتب الفني؛ يلزم تدقيق النص الكامل",
+    "challengedJudgment": "تأييد الحكم بما فيه المصادرة — يحتاج مطابقة النص الكامل",
+    "appealOutcome": "تصحيح الحكم بإلغاء المصادرة، وليس براءة جديدة — قيد التحقق",
+    "secondarySources": [
+      "https://register.cc.gov.eg/publications/159/download",
+      "https://register.cc.gov.eg/publications/42/download"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
