@@ -15,9 +15,21 @@ type CaseRecord = {
   reviewedBy: string | null;
 };
 
+const isOfficialCourtSource = (value: string | null) => {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" &&
+      (url.hostname === "cc.gov.eg" || url.hostname.endsWith(".cc.gov.eg")) &&
+      !url.username && !url.password;
+  } catch {
+    return false;
+  }
+};
+
 const verifiedCases = (caseRecords as CaseRecord[]).filter(
   (c) => c.status === "verified" && c.primarySourceChecked === true &&
-    Boolean(c.officialJudgmentUrl?.startsWith("https://")) &&
+    isOfficialCourtSource(c.officialJudgmentUrl) &&
     Boolean(c.reviewedAt && c.reviewedBy)
 );
 
