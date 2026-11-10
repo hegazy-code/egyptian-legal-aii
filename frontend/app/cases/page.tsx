@@ -1,5 +1,6 @@
 import Link from "next/link";
 import caseRecords from "../../data/appeal-cases.json";
+import intakeCandidates from "../../data/appeal-case-intake-candidates.json";
 
 type CaseRecord = {
   id: string;
@@ -15,6 +16,22 @@ type CaseRecord = {
   reviewedBy: string | null;
   secondarySources?: string[];
 };
+
+type IntakeCandidate = {
+  id: string;
+  docket: string;
+  hearingDate: string;
+  reportedOutcome: string;
+  sourceUrl: string;
+  sourceType: string;
+  missing: string[];
+  publishable: boolean;
+  sourceEvidence?: { reportedCharge?: string; reportedChallengedJudgment?: string; evidenceScope?: string };
+};
+
+const visibleResearchLeads = (intakeCandidates as IntakeCandidate[]).filter(c =>
+  c.publishable === false && c.sourceUrl.startsWith("https://")
+);
 
 const isOfficialCourtSource = (value: string | null) => {
   if (!value) return false;
@@ -94,11 +111,26 @@ export default function CasesPage() {
           </article>)}
         </div>
       </section>}
+      {visibleResearchLeads.length > 0 && <section className="mt-12" aria-label="مرشحات طعون لم تستكمل المراجعة">
+        <h2 className="font-legal text-3xl font-bold">مرشحات طعون للبحث — ليست قضايا مكتملة</h2>
+        <p className="mt-3 leading-8 text-muted">هذه سجلات أولية من فهارس قانونية غير رسمية. لم نتحقق من الحكم السابق أو نطابق منطوق الحكم النهائي كاملًا؛ لذلك لا نعدّها ضمن القضايا المنشورة أو الأحكام الموثقة.</p>
+        <div className="mt-5 grid gap-5 md:grid-cols-2">
+          {visibleResearchLeads.map(c => <article key={c.id} className="border border-sand bg-white p-6">
+            <p className="text-sm font-semibold text-seal">مرشح غير معتمد · {c.hearingDate}</p>
+            <h3 className="mt-3 font-legal text-2xl font-bold">الطعن {c.docket}</h3>
+            {c.sourceEvidence?.reportedCharge && <p className="mt-3 leading-8"><strong>موضوع القضية بحسب المقتطف:</strong> {c.sourceEvidence.reportedCharge}</p>}
+            <p className="mt-3 leading-8"><strong>النتيجة المذكورة في الفهرس:</strong> {c.reportedOutcome}</p>
+            <p className="mt-3 leading-8"><strong>ما لم يثبت بعد:</strong> {c.missing.join("؛ ")}</p>
+            <p className="mt-2 text-sm text-muted">المصدر: {c.sourceType}. هذه بيانات بحثية وليست توصيفًا قضائيًا نهائيًا.</p>
+            <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block border border-seal px-4 py-2 font-semibold text-seal">افتح الفهرس المصدر ↗</a>
+          </article>)}
+        </div>
+      </section>}
       <nav className="mt-8 flex flex-wrap gap-4" aria-label="أقسام ذات صلة">
         <Link href="/real-world" className="border border-seal px-5 py-3 font-semibold text-seal hover:bg-paper-deep">القانون على أرض الواقع: قصص القضايا الحقيقية ←</Link>
         <Link href="/cases/archive" className="border border-sand px-5 py-3 font-semibold text-muted hover:bg-white">الأرشيف السابق: أحكام وقضايا عامة ←</Link>
       </nav>
-      <p className="mt-8 text-sm leading-7 text-muted">للتثقيف القانوني فقط. لا تُعرض هنا إلا القضايا التي اجتازت متطلبات توثيق المصدر.</p>
+      <p className="mt-8 text-sm leading-7 text-muted">للتثقيف القانوني فقط. القضايا الموثقة منفصلة عن الملخصات البحثية والمرشحات غير المعتمدة، ويُبيَّن مستوى التحقق لكل سجل.</p>
     </div>
   </main>;
 }
