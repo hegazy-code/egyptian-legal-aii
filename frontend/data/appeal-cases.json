@@ -80,5 +80,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-2905-61-1993",
+    "status": "research_only",
+    "appealNumber": "2905 لسنة 61 قضائية",
+    "appealDate": "1993-11-21",
+    "firstJudgment": "إخلاء الشقة السكنية رقم 14 بعد تحويلها مع العيادة المجاورة إلى مستشفى",
+    "challengedJudgment": "استئناف طنطا ألغى الإخلاء ورفض الدعوى في 1983 ثم مجددًا في 1991 بعد نقض سابق",
+    "appealOutcome": "نقض جزئي للمرة الثانية، ورفض الاستئناف وتأييد الإخلاء للشقة السكنية",
+    "secondarySources": [
+      "https://mksegypt.org/ar/court-of-cassation-rulings/22436"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
