@@ -128,5 +128,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-694-58-1993",
+    "status": "research_only",
+    "appealNumber": "694 لسنة 58 قضائية",
+    "appealDate": "1993-02-17",
+    "firstJudgment": "محكمة السويس الابتدائية قضت بعدم قبول دعوى إخلاء جراج لرفعها قبل الأوان",
+    "challengedJudgment": "محكمة استئناف الإسماعيلية مأمورية السويس ألغت الحكم وقضت بإخلاء الجراج في 15 ديسمبر 1987",
+    "appealOutcome": "محكمة النقض نقضت حكم الإخلاء وفصلت في الموضوع برفض الاستئناف وتأييد الحكم الابتدائي",
+    "secondarySources": [
+      "https://mksegypt.org/ar/court-of-cassation-rulings/22337"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
