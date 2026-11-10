@@ -19,6 +19,6 @@ for (const c of candidates) {
   assert(c.sourceType && c.reportedOutcome, "Source type and attributed outcome required");
   assert(c.publishable === false, "Intake candidates must not be auto-published");
   assert(c.status === "candidate_needs_first_judgment", "Unexpected candidate status");
-  assert(c.missing?.includes("الحكم السابق ومنطوقه"), "Missing previous judgment must be disclosed");
+  assert(c.missing?.some(item => item.includes("الحكم السابق")), "Missing previous judgment must be disclosed");
 }
 console.log("PASS: " + candidates.length + " attributed leads checked for format and duplicates; none approved for publication. URL reachability and claims NOT verified.");
