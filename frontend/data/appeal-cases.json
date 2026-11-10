@@ -112,5 +112,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-324-57-1993",
+    "status": "research_only",
+    "appealNumber": "324 لسنة 57 قضائية",
+    "appealDate": "1993-12-08",
+    "firstJudgment": "إدانة متهم بتقاضي 300 جنيه مقابل تحرير عقد إيجار، مع غرامة 50 جنيهًا وتعويض مدني مؤقت 51 جنيهًا",
+    "challengedJudgment": "بعد نقض سابق وإعادة المحاكمة، قضت محكمة الإعادة ببراءة المتهم وعدم قبول الدعوى المدنية",
+    "appealOutcome": "رفض طعن المدعية بالحقوق المدنية في حكم البراءة، واستمرار نتيجة البراءة بعد إعادة المحاكمة",
+    "secondarySources": [
+      "https://www.mksegypt.org/ar/court-of-cassation-rulings/22167"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
