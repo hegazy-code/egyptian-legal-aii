@@ -150,9 +150,10 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
     <p className="mt-8 font-bold text-seal">حجازي للتقنية القانونية · قصص القضايا</p>
     <h1 className="mt-4 font-legal text-4xl font-bold">{editorial?.headline ?? `الطعن ${record ? record.appealNumber : lead!.docket}`}</h1>
     <p className="mt-3 text-sm text-muted">الطعن {record ? record.appealNumber : lead!.docket}</p>
+    <p className="mt-4 border-r-4 border-seal bg-paper-deep p-4 text-sm leading-7 text-muted" role="note">{record?.status === "verified" ? "تمت مطابقة بيانات هذا الحكم مع مصدر قضائي رسمي." : "قصة بحثية مستندة إلى مصدر منشور، ولم تكتمل مطابقتها مع نسخة قضائية رسمية. راجع المصادر قبل الاستناد إلى الوقائع في أي إجراء قانوني."}</p>
     <div className="mt-10 space-y-8">{chapters.map(([heading, body], index) => <section key={heading} className="border-b border-sand pb-8">
       <p className="text-sm font-bold text-seal">الفصل {index + 1}</p><h2 className="mt-2 font-legal text-2xl font-bold">{heading}</h2><p className="mt-4 text-lg leading-10">{body}</p>
     </section>)}</div>
-    <section className="mt-10"><h2 className="font-legal text-2xl font-bold">المراجع والتوثيق</h2><p className="mt-3 leading-8 text-muted"></p><div className="mt-4 flex flex-wrap gap-3">{sources.map((url, i) => <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="border border-seal px-4 py-2 text-seal">المصدر {i + 1} ↗</a>)}</div></section>
+    <section className="mt-10"><h2 className="font-legal text-2xl font-bold">المراجع والتوثيق</h2><p className="mt-3 leading-8 text-muted">المصادر المستخدمة في إعداد القصة؛ إتاحتها لا تعني اعتمادها رسميًا.</p><div className="mt-4 flex flex-wrap gap-3">{sources.map((url, i) => <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="border border-seal px-4 py-2 text-seal">المصدر {i + 1} ↗</a>)}</div></section>
   </article></main>;
 }
