@@ -52,7 +52,7 @@ const verifiedCases = (caseRecords as CaseRecord[]).filter(
 );
 
 const pressCases = (caseRecords as CaseRecord[]).filter(c =>
-  c.status === "research_only" && (c.secondarySources?.length ?? 0) > 0
+  c.status === "research_only" && c.id !== "cassation-5032-93-2024" && (c.secondarySources?.length ?? 0) > 0
 );
 
 export default function CasesPage() {
@@ -106,7 +106,7 @@ export default function CasesPage() {
           </article>)}
         </div>
       </section>}
-      {visibleResearchLeads.length > 0 && <section className="mt-12" aria-label="مرشحات طعون لم تستكمل المراجعة">
+      {visibleResearchLeads.length > 0 && false && <section className="mt-12" aria-label="مرشحات طعون لم تستكمل المراجعة">
         <h2 className="font-legal text-3xl font-bold">مرشحات طعون للبحث — ليست قضايا مكتملة</h2>
         <p className="mt-3 leading-8 text-muted">هذه سجلات أولية من فهارس قانونية غير رسمية. لم نتحقق من الحكم السابق أو نطابق منطوق الحكم النهائي كاملًا؛ لذلك لا نعدّها ضمن القضايا المنشورة أو الأحكام الموثقة.</p>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
