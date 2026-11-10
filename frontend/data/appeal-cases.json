@@ -38,9 +38,9 @@
     "status": "research_only",
     "appealNumber": "5032 لسنة 93 قضائية",
     "appealDate": "2024-12-19",
-    "firstJudgment": "لم يُستخرج نص الحكم الأول بعد",
-    "challengedJudgment": "إدانة عن واقعة نقد أجنبي ومصادرة المبلغ وفق ملخص المكتب الفني؛ تفاصيل الحكم قيد الفحص",
-    "appealOutcome": "نقض وبراءة وإلغاء المصادرة بحسب مبدأ المكتب الفني الرسمي، لزوال التجريم وفق القانون 194 لسنة 2020",
+    "firstJudgment": "لم يُستخرج الحكم الأول أو يُطابق بعد",
+    "challengedJudgment": "ملخص منشور منسوب للمكتب الفني عن إدانة ومصادرة؛ لم يُقرأ النص الكامل للحكم",
+    "appealOutcome": "ورد في فهرس مصدر رسمي نقض وبراءة وإلغاء مصادرة؛ لم يُتحقق من النص الكامل أو سلسلة الأحكام",
     "secondarySources": [
       "https://www.register.cc.gov.eg/storage/publications/pdfs/xh5hgv4LJxbMXeqoc5SeQmFQCrhD2AlT3vM6G55d.pdf"
     ],
