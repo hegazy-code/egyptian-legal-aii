@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 const records = JSON.parse(readFileSync(new URL("../data/appeal-cases.json", import.meta.url), "utf8"));
 assert.ok(Array.isArray(records), "Appeal cases must be an array");
 const ids = new Set();
+const docketDates = new Set();
 const isOfficialCourtSource = (value) => {
   if (typeof value !== "string") return false;
   try {
@@ -19,6 +20,11 @@ for (const c of records) {
   assert.ok(typeof c.id === "string" && c.id, "Case id required");
   assert.ok(!ids.has(c.id), "Duplicate case id");
   ids.add(c.id);
+  assert.match(c.appealDate, /^\\d{4}-\\d{2}-\\d{2}$/, "Appeal date must be YYYY-MM-DD");
+  assert.equal(new Date(c.appealDate).toISOString().slice(0, 10), c.appealDate, "Invalid appeal date");
+  const docketDateKey = c.appealNumber.replace(/\\s+/g, "").trim() + ":" + c.appealDate;
+  assert.ok(!docketDates.has(docketDateKey), "Duplicate appeal docket and hearing date");
+  docketDates.add(docketDateKey);
   assert.ok(["research_only", "verified"].includes(c.status), "Unknown verification status");
   assert.ok(c.appealNumber && c.appealDate, "Docket and appeal date required");
   assert.ok(c.firstJudgment && c.challengedJudgment && c.appealOutcome, "All three judgment stages required");
