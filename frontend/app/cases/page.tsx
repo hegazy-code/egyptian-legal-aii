@@ -81,7 +81,7 @@ export default function CasesPage() {
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             {verifiedCases.map(c => <article key={c.id} className="border border-sand bg-white p-6">
               <p className="text-sm font-semibold text-seal">حكم موثق · {c.appealDate}</p>
-              <h3 className="mt-3 font-legal text-2xl font-bold">{c.appealNumber}</h3>
+              <h3 className="mt-3 font-legal text-2xl font-bold">{c.appealNumber}</h3><Link href={`/cases/${c.id}`} className="mt-3 inline-block font-bold text-seal underline">اقرأ القصة كاملة ←</Link>
               <dl className="mt-4 space-y-3 leading-8">
                 <div><dt className="font-bold text-seal">الحكم الأول</dt><dd>{c.firstJudgment}</dd></div>
                 <div><dt className="font-bold text-seal">الحكم المطعون فيه</dt><dd>{c.challengedJudgment}</dd></div>
@@ -117,7 +117,7 @@ export default function CasesPage() {
         <div className="mt-5 grid gap-5 md:grid-cols-2">
           {visibleResearchLeads.map(c => <article key={c.id} className="border border-sand bg-white p-6">
             <p className="text-sm font-semibold text-seal">مرشح غير معتمد · {c.hearingDate}</p>
-            <h3 className="mt-3 font-legal text-2xl font-bold">الطعن {c.docket}</h3>
+            <h3 className="mt-3 font-legal text-2xl font-bold">الطعن {c.docket}</h3><Link href={`/cases/${c.id}`} className="mt-3 inline-block font-bold text-seal underline">افتح ملف القضية وقصتها ←</Link>
             {c.sourceEvidence?.reportedCharge && <p className="mt-3 leading-8"><strong>موضوع القضية بحسب المقتطف:</strong> {c.sourceEvidence.reportedCharge}</p>}
             <p className="mt-3 leading-8"><strong>النتيجة المذكورة في الفهرس:</strong> {c.reportedOutcome}</p>
             <p className="mt-3 leading-8"><strong>ما لم يثبت بعد:</strong> {c.missing.join("؛ ")}</p>
