@@ -96,5 +96,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-1418-63-1993",
+    "status": "research_only",
+    "appealNumber": "1418 لسنة 63 قضائية",
+    "appealDate": "1993-12-22",
+    "firstJudgment": "محكمة شمال القاهرة الابتدائية رفضت دعوى إخلاء المستأجرة",
+    "challengedJudgment": "محكمة استئناف القاهرة ألغت الرفض وقضت بالإخلاء والتسليم في 3 يناير 1993",
+    "appealOutcome": "محكمة النقض نقضت حكم الإخلاء، ورفضت الاستئناف، وعدلت الحكم الابتدائي إلى عدم قبول دعوى الإخلاء لبطلان التكليف بالوفاء",
+    "secondarySources": [
+      "https://mksegypt.org/ar/court-of-cassation-rulings/22367"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
