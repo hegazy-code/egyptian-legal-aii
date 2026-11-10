@@ -160,5 +160,21 @@
     "primarySourceChecked": false,
     "reviewedAt": null,
     "reviewedBy": null
+  },
+  {
+    "id": "cassation-50-60-1993",
+    "status": "research_only",
+    "appealNumber": "50 لسنة 60 قضائية (أحوال شخصية)",
+    "appealDate": "1993-03-16",
+    "firstJudgment": "محكمة كفر الشيخ للأحوال الشخصية قضت بالتطليق في 17 يناير 1989 بناء على دعوى الزوج",
+    "challengedJudgment": "محكمة استئناف طنطا مأمورية كفر الشيخ ألغت حكم التطليق ورفضت الدعوى في 7 يناير 1990",
+    "appealOutcome": "محكمة النقض رفضت طعن الزوج في 16 مارس 1993، فأبقت على حكم الاستئناف الرافض للتطليق",
+    "secondarySources": [
+      "https://mksegypt.org/ar/court-of-cassation-rulings/22290"
+    ],
+    "officialJudgmentUrl": null,
+    "primarySourceChecked": false,
+    "reviewedAt": null,
+    "reviewedBy": null
   }
 ]
