@@ -20,9 +20,9 @@ for (const c of records) {
   assert.ok(typeof c.id === "string" && c.id, "Case id required");
   assert.ok(!ids.has(c.id), "Duplicate case id");
   ids.add(c.id);
-  assert.match(c.appealDate, /^\\d{4}-\\d{2}-\\d{2}$/, "Appeal date must be YYYY-MM-DD");
+  assert.match(c.appealDate, /^\d{4}-\d{2}-\d{2}$/, "Appeal date must be YYYY-MM-DD");
   assert.equal(new Date(c.appealDate).toISOString().slice(0, 10), c.appealDate, "Invalid appeal date");
-  const docketDateKey = c.appealNumber.replace(/\\s+/g, "").trim() + ":" + c.appealDate;
+  const docketDateKey = c.appealNumber.replace(/\s+/g, "").trim() + ":" + c.appealDate;
   assert.ok(!docketDates.has(docketDateKey), "Duplicate appeal docket and hearing date");
   docketDates.add(docketDateKey);
   assert.ok(["research_only", "verified"].includes(c.status), "Unknown verification status");
