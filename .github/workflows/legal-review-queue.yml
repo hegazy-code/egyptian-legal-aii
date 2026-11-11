@@ -1,0 +1,22 @@
+name: Legal review queue integrity
+
+on:
+  pull_request:
+    paths:
+      - "docs/review-queue/**"
+      - ".github/workflows/legal-review-queue.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-review-queue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate isolated draft manifest
+        run: node docs/review-queue/check-review-manifest.mjs
