@@ -9,7 +9,8 @@
     "Research-only manifest. Never ingest or publish automatically.",
     "A-12 excluded: in absentia retrial does not meet appeal requirement.",
     "R-06 and overlapping R-18 excluded.",
-    "Not checked against live DB, not verified against official judgments."
+    "Not checked against live DB, not verified against official judgments.",
+    "R-06 in followup-2 is corroboration of R-04 and excluded from 20 unique stories."
   ],
   "records": [
     {
@@ -303,18 +304,6 @@
     {
       "review_id": "story-06",
       "category": "real_world",
-      "source_id": "R-06",
-      "title": "قضية قتل وإخفاء جثمان بمدينة 15 مايو: توثيق ثانٍ للمرشح R-04",
-      "source_file": "2026-11-11-followup-2.md",
-      "status": "draft",
-      "verification_status": "needs_review",
-      "publishable": false,
-      "approved": false,
-      "primary_source_checked": false
-    },
-    {
-      "review_id": "story-07",
-      "category": "real_world",
       "source_id": "R-07",
       "title": "قضية «طبيب الساحل»: الاستدراج والقتل والسرقة بالإكراه",
       "source_file": "2026-11-11-followup-4.md",
@@ -325,7 +314,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-08",
+      "review_id": "story-07",
       "category": "real_world",
       "source_id": "R-08",
       "title": "«قضية الآثار الكبرى» بين الاتجار بالآثار وغسل الأموال",
@@ -337,7 +326,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-09",
+      "review_id": "story-08",
       "category": "real_world",
       "source_id": "R-09",
       "title": "مقتل زوجة وإلقاء جثمانها في ترعة الهويس بالإسكندرية",
@@ -349,7 +338,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-10",
+      "review_id": "story-09",
       "category": "real_world",
       "source_id": "R-10",
       "title": "حفر بحثًا عن الآثار في الأقصر: البراءة تصمد أمام طعن النيابة",
@@ -361,7 +350,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-11",
+      "review_id": "story-10",
       "category": "real_world",
       "source_id": "R-11",
       "title": "حكم في قضية مقتل جار بالوراق",
@@ -373,7 +362,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-12",
+      "review_id": "story-11",
       "category": "real_world",
       "source_id": "R-12",
       "title": "براءة متهم وحبس آخر مع وقف التنفيذ في قضية وفاة سيدة ببورسعيد",
@@ -385,7 +374,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-13",
+      "review_id": "story-12",
       "category": "real_world",
       "source_id": "R-13",
       "title": "قضية وفاة طفلة في العطارين بالإسكندرية",
@@ -397,7 +386,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-14",
+      "review_id": "story-13",
       "category": "real_world",
       "source_id": "R-14",
       "title": "جريمة قتل في السنبلاوين وأحكام متفاوتة على ثلاثة متهمين",
@@ -409,7 +398,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-15",
+      "review_id": "story-14",
       "category": "real_world",
       "source_id": "R-15",
       "title": "وفاة شاب أسفل قطار بالإسكندرية: براءة من تهمة القتل العمد",
@@ -421,7 +410,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-16",
+      "review_id": "story-15",
       "category": "real_world",
       "source_id": "R-16",
       "title": "مقتل طليقة في المنتزه ثان بالإسكندرية",
@@ -433,7 +422,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-17",
+      "review_id": "story-16",
       "category": "real_world",
       "source_id": "R-17",
       "title": "مقتل شقيق في مركز الجمالية بالدقهلية",
@@ -445,7 +434,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-18",
+      "review_id": "story-17",
       "category": "real_world",
       "source_id": "R-17",
       "title": "قضية قتل طفل أثناء سرقة توك توك في سمالوط",
@@ -457,7 +446,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-19",
+      "review_id": "story-18",
       "category": "real_world",
       "source_id": "R-18",
       "title": "مقتل نجل سفير سابق في الشيخ زايد",
@@ -469,7 +458,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-20",
+      "review_id": "story-19",
       "category": "real_world",
       "source_id": "R-19",
       "title": "«أبو حزام»: من المؤبد إلى البراءة في النقض",
@@ -481,7 +470,7 @@
       "primary_source_checked": false
     },
     {
-      "review_id": "story-21",
+      "review_id": "story-20",
       "category": "real_world",
       "source_id": "R-20",
       "title": "اتهامات سرقة وقتل شخص في الهرم: من الإحالة إلى نظر الاستئناف",
