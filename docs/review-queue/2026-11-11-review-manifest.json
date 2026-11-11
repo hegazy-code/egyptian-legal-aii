@@ -10,7 +10,8 @@
     "A-12 excluded: in absentia retrial does not meet appeal requirement.",
     "R-06 and overlapping R-18 excluded.",
     "Not checked against live DB, not verified against official judgments.",
-    "R-06 in followup-2 is corroboration of R-04 and excluded from 20 unique stories."
+    "R-06 in followup-2 is corroboration of R-04 and excluded from 20 unique stories.",
+    "A-21 substantive draft added; similar legal principle to A-02 but different docket; still requires full duplicate check."
   ],
   "records": [
     {
@@ -475,6 +476,22 @@
       "source_id": "R-20",
       "title": "اتهامات سرقة وقتل شخص في الهرم: من الإحالة إلى نظر الاستئناف",
       "source_file": "2026-11-11-followup-10.md",
+      "status": "draft",
+      "verification_status": "needs_review",
+      "publishable": false,
+      "approved": false,
+      "primary_source_checked": false
+    },
+    {
+      "review_id": "appeal-20",
+      "category": "appeal",
+      "source_id": "A-21",
+      "title": "البراءة من اتهام جمركي ثم تعويض مدني أبطله النقض",
+      "source_file": "2026-11-11-appeal-A21.md",
+      "court": "محكمة النقض",
+      "docket": "14290 لسنة 60 قضائية",
+      "judgment_date": "1992-12-16",
+      "source_url": "https://mksegypt.org/ar/court-of-cassation-rulings/22121",
       "status": "draft",
       "verification_status": "needs_review",
       "publishable": false,
