@@ -40,6 +40,21 @@ jobs:
           assert {"laws", "articles", "judgments", "documents"} <= set(i.get_table_names())
           PY
       - run: python -m scripts.import_library_inventory ../data/inventory/drive_batch_01.json --dry-run
+      - name: Test real import and idempotent re-import on disposable SQLite database
+        run: |
+          python -m scripts.import_library_inventory ../data/inventory/drive_batch_01.json --apply
+          python -m scripts.import_library_inventory ../data/inventory/drive_batch_01.json --apply
+          python - <<'PY'
+          from sqlalchemy import create_engine, func, select
+          from sqlalchemy.orm import Session
+          from app.models.library_catalog import LibraryAsset
+          engine = create_engine("sqlite:///./legal_library_ci.db")
+          with Session(engine) as db:
+              total = db.scalar(select(func.count()).select_from(LibraryAsset))
+              assert total > 0, "No inventory rows imported"
+              assert db.scalar(select(func.count()).select_from(LibraryAsset).where(LibraryAsset.review_status != "unverified")) == 0
+              print("Idempotent catalog import verified:", total, "unverified files")
+          PY
 
   postgres:
     runs-on: ubuntu-latest
