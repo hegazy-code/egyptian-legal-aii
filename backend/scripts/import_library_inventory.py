@@ -45,12 +45,21 @@ def validate(records):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("inventory", type=Path)
+    parser.add_argument("inventory", type=Path, help="Flat JSON array or Drive batch JSON")
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--apply", action="store_true")
     args = parser.parse_args()
-    records = validate(json.loads(args.inventory.read_text(encoding="utf-8")))
+    raw = json.loads(args.inventory.read_text(encoding="utf-8"))
+    if isinstance(raw, dict) and "folders" in raw:
+        raw = [
+            item
+            for folder in raw["folders"]
+            for item in folder["items"]
+            if not item.get("is_folder")
+            and item.get("mime_type") != "application/vnd.google-apps.folder"
+        ]
+    records = validate(raw)
     if args.dry_run:
         print(f"Validated {len(records)} unique Drive items; database unchanged")
         return
