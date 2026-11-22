@@ -16,6 +16,7 @@ from app.rag.engine import GeminiUnavailableError, generate_answer
 from app.repositories.user_repository import ConversationRepository
 from app.schemas.legal import SearchResultItem
 from app.search.hybrid import hybrid_search
+from app.services.library_search import search_verified_library
 
 logger = logging.getLogger(__name__)
 
@@ -79,9 +80,25 @@ class ChatService:
         search_results = hybrid_search(self.db, expand_query(question), limit=40, legal_area=legal_area)
         search_results = rerank_for_question(search_results, question, limit=8)
 
-        # 4. RAG engine: call Gemini with grounded context, or fall back.
+        # 4. Only reviewed and rights-cleared library excerpts may enrich answers.
+        # Keep these separate from legacy article/judgment citation IDs.
+        reviewed_library_context = ""
         try:
-            raw = generate_answer(question, search_results, analysis, history)
+            excerpts = search_verified_library(self.db, question, limit=3)
+            reviewed_library_context = "\n\n".join(
+                f"العنوان: {item['title']} | المصدر: {item['source_url'] or 'غير متاح'} "
+                f"| الصفحة: {item['page_start'] or 'غير محددة'} "
+                f"| النوع: {item['authority']}\nالنص: {item['text'][:1200]}"
+                for item in excerpts
+            )
+        except Exception as exc:
+            # During staged deployment, the new catalog tables may not yet exist.
+            logger.warning("Reviewed library search unavailable: %s", exc)
+            self.db.rollback()
+
+        # 5. RAG engine: call Gemini with grounded context, or fall back.
+        try:
+            raw = generate_answer(question, search_results, analysis, history, reviewed_library_context=reviewed_library_context)
             answer_dict = answer_builder.parse_gemini_answer(raw)
             answer_dict = finalize_answer(answer_dict, search_results)
         except GeminiUnavailableError as exc:
