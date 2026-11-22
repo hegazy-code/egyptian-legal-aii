@@ -1,0 +1,663 @@
+{
+  "scope": "nested folders batch 1 of 8",
+  "parent_id": "1AyZ6vTp19eh4cmFIbERsgpWpOV01d_S4",
+  "folders": [
+    {
+      "folder_id": "1gyX33taRqvx3k1QD50zW_yi_cAmLwwuu",
+      "folder_title": "الاثبات",
+      "returned_count": 1,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1X7thqd0CIeSKsvgV3UlqscjFj8D8cGZO",
+          "title": "نسخة من قانون الإثبات.doc",
+          "mime_type": "application/msword",
+          "size": "155136",
+          "url": "https://docs.google.com/document/d/1X7thqd0CIeSKsvgV3UlqscjFj8D8cGZO/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1gyX33taRqvx3k1QD50zW_yi_cAmLwwuu",
+          "path": "موسوعة قوانين مصر/الاثبات/نسخة من قانون الإثبات.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+      "folder_title": "الأجراءات الجنائية",
+      "returned_count": 8,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1MooyMOYqtS0qpWnGj0ushx0M4o96OD2X",
+          "title": "نسخة من شرح قانون الاجراءات للاستاذ اسامة حسنين جزء 1.doc",
+          "mime_type": "application/msword",
+          "size": "162816",
+          "url": "https://docs.google.com/document/d/1MooyMOYqtS0qpWnGj0ushx0M4o96OD2X/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من شرح قانون الاجراءات للاستاذ اسامة حسنين جزء 1.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1mJsdNePlI8w-vo8IuuwcbAQ-BWEoN_Xp",
+          "title": "نسخة من قـــــــــــــــــانون الإجراءات الجنائية.doc",
+          "mime_type": "application/msword",
+          "size": "418304",
+          "url": "https://docs.google.com/document/d/1mJsdNePlI8w-vo8IuuwcbAQ-BWEoN_Xp/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من قـــــــــــــــــانون الإجراءات الجنائية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1waaHBP0lHG21g0r6XmYKGmvanhg1MOxY",
+          "title": "نسخة من شرح قانون الاجراءات جزء 1.doc",
+          "mime_type": "application/msword",
+          "size": "119808",
+          "url": "https://docs.google.com/document/d/1waaHBP0lHG21g0r6XmYKGmvanhg1MOxY/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من شرح قانون الاجراءات جزء 1.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1hi0KLs8asDk1e4YQWRr6QF02PiKSCMWy",
+          "title": "نسخة من شرح قانون الاجراءات جزء 2.doc",
+          "mime_type": "application/msword",
+          "size": "444928",
+          "url": "https://docs.google.com/document/d/1hi0KLs8asDk1e4YQWRr6QF02PiKSCMWy/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من شرح قانون الاجراءات جزء 2.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1TUkad--SPOMESWvCqExSrZYzh4iHiR9E",
+          "title": "نسخة من القانون رقم 11 لسنة2017  لتعديل بعض احكام الاجراءات الجنائية.pdf",
+          "mime_type": "application/pdf",
+          "size": "221150",
+          "url": "https://drive.google.com/file/d/1TUkad--SPOMESWvCqExSrZYzh4iHiR9E/view?usp=drivesdk",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من القانون رقم 11 لسنة2017  لتعديل بعض احكام الاجراءات الجنائية.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1l7xiedparvhl816JmCbC-7e0si3oYcMd",
+          "title": "نسخة من شرح قانون الاجراءات الجنائية للاستائ محمود سليمان.pdf",
+          "mime_type": "application/pdf",
+          "size": "1611823",
+          "url": "https://drive.google.com/file/d/1l7xiedparvhl816JmCbC-7e0si3oYcMd/view?usp=drivesdk",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من شرح قانون الاجراءات الجنائية للاستائ محمود سليمان.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1MDVBKO1naI2SU0jmf6mp5LlSDuURSpNT",
+          "title": "نسخة من كود قانون الأجراءات الجنائية.doc",
+          "mime_type": "application/msword",
+          "size": "1200128",
+          "url": "https://docs.google.com/document/d/1MDVBKO1naI2SU0jmf6mp5LlSDuURSpNT/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من كود قانون الأجراءات الجنائية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "11u39ZfOhVxO2WcwxpWdSE8v-TUEmACMo",
+          "title": "نسخة من شرح قانون الاجراءات للاستاذ اسامة حسنين جزء 2.doc",
+          "mime_type": "application/msword",
+          "size": "452096",
+          "url": "https://docs.google.com/document/d/11u39ZfOhVxO2WcwxpWdSE8v-TUEmACMo/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1pKxeag7IPaDhhZHY5Ty-GQEyKFY0PAlq",
+          "path": "موسوعة قوانين مصر/الأجراءات الجنائية/نسخة من شرح قانون الاجراءات للاستاذ اسامة حسنين جزء 2.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1Riv48Hy6gmQwEM5fhaf7NC55lE9Iq2oT",
+      "folder_title": "الادارات القانونيه",
+      "returned_count": 1,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1SOI-NT8zNuewYlQCK3TxMKvSgdGgEY2Z",
+          "title": "نسخة من قانون  الإدارات القانونية.doc",
+          "mime_type": "application/msword",
+          "size": "97280",
+          "url": "https://docs.google.com/document/d/1SOI-NT8zNuewYlQCK3TxMKvSgdGgEY2Z/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1Riv48Hy6gmQwEM5fhaf7NC55lE9Iq2oT",
+          "path": "موسوعة قوانين مصر/الادارات القانونيه/نسخة من قانون  الإدارات القانونية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+      "folder_title": "الايجارات",
+      "returned_count": 13,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "10glOUD_M0VytDmEO3got_l8zONzyilc7",
+          "title": "الكتاب_الذهبي_الشامل_في_عقد_الإيجار_صيغ_قانونية_مذكرات_أحكام_نقض (1).pdf",
+          "mime_type": "application/pdf",
+          "size": "8800751",
+          "url": "https://drive.google.com/file/d/10glOUD_M0VytDmEO3got_l8zONzyilc7/view?usp=drivesdk",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/الكتاب_الذهبي_الشامل_في_عقد_الإيجار_صيغ_قانونية_مذكرات_أحكام_نقض (1).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1AAtA8SDiye0lg9J0xs6KCkhsMWLW6sLM",
+          "title": "نسخة من قانون47لسنة1977.doc",
+          "mime_type": "application/msword",
+          "size": "313856",
+          "url": "https://docs.google.com/document/d/1AAtA8SDiye0lg9J0xs6KCkhsMWLW6sLM/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من قانون47لسنة1977.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1bB6gx-mrIFwmgFJ_C3y-gu-gRcfIYyVT",
+          "title": "نسخة من قانون ايجار وبيع الاماكن.doc",
+          "mime_type": "application/msword",
+          "size": "308224",
+          "url": "https://docs.google.com/document/d/1bB6gx-mrIFwmgFJ_C3y-gu-gRcfIYyVT/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من قانون ايجار وبيع الاماكن.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1-AtaTIfy6392zfR1VfU5QTLjsMMaybQp",
+          "title": "نسخة من قانون رقم 6 لسنة 1997م بشأن تأجير الأماكن.doc",
+          "mime_type": "application/msword",
+          "size": "31232",
+          "url": "https://docs.google.com/document/d/1-AtaTIfy6392zfR1VfU5QTLjsMMaybQp/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من قانون رقم 6 لسنة 1997م بشأن تأجير الأماكن.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1ZlnpIH1QzSWTUNO-alffCshfN9S-YzB7",
+          "title": "نسخة من قانون رقم 14 لسنة 2001 بشأن تأجير الأماكن.doc",
+          "mime_type": "application/msword",
+          "size": "44544",
+          "url": "https://docs.google.com/document/d/1ZlnpIH1QzSWTUNO-alffCshfN9S-YzB7/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من قانون رقم 14 لسنة 2001 بشأن تأجير الأماكن.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "135Wju492ARQRKGWeYRc0ADNTHjHdq5yd",
+          "title": "نسخة من إيجارات 5 لسنة 1996.doc",
+          "mime_type": "application/msword",
+          "size": "34816",
+          "url": "https://docs.google.com/document/d/135Wju492ARQRKGWeYRc0ADNTHjHdq5yd/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من إيجارات 5 لسنة 1996.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1B5VHwu85s2h9uXbpA_U0zCDgjlBazXpk",
+          "title": "نسخة من قانون رقم 5 لسنة 1996م بشأن تأجير الأماكن.doc",
+          "mime_type": "application/msword",
+          "size": "35328",
+          "url": "https://docs.google.com/document/d/1B5VHwu85s2h9uXbpA_U0zCDgjlBazXpk/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من قانون رقم 5 لسنة 1996م بشأن تأجير الأماكن.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1o0wHk0XdNEIU9pX0UVDZe2fH-RZ8s5mg",
+          "title": "نسخة من قانون ايجارات 4 لسنة1996.doc",
+          "mime_type": "application/msword",
+          "size": "32256",
+          "url": "https://docs.google.com/document/d/1o0wHk0XdNEIU9pX0UVDZe2fH-RZ8s5mg/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من قانون ايجارات 4 لسنة1996.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1rhM2aPGLDd39OBvgU6aesLzRVTdV2UUX",
+          "title": "نسخة من قانون رقم 136 لسنة 1981 في شأن بعض الأحكام الخاصة بتأجير وبيع الأماكن وتنظيم العلاقة بين المؤجر والمستأجر.doc",
+          "mime_type": "application/msword",
+          "size": "65024",
+          "url": "https://docs.google.com/document/d/1rhM2aPGLDd39OBvgU6aesLzRVTdV2UUX/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من قانون رقم 136 لسنة 1981 في شأن بعض الأحكام الخاصة بتأجير وبيع الأماكن وتنظيم العلاقة بين المؤجر والمستأجر.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1UTVs4YiO1CdP2YRvpPFwAgm2AP5QSZ10",
+          "title": "نسخة من نموذج قانون ايجارات 6 لسنة 1996.doc",
+          "mime_type": "application/msword",
+          "size": "36352",
+          "url": "https://docs.google.com/document/d/1UTVs4YiO1CdP2YRvpPFwAgm2AP5QSZ10/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من نموذج قانون ايجارات 6 لسنة 1996.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1rJD3uA6RCcIvJdDH6Nt2F5rMuWzHTVc6",
+          "title": "نسخة من إيجار وبيع.doc",
+          "mime_type": "application/msword",
+          "size": "379392",
+          "url": "https://docs.google.com/document/d/1rJD3uA6RCcIvJdDH6Nt2F5rMuWzHTVc6/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من إيجار وبيع.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1zEhceaW5rCaCfwblmXOIz18CQSu0l9Uu",
+          "title": "نسخة من الايجارات136 لسنة1981.doc",
+          "mime_type": "application/msword",
+          "size": "88064",
+          "url": "https://docs.google.com/document/d/1zEhceaW5rCaCfwblmXOIz18CQSu0l9Uu/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من الايجارات136 لسنة1981.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1IYygq32as89ry_Htfw4SPg_fB8Wclpnm",
+          "title": "نسخة من ألايجارات والبيوع.doc",
+          "mime_type": "application/msword",
+          "size": "338944",
+          "url": "https://docs.google.com/document/d/1IYygq32as89ry_Htfw4SPg_fB8Wclpnm/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1A2dfu7u79rSHebXJsp0gkTuaw_u9QHAy",
+          "path": "موسوعة قوانين مصر/الايجارات/نسخة من ألايجارات والبيوع.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1ep51U2X1a_Fd1rpnnVo40kY6SyNKGUes",
+      "folder_title": "التجاره",
+      "returned_count": 1,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1oPTEFnrAhJ02J94YvPJ5I5owkYNTc0fn",
+          "title": "نسخة من قانون رقم 17 سنة 1999 بإصدار قانون التجارة.PDF",
+          "mime_type": "application/pdf",
+          "size": "4395617",
+          "url": "https://drive.google.com/file/d/1oPTEFnrAhJ02J94YvPJ5I5owkYNTc0fn/view?usp=drivesdk",
+          "parent_id": "1ep51U2X1a_Fd1rpnnVo40kY6SyNKGUes",
+          "path": "موسوعة قوانين مصر/التجاره/نسخة من قانون رقم 17 سنة 1999 بإصدار قانون التجارة.PDF",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1OzGTy2HmNI--TVO4TyyLARuavdlhwG3H",
+      "folder_title": "التحكيم",
+      "returned_count": 2,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1nTjgSsblQH3nPCOWF5vir92vSFTWwxs5",
+          "title": "نسخة من قانون التحكيم.doc",
+          "mime_type": "application/msword",
+          "size": "139776",
+          "url": "https://docs.google.com/document/d/1nTjgSsblQH3nPCOWF5vir92vSFTWwxs5/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1OzGTy2HmNI--TVO4TyyLARuavdlhwG3H",
+          "path": "موسوعة قوانين مصر/التحكيم/نسخة من قانون التحكيم.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "13S5eaFAoCbmiECpwiCelrYnPAWas0e7j",
+          "title": "نسخة من قانون رقم 27 لسنة 1994 بإصدار قانون في شأن التحكيم في المواد المدنية والتجارية.PDF",
+          "mime_type": "application/pdf",
+          "size": "431161",
+          "url": "https://drive.google.com/file/d/13S5eaFAoCbmiECpwiCelrYnPAWas0e7j/view?usp=drivesdk",
+          "parent_id": "1OzGTy2HmNI--TVO4TyyLARuavdlhwG3H",
+          "path": "موسوعة قوانين مصر/التحكيم/نسخة من قانون رقم 27 لسنة 1994 بإصدار قانون في شأن التحكيم في المواد المدنية والتجارية.PDF",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+      "folder_title": "الجمارك",
+      "returned_count": 7,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1UXwJByak8TT9lpl3O6VJkvfpvNJ-cW3R",
+          "title": "نسخة من مشروع قانون الجمارك الجديد.pdf",
+          "mime_type": "application/pdf",
+          "size": "2060979",
+          "url": "https://drive.google.com/file/d/1UXwJByak8TT9lpl3O6VJkvfpvNJ-cW3R/view?usp=drivesdk",
+          "parent_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+          "path": "موسوعة قوانين مصر/الجمارك/نسخة من مشروع قانون الجمارك الجديد.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "16LkcuMMKwoXtVoE2toaMCFW1M5y65UZD",
+          "title": "نسخة من قرار وزير التجارة والصناعة رقم 835 لسنة 2017.pdf",
+          "mime_type": "application/pdf",
+          "size": "313353",
+          "url": "https://drive.google.com/file/d/16LkcuMMKwoXtVoE2toaMCFW1M5y65UZD/view?usp=drivesdk",
+          "parent_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+          "path": "موسوعة قوانين مصر/الجمارك/نسخة من قرار وزير التجارة والصناعة رقم 835 لسنة 2017.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "17TLE_8zr-AkD74FMwrnTaz2gghjHLrlw",
+          "title": "نسخة من القانون رقم 121 ل82  سجل المستوردين.pdf",
+          "mime_type": "application/pdf",
+          "size": "167088",
+          "url": "https://drive.google.com/file/d/17TLE_8zr-AkD74FMwrnTaz2gghjHLrlw/view?usp=drivesdk",
+          "parent_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+          "path": "موسوعة قوانين مصر/الجمارك/نسخة من القانون رقم 121 ل82  سجل المستوردين.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1GeKAftwSYGaRmSx-13CQ2-sJiiz2dF-n",
+          "title": "نسخة من القانون رقم 7 ل2017 بتعديل أحكام سجل المستوردين.pdf",
+          "mime_type": "application/pdf",
+          "size": "726357",
+          "url": "https://drive.google.com/file/d/1GeKAftwSYGaRmSx-13CQ2-sJiiz2dF-n/view?usp=drivesdk",
+          "parent_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+          "path": "موسوعة قوانين مصر/الجمارك/نسخة من القانون رقم 7 ل2017 بتعديل أحكام سجل المستوردين.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1YHUlkg66KtwtCqA6LITYQbiCcIuP7YCI",
+          "title": "نسخة من القانون 155 لسنة 2002 بشأن تنمية التصدير.pdf",
+          "mime_type": "application/pdf",
+          "size": "81666",
+          "url": "https://drive.google.com/file/d/1YHUlkg66KtwtCqA6LITYQbiCcIuP7YCI/view?usp=drivesdk",
+          "parent_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+          "path": "موسوعة قوانين مصر/الجمارك/نسخة من القانون 155 لسنة 2002 بشأن تنمية التصدير.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Mtt8YH6I08jWUttCZKM5Vzz65m6PSeTL",
+          "title": "نسخة من القانون 118 لسنة 75 في شأن الاستيراد والتصدير.pdf",
+          "mime_type": "application/pdf",
+          "size": "67616",
+          "url": "https://drive.google.com/file/d/1Mtt8YH6I08jWUttCZKM5Vzz65m6PSeTL/view?usp=drivesdk",
+          "parent_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+          "path": "موسوعة قوانين مصر/الجمارك/نسخة من القانون 118 لسنة 75 في شأن الاستيراد والتصدير.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1lFlZKSXO0bREl2pAVhntPGdIwFlKZW0s",
+          "title": "نسخة من قانون الجمارك وفقاً لأحدث تعديلاته.pdf",
+          "mime_type": "application/pdf",
+          "size": "165512",
+          "url": "https://drive.google.com/file/d/1lFlZKSXO0bREl2pAVhntPGdIwFlKZW0s/view?usp=drivesdk",
+          "parent_id": "1IT3tBlPv9vk_u_sc6iwYSdWsZNDJaIHC",
+          "path": "موسوعة قوانين مصر/الجمارك/نسخة من قانون الجمارك وفقاً لأحدث تعديلاته.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1O666mMLKMTz8wzQ-yvWJUUC3av_w30Fq",
+      "folder_title": "الحجز الاداري",
+      "returned_count": 1,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1Kc7eA_-__s-6nl8JJgPUyaTaQ1I5qeFK",
+          "title": "نسخة من قانون الحجز الإدارى.doc",
+          "mime_type": "application/msword",
+          "size": "206336",
+          "url": "https://docs.google.com/document/d/1Kc7eA_-__s-6nl8JJgPUyaTaQ1I5qeFK/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1O666mMLKMTz8wzQ-yvWJUUC3av_w30Fq",
+          "path": "موسوعة قوانين مصر/الحجز الاداري/نسخة من قانون الحجز الإدارى.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+      "folder_title": "الخدمة العسكرية",
+      "returned_count": 7,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1kS-6sa36_EmLKbSwRG52KHNlfQcdORUV",
+          "title": "نسخة من رسوم القضائيه.doc",
+          "mime_type": "application/msword",
+          "size": "545280",
+          "url": "https://docs.google.com/document/d/1kS-6sa36_EmLKbSwRG52KHNlfQcdORUV/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+          "path": "موسوعة قوانين مصر/الخدمة العسكرية/نسخة من رسوم القضائيه.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1KrZFvXQkGa969aXNj9_W58sMvPnrbSq-",
+          "title": "نسخة من قانون الاحكام العسكريه.doc",
+          "mime_type": "application/msword",
+          "size": "207360",
+          "url": "https://docs.google.com/document/d/1KrZFvXQkGa969aXNj9_W58sMvPnrbSq-/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+          "path": "موسوعة قوانين مصر/الخدمة العسكرية/نسخة من قانون الاحكام العسكريه.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1360rhBtsV5qKbV7s6pwwYZk0yKMWhPhd",
+          "title": "نسخة من قانون الخدمة العسكرية.doc",
+          "mime_type": "application/msword",
+          "size": "139776",
+          "url": "https://docs.google.com/document/d/1360rhBtsV5qKbV7s6pwwYZk0yKMWhPhd/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+          "path": "موسوعة قوانين مصر/الخدمة العسكرية/نسخة من قانون الخدمة العسكرية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1pC8U-Y3_ti4RnRcMA9Zfa6D7c9UDtex1",
+          "title": "نسخة من قانون الخدمة العسكرية والوطنية المصرى.doc",
+          "mime_type": "application/msword",
+          "size": "184320",
+          "url": "https://docs.google.com/document/d/1pC8U-Y3_ti4RnRcMA9Zfa6D7c9UDtex1/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+          "path": "موسوعة قوانين مصر/الخدمة العسكرية/نسخة من قانون الخدمة العسكرية والوطنية المصرى.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1y-awW17j3bU5S5R2RQ_6SP4uTISIjXM1",
+          "title": "نسخة من الخدمة العسكرية والوطنية.doc",
+          "mime_type": "application/msword",
+          "size": "134793",
+          "url": "https://docs.google.com/document/d/1y-awW17j3bU5S5R2RQ_6SP4uTISIjXM1/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+          "path": "موسوعة قوانين مصر/الخدمة العسكرية/نسخة من الخدمة العسكرية والوطنية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1mRPL0kF-rfatErFpGm2G6z-oVVv-C10t",
+          "title": "نسخة من قانون رقم 152 لسنة  2009بتعديل قانون الخدمة العسكرية.doc",
+          "mime_type": "application/msword",
+          "size": "70144",
+          "url": "https://docs.google.com/document/d/1mRPL0kF-rfatErFpGm2G6z-oVVv-C10t/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+          "path": "موسوعة قوانين مصر/الخدمة العسكرية/نسخة من قانون رقم 152 لسنة  2009بتعديل قانون الخدمة العسكرية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "11rNOvOxFEymUDEzL2LW7oRr1hVMXj1RO",
+          "title": "نسخة من تعديل قانون الأحكام العسكرية 2014.docx",
+          "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "size": "14277",
+          "url": "https://docs.google.com/document/d/11rNOvOxFEymUDEzL2LW7oRr1hVMXj1RO/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dnKeRxjzMuvs7q2Am6UIRdJBY4vDhaVt",
+          "path": "موسوعة قوانين مصر/الخدمة العسكرية/نسخة من تعديل قانون الأحكام العسكرية 2014.docx",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1dQRiiSS1zu5v7kWx3uHjBKm9quetuB3V",
+      "folder_title": "الخمر",
+      "returned_count": 3,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1wEvcCgGoWxm2x4CrQ7IE9vvO49wKORtG",
+          "title": "نسخة من قانون الخمر.doc",
+          "mime_type": "application/msword",
+          "size": "61440",
+          "url": "https://docs.google.com/document/d/1wEvcCgGoWxm2x4CrQ7IE9vvO49wKORtG/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dQRiiSS1zu5v7kWx3uHjBKm9quetuB3V",
+          "path": "موسوعة قوانين مصر/الخمر/نسخة من قانون الخمر.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1nD55QS9uLOaGfoyAt8NtZczPVyCmHnWN",
+          "title": "نسخة من حظر شرب الخمور.doc",
+          "mime_type": "application/msword",
+          "size": "43520",
+          "url": "https://docs.google.com/document/d/1nD55QS9uLOaGfoyAt8NtZczPVyCmHnWN/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dQRiiSS1zu5v7kWx3uHjBKm9quetuB3V",
+          "path": "موسوعة قوانين مصر/الخمر/نسخة من حظر شرب الخمور.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1TiL5rcif2lqxGnwNfzKFcV6bzZ1-2yci",
+          "title": "نسخة من حظر شرب الخمر.doc",
+          "mime_type": "application/msword",
+          "size": "39561",
+          "url": "https://docs.google.com/document/d/1TiL5rcif2lqxGnwNfzKFcV6bzZ1-2yci/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1dQRiiSS1zu5v7kWx3uHjBKm9quetuB3V",
+          "path": "موسوعة قوانين مصر/الخمر/نسخة من حظر شرب الخمر.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "11ANzmst6Wy8vY50otKZcwPGmKAgjM0lC",
+      "folder_title": "الدستور",
+      "returned_count": 6,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1rCKoedqsT6mYKdc_5Cap8r9syW-5Ho3h",
+          "title": "نسخة من دستوري.doc",
+          "mime_type": "application/msword",
+          "size": "308736",
+          "url": "https://docs.google.com/document/d/1rCKoedqsT6mYKdc_5Cap8r9syW-5Ho3h/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "11ANzmst6Wy8vY50otKZcwPGmKAgjM0lC",
+          "path": "موسوعة قوانين مصر/الدستور/نسخة من دستوري.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Y7_4iQPTUW69Zs7XM_VB5dea6s-giZ6o",
+          "title": "نسخة من الدستور المصري.doc",
+          "mime_type": "application/msword",
+          "size": "330889",
+          "url": "https://docs.google.com/document/d/1Y7_4iQPTUW69Zs7XM_VB5dea6s-giZ6o/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "11ANzmst6Wy8vY50otKZcwPGmKAgjM0lC",
+          "path": "موسوعة قوانين مصر/الدستور/نسخة من الدستور المصري.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Mo2uFWF37rymBeIL4SNrf_MN-aYa-QJj",
+          "title": "نسخة من الدستور.doc",
+          "mime_type": "application/msword",
+          "size": "119808",
+          "url": "https://docs.google.com/document/d/1Mo2uFWF37rymBeIL4SNrf_MN-aYa-QJj/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "11ANzmst6Wy8vY50otKZcwPGmKAgjM0lC",
+          "path": "موسوعة قوانين مصر/الدستور/نسخة من الدستور.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "193rXWB091sbjFn6gA_zqobpiuaWYUDF2",
+          "title": "نسخة من المحكمة الدستورية.doc",
+          "mime_type": "application/msword",
+          "size": "86153",
+          "url": "https://docs.google.com/document/d/193rXWB091sbjFn6gA_zqobpiuaWYUDF2/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "11ANzmst6Wy8vY50otKZcwPGmKAgjM0lC",
+          "path": "موسوعة قوانين مصر/الدستور/نسخة من المحكمة الدستورية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1oX95YWYz7l6evspMME4RF7Mh4U1SGKwn",
+          "title": "نسخة من المحكمه الدستوريه.doc",
+          "mime_type": "application/msword",
+          "size": "100352",
+          "url": "https://docs.google.com/document/d/1oX95YWYz7l6evspMME4RF7Mh4U1SGKwn/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "11ANzmst6Wy8vY50otKZcwPGmKAgjM0lC",
+          "path": "موسوعة قوانين مصر/الدستور/نسخة من المحكمه الدستوريه.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1YFb8qQnaez1vz59M6pWSnUknRpLMbtjG",
+          "title": "نسخة من دستورية.doc",
+          "mime_type": "application/msword",
+          "size": "110080",
+          "url": "https://docs.google.com/document/d/1YFb8qQnaez1vz59M6pWSnUknRpLMbtjG/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "11ANzmst6Wy8vY50otKZcwPGmKAgjM0lC",
+          "path": "موسوعة قوانين مصر/الدستور/نسخة من دستورية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1Ugets9oM-sczbTa4FdUIpYXYf5NvpwH0",
+      "folder_title": "الرسوم القضائيه",
+      "returned_count": 1,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1I3e09pbzKEfGregAg4LQ65GLhyxhBf7B",
+          "title": "نسخة من قانون رقم 6 لسنة 1991 بشأن رسوم التوثيق والشهر.doc",
+          "mime_type": "application/msword",
+          "size": "48128",
+          "url": "https://docs.google.com/document/d/1I3e09pbzKEfGregAg4LQ65GLhyxhBf7B/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1Ugets9oM-sczbTa4FdUIpYXYf5NvpwH0",
+          "path": "موسوعة قوانين مصر/الرسوم القضائيه/نسخة من قانون رقم 6 لسنة 1991 بشأن رسوم التوثيق والشهر.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    }
+  ]
+}
