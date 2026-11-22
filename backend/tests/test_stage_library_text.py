@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from app.models import Base
 from app.models.library_catalog import LibraryAsset, LibraryTextChunk
-from app.scripts.stage_library_text import stage
+from scripts.stage_library_text import stage
 from app.services.library_search import search_verified_library
 
 
