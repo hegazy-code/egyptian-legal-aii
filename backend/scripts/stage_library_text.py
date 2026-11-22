@@ -28,7 +28,8 @@ def stage(db, external_file_id: str, path: Path, apply: bool = False) -> dict:
         raise ValueError("Chunks already exist; manual review required before replacement")
     if not path.is_file() or path.stat().st_size > 30_000_000:
         raise ValueError("Missing file or file exceeds 30 MB")
-    data_hash = hashlib.file_digest(path.open("rb"), "sha256").hexdigest()
+    with path.open("rb") as stream:
+        data_hash = hashlib.file_digest(stream, "sha256").hexdigest()
     pages = extract_pages(path)
     chunks = chunk_pages(pages)
     if not chunks:
