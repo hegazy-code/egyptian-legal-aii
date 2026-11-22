@@ -13,6 +13,8 @@ on:
       - 'backend/tests/test_library_extraction.py'
       - 'backend/scripts/stage_library_text.py'
       - 'backend/tests/test_stage_library_text.py'
+      - 'backend/app/services/chat_service.py'
+      - 'backend/app/rag/engine.py'
       - 'backend/requirements-dev.txt'
       - '.github/workflows/legal-library-catalog.yml'
   push:
