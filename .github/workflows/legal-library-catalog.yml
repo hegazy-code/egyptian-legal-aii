@@ -1,0 +1,69 @@
+name: Legal Library Catalog CI
+on:
+  pull_request:
+    paths:
+      - 'backend/app/models/library_catalog.py'
+      - 'backend/app/models/__init__.py'
+      - 'backend/migrations/versions/b7c8d9e0f1a2_legal_library_catalog.py'
+      - 'backend/scripts/import_library_inventory.py'
+      - 'backend/tests/test_library_inventory.py'
+      - '.github/workflows/legal-library-catalog.yml'
+  push:
+    branches: [feature/legal-library-catalog]
+jobs:
+  sqlite:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: sqlite:///./legal_library_ci.db
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pytest tests/test_library_inventory.py -q
+      - run: python -m alembic upgrade head
+      - name: Verify tables and constraints
+        run: |
+          python - <<'PY'
+          from sqlalchemy import create_engine, inspect
+          e = create_engine("sqlite:///./legal_library_ci.db")
+          i = inspect(e)
+          expected = {"library_assets", "library_text_chunks", "legal_commentaries", "appeal_records", "legal_templates"}
+          assert expected <= set(i.get_table_names())
+          assert any(c["name"] == "external_file_id" for c in i.get_columns("library_assets"))
+          assert {"laws", "articles", "judgments", "documents"} <= set(i.get_table_names())
+          PY
+      - run: python -m scripts.import_library_inventory ../data/inventory/drive_batch_01.json --dry-run
+
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: catalog
+          POSTGRES_PASSWORD: catalog_ci_only
+          POSTGRES_DB: catalog_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U catalog -d catalog_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql+psycopg://catalog:catalog_ci_only@localhost:5432/catalog_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m alembic upgrade head
+      - run: python -m pytest tests/test_library_inventory.py -q
