@@ -10,6 +10,7 @@ depends_on = None
 
 def upgrade():
     op.create_table("library_assets",
+        sa.UniqueConstraint("provider", "external_file_id", name="uq_library_asset_provider_file"),
         sa.Column("provider", sa.String(30), nullable=False),
         sa.Column("external_file_id", sa.String(255), nullable=False),
         sa.Column("parent_external_id", sa.String(255), nullable=True),
@@ -30,6 +31,7 @@ def upgrade():
     )
     op.create_index("ix_library_assets_id", "library_assets", ["id"])
     op.create_table("library_text_chunks",
+        sa.UniqueConstraint("asset_id", "chunk_index", name="uq_library_chunk_index"),
         sa.Column("asset_id", sa.String(36), sa.ForeignKey("library_assets.id"), nullable=False),
         sa.Column("chunk_index", sa.Integer(), nullable=False),
         sa.Column("page_start", sa.Integer(), nullable=True),
@@ -84,9 +86,7 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     )
     op.create_index("ix_legal_templates_id", "legal_templates", ["id"])
-    op.create_unique_constraint("uq_library_asset_provider_file", "library_assets", ["provider", "external_file_id"])
     op.create_index("ix_library_asset_category_status", "library_assets", ["category", "review_status"])
-    op.create_unique_constraint("uq_library_chunk_index", "library_text_chunks", ["asset_id", "chunk_index"])
 
 
 def downgrade():
