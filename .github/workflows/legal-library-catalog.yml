@@ -9,6 +9,9 @@ on:
       - 'backend/tests/test_library_inventory.py'
       - 'backend/tests/test_library_search.py'
       - 'backend/app/services/library_search.py'
+      - 'backend/app/services/library_extraction.py'
+      - 'backend/tests/test_library_extraction.py'
+      - 'backend/requirements-dev.txt'
       - '.github/workflows/legal-library-catalog.yml'
   push:
     branches: [feature/legal-library-catalog]
@@ -25,8 +28,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install -r requirements.txt pytest
-      - run: python -m pytest tests/test_library_inventory.py tests/test_library_search.py -q
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest tests/test_library_inventory.py tests/test_library_search.py tests/test_library_extraction.py -q
       - run: python -m alembic upgrade head
       - name: Verify tables and constraints
         run: |
@@ -81,6 +84,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install -r requirements.txt pytest
+      - run: python -m pip install -r requirements-dev.txt
       - run: python -m alembic upgrade head
-      - run: python -m pytest tests/test_library_inventory.py tests/test_library_search.py -q
+      - run: python -m pytest tests/test_library_inventory.py tests/test_library_search.py tests/test_library_extraction.py -q
