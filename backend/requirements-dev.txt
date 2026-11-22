@@ -1,3 +1,6 @@
 # Dev/test-only deps -- not needed to run the app, only to run backend/tests/
 -r requirements.txt
 pytest>=8.0
+pypdf>=5.0
+python-docx>=1.1
+reportlab>=4.0
