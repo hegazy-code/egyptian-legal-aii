@@ -239,12 +239,15 @@ def generate_answer(
     context_results: List[SearchResultItem],
     analysis: Optional[Dict[str, Any]] = None,
     conversation_history: Optional[List[Dict[str, str]]] = None,
+    reviewed_library_context: str = "",
 ) -> str:
     """
     Calls Gemini to produce a structured JSON answer matching the 8-section
     LegalAnswerOut schema. Returns the raw JSON string from the model.
     """
     context_block = build_context_block(context_results)
+    if reviewed_library_context:
+        context_block += "\n\nمقتطفات مكتبة مراجعة (ليست بالضرورة نصوصًا تشريعية سارية):\n" + reviewed_library_context[:8000]
 
     analysis_block = ""
     if analysis:
