@@ -9,6 +9,7 @@ Does not download documents, modify records, or expose credentials.
 import argparse
 import json
 from collections import Counter
+from sqlalchemy import inspect
 from pathlib import Path
 
 from sqlalchemy import func
@@ -50,6 +51,10 @@ def main():
     paths, items, duplicates, temporary = inventory_files(args.inventory_dir)
     print(f"Manifests: {len(paths)}; unique source files: {len(items)}; repeated IDs: {duplicates}; temporary files excluded: {temporary}")
     with SessionLocal() as db:
+        tables = set(inspect(db.get_bind()).get_table_names())
+        required = {"library_assets", "library_text_chunks"}
+        if not required.issubset(tables):
+            raise SystemExit("Catalog migration not applied to this database; no changes made")
         existing = {
             row.external_file_id: row
             for row in db.query(LibraryAsset).filter(LibraryAsset.provider == "google_drive").all()
