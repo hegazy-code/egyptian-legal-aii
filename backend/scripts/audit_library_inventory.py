@@ -47,9 +47,13 @@ def inventory_files(root: Path):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("inventory_dir", type=Path)
+    parser.add_argument("--manifest-only", action="store_true", help="Inspect staged inventory without connecting to a database")
     args = parser.parse_args()
     paths, items, duplicates, temporary = inventory_files(args.inventory_dir)
     print(f"Manifests: {len(paths)}; unique source files: {len(items)}; repeated IDs: {duplicates}; temporary files excluded: {temporary}")
+    if args.manifest_only:
+        print("Manifest-only mode: no database accessed; no changes made")
+        return
     with SessionLocal() as db:
         tables = set(inspect(db.get_bind()).get_table_names())
         required = {"library_assets", "library_text_chunks"}
