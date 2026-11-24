@@ -8,7 +8,6 @@ The model is explicitly forbidden from inventing laws, articles, judgments,
 or citations -- if the retrieved context is insufficient, answer from your comprehensive knowledge of Egyptian law -- explain what the law says, the exact procedures, where to go, and what will happen step by step. Never invent fake article numbers.
 """
 import logging
-import time
 from typing import Any, Dict, List, Optional
 
 from app.config import settings
@@ -132,7 +131,11 @@ def _get_client():
     from google.genai import types
     return genai.Client(
         api_key=settings.GEMINI_API_KEY,
-        http_options=types.HttpOptions(api_version="v1beta"),
+        http_options=types.HttpOptions(
+            api_version="v1beta",
+            timeout=8000,
+            retry_options=types.HttpRetryOptions(attempts=1),
+        ),
     )
 
 
@@ -143,32 +146,16 @@ def call_gemini_with_retry(
     max_output_tokens: int = 8192,
     model: Optional[str] = None,
 ) -> str:
-    """
-    Calls Gemini via google-genai. On transient errors (429 rate-limit,
-    500/503 overloaded) it retries the SAME model with exponential backoff
-    (1s then 2s), then automatically falls back to more stable models before
-    giving up.
-
-    Returns the raw text of the model's response. Raises GeminiUnavailableError
-    only if the API key is missing, the request is rejected (auth / bad request),
-    or every model stays overloaded after all retries.
-    """
-    from google.genai import types
+    """Try the primary model and one fallback, without retrying exhausted quota."""
+    import httpx
     from google.genai import errors as genai_errors
+    from google.genai import types
 
-    client = _get_client()  # raises GeminiUnavailableError only if the key is missing
-
-    # Try the configured model first, then stable fallbacks (deduped, in order).
     primary = model or settings.GEMINI_MODEL
-    candidates = [primary, "gemini-2.5-flash", "gemini-flash-latest"]
-    models_to_try = list(dict.fromkeys([m for m in candidates if m]))
-
-    max_attempts_per_model = 3
-    last_error: Optional[Exception] = None
-
-    for model_name in models_to_try:
-        delay = 1.0
-        for attempt in range(1, max_attempts_per_model + 1):
+    candidates = dict.fromkeys((primary, "gemini-flash-latest"))
+    last_error = None
+    with _get_client() as client:
+        for model_name in candidates:
             try:
                 response = client.models.generate_content(
                     model=model_name,
@@ -179,42 +166,18 @@ def call_gemini_with_retry(
                         max_output_tokens=max_output_tokens,
                     ),
                 )
-                text = response.text or ""
-                if text:
-                    return text
-                last_error = RuntimeError("Gemini returned an empty response")
-            except genai_errors.APIError as exc:  # type: ignore[attr-defined]
-                last_error = exc
-                code = getattr(exc, "code", None)
-                if code in (429, 500, 503):
-                    # transient overload -> back off and retry the same model
-                    if attempt < max_attempts_per_model:
-                        logger.warning(
-                            "Gemini %s on %s (attempt %s/%s); backing off %.0fs...",
-                            code, model_name, attempt, max_attempts_per_model, delay,
-                        )
-                        time.sleep(delay)
-                        delay = min(delay * 2, 8.0)
-                        continue
-                    logger.warning("Gemini %s persisted on %s; trying next model...", code, model_name)
-                    break  # exhausted this model -> next fallback model
-                if code == 404:
-                    logger.warning("Model %s not found (404); trying next model...", model_name)
-                    break  # bad model name -> next fallback model
-                # auth / bad request / other -> a real problem, surface it
-                raise GeminiUnavailableError(f"Gemini API error {code}: {exc}") from exc
-            except Exception as exc:  # pragma: no cover - defensive
-                last_error = exc
-                if attempt < max_attempts_per_model:
-                    logger.warning("Gemini unexpected error on %s: %s; retrying...", model_name, exc)
-                    time.sleep(delay)
-                    delay = min(delay * 2, 8.0)
-                    continue
-                break  # try next model
-
-    raise GeminiUnavailableError(
-        f"Gemini is overloaded/unavailable after retries across models: {last_error}"
-    )
+                if response.text:
+                    return response.text
+                last_error = "empty response"
+            except genai_errors.APIError as exc:
+                last_error = f"HTTP {exc.code}"
+                if exc.code not in {404, 429, 500, 502, 503, 504}:
+                    raise GeminiUnavailableError(last_error) from exc
+                logger.warning("Gemini %s on %s", last_error, model_name)
+            except httpx.TransportError as exc:
+                last_error = type(exc).__name__
+                logger.warning("Gemini %s on %s", last_error, model_name)
+    raise GeminiUnavailableError(f"Gemini did not answer: {last_error}")
 
 
 def build_context_block(results: List[SearchResultItem]) -> str:

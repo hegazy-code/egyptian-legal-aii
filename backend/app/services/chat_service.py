@@ -12,7 +12,6 @@ from sqlalchemy.orm import Session
 from app.models.system import AnswerCitation
 from app.models.users import Conversation, Message
 from app.rag import answer_builder
-from app.rag.analyzer import analyze_question
 from app.rag.engine import GeminiUnavailableError, generate_answer
 from app.repositories.user_repository import ConversationRepository
 from app.schemas.legal import SearchResultItem
@@ -72,13 +71,10 @@ class ChatService:
         # 1. Fetch conversation history for context.
         history = self._get_history(conversation.id)
 
-        # 2. Analyzer: understand the question and extract legal_area.
-        analysis = analyze_question(question)
-        legal_area = analysis.get("legal_area") or None
-
-        # 3. Search: hybrid retrieval over the legal corpus, filtered by legal area.
+        # Retrieve across domains and let answer generation classify the question.
+        analysis = {}
         from app.rag.postprocess import rerank_for_question, finalize_answer, expand_query
-        search_results = hybrid_search(self.db, expand_query(question), limit=40, legal_area=legal_area)
+        search_results = hybrid_search(self.db, expand_query(question), limit=40)
         search_results = rerank_for_question(search_results, question, limit=8)
 
         # 4. Only reviewed and rights-cleared library excerpts may enrich answers.
@@ -113,7 +109,7 @@ class ChatService:
                 note=(
                     "ملخص من المصادر الرسمية المراجعة:\n\n"
                     + "\n\n".join(item["text"][:600] for item in excerpts)
-                    if excerpts else "خدمة الذكاء الاصطناعي (Gemini) غير مُهيأة حالياً على هذا الخادم."
+                    if excerpts else "تعذّر توليد شرح آلي، ولم نعثر على مقتطفات مراجعة تكفي لهذا السؤال."
                 ),
             )
 
