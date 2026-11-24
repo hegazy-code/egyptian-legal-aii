@@ -68,3 +68,32 @@ def test_chat_includes_reviewed_library_source_in_fallback(client):
     source = next(s for s in sources if s["sourceUrl"] == "https://example.org/gazette.pdf")
     assert source["status"] == "verified"
     assert source["lawName"].endswith("(ص. 5)")
+
+
+def test_literal_civil_article_does_not_call_gemini(client, monkeypatch):
+    from app.database import SessionLocal
+    from app.models.library_catalog import LibraryAsset, LibraryTextChunk
+    from app.services import chat_service
+
+    with SessionLocal.begin() as db:
+        asset = LibraryAsset(
+            provider="official", external_file_id="egypt-civil-131-1948-article-599",
+            title="القانون المدني — المادة 599", source_url="https://example.org/civil.pdf#page=48",
+            category="legislation", review_status="verified", rights_status="cleared",
+        )
+        db.add(asset)
+        db.flush()
+        db.add(LibraryTextChunk(
+            asset_id=asset.id, chunk_index=0, page_start=48,
+            text="الفقرة الأولى\nالفقرة الثانية", verified=True,
+        ))
+
+    def unexpected_call(*args, **kwargs):
+        raise AssertionError("A literal article request must not call Gemini")
+
+    monkeypatch.setattr(chat_service, "generate_answer", unexpected_call)
+    result = client.post("/chat", json={"question": "ما نص المادة ٥٩٩ من القانون المدني؟"})
+    assert result.status_code == 200
+    answer = result.json()["answer"]
+    assert answer["explanation"] == "الفقرة الأولى\nالفقرة الثانية"
+    assert [source["articleNumber"] for source in answer["answerSources"]] == ["599"]

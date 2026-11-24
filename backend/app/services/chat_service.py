@@ -4,6 +4,7 @@ answer_builder, then persists the conversation/message/citations.
 """
 import json
 import logging
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -17,6 +18,7 @@ from app.repositories.user_repository import ConversationRepository
 from app.schemas.legal import SearchResultItem
 from app.search.hybrid import hybrid_search
 from app.services.library_search import search_verified_library
+from app.utils.arabic import simple_normalize
 
 logger = logging.getLogger(__name__)
 
@@ -68,15 +70,6 @@ class ChatService:
         conversation = self._get_or_create_conversation(user_id, conversation_id, question)
         self.conversations.add_message(conversation.id, role="user", content=question)
 
-        # 1. Fetch conversation history for context.
-        history = self._get_history(conversation.id)
-
-        # Retrieve across domains and let answer generation classify the question.
-        analysis = {}
-        from app.rag.postprocess import rerank_for_question, finalize_answer, expand_query
-        search_results = hybrid_search(self.db, expand_query(question), limit=40)
-        search_results = rerank_for_question(search_results, question, limit=8)
-
         # 4. Only reviewed and rights-cleared library excerpts may enrich answers.
         # Keep these separate from legacy article/judgment citation IDs.
         excerpts = []
@@ -86,32 +79,53 @@ class ChatService:
         except SQLAlchemyError:
             logger.warning("Reviewed library search unavailable", exc_info=True)
 
-        reviewed_library_context = ""
-        if excerpts:
-            reviewed_library_context = "\n\n".join(
-                f"العنوان: {item['title']} | المصدر: {item['source_url'] or 'غير متاح'} "
-                f"| الصفحة: {item['page_start'] or 'غير محددة'} "
-                f"| النوع: {item['category']}\nالنص: {item['text'][:1200]}"
-                for item in excerpts
-            )
+        from app.rag.postprocess import rerank_for_question, finalize_answer, expand_query
 
-        # 5. RAG engine: call Gemini with grounded context, or fall back.
-        try:
-            raw = generate_answer(question, search_results, analysis, history, reviewed_library_context=reviewed_library_context)
-            answer_dict = answer_builder.parse_gemini_answer(raw)
-            answer_dict = finalize_answer(answer_dict, search_results)
-        except GeminiUnavailableError as exc:
-            logger.warning("Chat: Gemini unavailable, using fallback answer: %s", exc)
-            answer_dict = answer_builder.build_fallback_answer(
-                question=question,
-                analysis=analysis,
-                context_results=search_results,
-                note=(
-                    "ملخص من المصادر الرسمية المراجعة:\n\n"
-                    + "\n\n".join(item["text"][:600] for item in excerpts)
-                    if excerpts else "تعذّر توليد شرح آلي، ولم نعثر على مقتطفات مراجعة تكفي لهذا السؤال."
-                ),
-            )
+        literal_request = re.fullmatch(
+            r"(?:ما\s+(?:هو\s+)?)?نص\s+(?:المادة|مادة)\s+([0-9]+)"
+            r"\s+من\s+القانون المدني(?:\s+(?:رقم\s+)?131\s+لسنة\s+1948)?\s*[؟?.]?",
+            simple_normalize(question),
+        )
+        if literal_request and excerpts and all(
+            item["article_number"] == literal_request.group(1) for item in excerpts
+        ):
+            search_results = []
+            answer_dict = {
+                "understandingOfQuestion": question,
+                "legalDomain": "قانون مدني",
+                "explanation": "\n\n".join(item["text"] for item in excerpts),
+            }
+        else:
+            analysis = {}
+            history = self._get_history(conversation.id)
+            search_results = hybrid_search(self.db, expand_query(question), limit=40)
+            search_results = rerank_for_question(search_results, question, limit=8)
+            reviewed_library_context = ""
+            if excerpts:
+                reviewed_library_context = "\n\n".join(
+                    f"العنوان: {item['title']} | المصدر: {item['source_url'] or 'غير متاح'} "
+                    f"| الصفحة: {item['page_start'] or 'غير محددة'} "
+                    f"| النوع: {item['category']}\nالنص: {item['text'][:1200]}"
+                    for item in excerpts
+                )
+
+            # 5. RAG engine: call Gemini with grounded context, or fall back.
+            try:
+                raw = generate_answer(question, search_results, analysis, history, reviewed_library_context=reviewed_library_context)
+                answer_dict = answer_builder.parse_gemini_answer(raw)
+                answer_dict = finalize_answer(answer_dict, search_results)
+            except GeminiUnavailableError as exc:
+                logger.warning("Chat: Gemini unavailable, using fallback answer: %s", exc)
+                answer_dict = answer_builder.build_fallback_answer(
+                    question=question,
+                    analysis=analysis,
+                    context_results=search_results,
+                    note=(
+                        "ملخص من المصادر الرسمية المراجعة:\n\n"
+                        + "\n\n".join(item["text"][:600] for item in excerpts)
+                        if excerpts else "تعذّر توليد شرح آلي، ولم نعثر على مقتطفات مراجعة تكفي لهذا السؤال."
+                    ),
+                )
 
         # Render source links from reviewed database rows rather than Gemini output.
         if excerpts:
