@@ -125,7 +125,7 @@ def _get_client():
     """Lazily construct a genai client so import doesn't fail without a key."""
     if not settings.GEMINI_API_KEY:
         raise GeminiUnavailableError("GEMINI_API_KEY is not configured.")
-    import httpx
+    import httpx2 as httpx
     from google import genai
 
     # Use v1beta: Render previously returned 404 for the configured models on v1.
@@ -151,7 +151,7 @@ def call_gemini_with_retry(
     model: Optional[str] = None,
 ) -> str:
     """Try the primary model and one fallback, without retrying exhausted quota."""
-    import httpx
+    import httpx2 as httpx
     from google.genai import errors as genai_errors
     from google.genai import types
 
@@ -281,7 +281,7 @@ def generate_answer(
 
 تعليمات إلزامية لمحتوى كل حقل — لا تختصر أبداً:
 
-"explanation" (الشرح): يجب أن يكون ٤٠٠ كلمة على الأقل. اشرح:
+"explanation" (الشرح): اشرح بالتفصيل الذي تحتاجه الوقائع والمصادر:
 - النص القانوني الحرفي للمادة ومعناها.
 - الحق القانوني للعميل بالتحديد.
 - التزامات الطرف الآخر.
@@ -308,6 +308,6 @@ def generate_answer(
         contents=prompt,
         system_instruction=NO_HALLUCINATION_SYSTEM_PROMPT,
         response_mime_type="application/json",
-        max_output_tokens=8192,
+        max_output_tokens=4096,
     )
     return raw
