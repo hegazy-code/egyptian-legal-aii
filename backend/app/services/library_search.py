@@ -15,8 +15,11 @@ _PRIMARY_CATEGORIES = ("legislation", "judgment", "appeal", "reconsideration")
 
 
 def search_verified_library(db: Session, query: str, limit: int = 10) -> list[dict]:
+    query = simple_normalize(query[:2000])
+    if re.search(r"شقة|شقه|مسكن|ايجار", query) and re.search(r"يطرد|طرد|اخلاء|يخليني|فسخ|ينهي", query):
+        query = "ايجار اخلاء " + query
     tokens = list(dict.fromkeys(
-        word for word in re.findall(r"[^\W_]+", simple_normalize(query[:2000]))
+        word for word in re.findall(r"[^\W_]+", query)
         if (len(word) >= 3 or word.isdecimal()) and word not in _STOP_WORDS
     ))[:12]
     if not tokens:

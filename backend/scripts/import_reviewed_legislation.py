@@ -38,9 +38,9 @@ RECORDS = (
 )
 
 
-def import_records(db) -> int:
+def import_records(db, records=RECORDS) -> int:
     inserted = 0
-    for external_id, title, url, page, page_end, category, summary in RECORDS:
+    for external_id, title, url, page, page_end, category, summary in records:
         existing = db.scalar(select(LibraryAsset.id).filter_by(
             provider="official", external_file_id=external_id,
         ))
