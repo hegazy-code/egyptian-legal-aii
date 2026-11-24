@@ -156,7 +156,7 @@ def call_gemini_with_retry(
     from google.genai import types
 
     primary = model or settings.GEMINI_MODEL
-    candidates = dict.fromkeys((primary, "gemini-flash-latest"))
+    candidates = dict.fromkeys((primary, "gemini-3.6-flash"))
     last_error = None
     with _get_client() as client:
         for model_name in candidates:
