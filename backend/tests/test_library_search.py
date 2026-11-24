@@ -19,7 +19,7 @@ def test_verified_search_excludes_unreviewed_and_uncleared():
         ]:
             asset = LibraryAsset(
                 provider="google_drive", external_file_id=file_id,
-                title=file_id, category="legislation",
+                title=file_id, category="legislation", source_url="https://example.com/test.pdf",
                 review_status=reviewed, rights_status=rights,
             )
             db.add(asset)
@@ -30,7 +30,7 @@ def test_verified_search_excludes_unreviewed_and_uncleared():
                 verified=chunk_reviewed,
             ))
         db.commit()
-        results = search_verified_library(db, "قانون العمل")
+        results = search_verified_library(db, "ما نصّ قانون العمل في مصر؟")
         assert len(results) == 1
         assert results[0]["title"] == "approved"
         assert results[0]["page_start"] == 3

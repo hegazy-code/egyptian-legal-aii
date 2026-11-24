@@ -36,3 +36,34 @@ def test_chat_rejects_missing_question(client):
 def test_conversation_history_requires_auth(client):
     resp = client.get("/conversations")
     assert resp.status_code == 401
+
+
+def test_chat_includes_reviewed_library_source_in_fallback(client):
+    from app.database import SessionLocal
+    from app.models.library_catalog import LibraryAsset, LibraryTextChunk
+
+    with SessionLocal.begin() as db:
+        asset = LibraryAsset(
+            provider="google_drive",
+            external_file_id="chat-citation-example",
+            title="قانون العمل رقم ١٤ لسنة ٢٠٢٥",
+            source_url="https://example.org/gazette.pdf",
+            category="legislation",
+            review_status="verified",
+            rights_status="cleared",
+        )
+        db.add(asset)
+        db.flush()
+        db.add(LibraryTextChunk(
+            asset_id=asset.id,
+            chunk_index=0,
+            page_start=5,
+            text="مقتطف تجريبي عن تاريخ تطبيق قانون العمل",
+            verified=True,
+        ))
+    resp = client.post("/chat", json={"question": "متى بدأ تطبيق قانون العمل رقم 14 لسنة 2025؟"})
+    assert resp.status_code == 200, resp.text
+    sources = resp.json()["answer"]["answerSources"]
+    source = next(s for s in sources if s["sourceUrl"] == "https://example.org/gazette.pdf")
+    assert source["status"] == "verified"
+    assert source["lawName"].endswith("(ص. 5)")

@@ -6,6 +6,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional, Tuple
 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.models.system import AnswerCitation
@@ -82,19 +83,21 @@ class ChatService:
 
         # 4. Only reviewed and rights-cleared library excerpts may enrich answers.
         # Keep these separate from legacy article/judgment citation IDs.
-        reviewed_library_context = ""
+        excerpts = []
         try:
-            excerpts = search_verified_library(self.db, question, limit=3)
+            with self.db.begin_nested():
+                excerpts = search_verified_library(self.db, question, limit=3)
+        except SQLAlchemyError:
+            logger.warning("Reviewed library search unavailable", exc_info=True)
+
+        reviewed_library_context = ""
+        if excerpts:
             reviewed_library_context = "\n\n".join(
                 f"العنوان: {item['title']} | المصدر: {item['source_url'] or 'غير متاح'} "
                 f"| الصفحة: {item['page_start'] or 'غير محددة'} "
-                f"| النوع: {item['authority']}\nالنص: {item['text'][:1200]}"
+                f"| النوع: {item['category']}\nالنص: {item['text'][:1200]}"
                 for item in excerpts
             )
-        except Exception as exc:
-            # During staged deployment, the new catalog tables may not yet exist.
-            logger.warning("Reviewed library search unavailable: %s", exc)
-            self.db.rollback()
 
         # 5. RAG engine: call Gemini with grounded context, or fall back.
         try:
@@ -109,6 +112,21 @@ class ChatService:
                 context_results=search_results,
                 note="خدمة الذكاء الاصطناعي (Gemini) غير مُهيأة حالياً على هذا الخادم.",
             )
+
+        # Render source links from reviewed database rows rather than Gemini output.
+        if excerpts:
+            sources = answer_dict.setdefault("answerSources", [])
+            for item in excerpts:
+                page = item["page_start"]
+                sources.append({
+                    "id": item["id"],
+                    "lawName": f"{item['title']} (ص. {page})",
+                    "kind": "judgment" if item["category"] != "legislation" else "law",
+                    "status": "verified",
+                    "basis": "reviewed_library",
+                    "sourceUrl": item["source_url"],
+                    "excerpt": item["text"][:600],
+                })
 
         # Store structured answer as JSON string in the DB for history retrieval.
         answer_json = json.dumps(answer_dict, ensure_ascii=False)
