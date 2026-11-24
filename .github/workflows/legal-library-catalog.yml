@@ -1,0 +1,116 @@
+name: Legal Library Catalog CI
+on:
+  pull_request:
+    paths:
+      - 'backend/app/models/library_catalog.py'
+      - 'backend/app/models/__init__.py'
+      - 'backend/migrations/versions/b7c8d9e0f1a2_legal_library_catalog.py'
+      - 'backend/scripts/import_library_inventory.py'
+      - 'backend/tests/test_library_inventory.py'
+      - 'backend/scripts/audit_library_inventory.py'
+      - 'backend/tests/test_audit_library_inventory.py'
+      - 'data/inventory/**'
+      - 'backend/tests/test_library_search.py'
+      - 'backend/app/services/library_search.py'
+      - 'backend/scripts/import_reviewed_legislation.py'
+      - 'backend/migrations/versions/c8da12ea019b_reviewed_library_seed.py'
+      - 'backend/app/services/library_extraction.py'
+      - 'backend/tests/test_library_extraction.py'
+      - 'backend/scripts/stage_library_text.py'
+      - 'backend/tests/test_stage_library_text.py'
+      - 'backend/app/services/chat_service.py'
+      - 'backend/app/rag/engine.py'
+      - 'backend/requirements-dev.txt'
+      - '.github/workflows/legal-library-catalog.yml'
+  push:
+    branches: [feature/legal-library-catalog]
+jobs:
+  sqlite:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: sqlite:///./legal_library_ci.db
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest tests/test_library_inventory.py tests/test_library_search.py tests/test_library_extraction.py tests/test_stage_library_text.py tests/test_chat.py tests/test_audit_library_inventory.py -q
+      - run: python -m alembic upgrade head
+      - name: Verify tables and constraints
+        run: |
+          python - <<'PY'
+          from sqlalchemy import create_engine, inspect
+          e = create_engine("sqlite:///./legal_library_ci.db")
+          i = inspect(e)
+          expected = {"library_assets", "library_text_chunks", "legal_commentaries", "appeal_records", "legal_templates"}
+          assert expected <= set(i.get_table_names())
+          assert any(c["name"] == "external_file_id" for c in i.get_columns("library_assets"))
+          assert {"laws", "articles", "judgments", "documents"} <= set(i.get_table_names())
+          PY
+      - run: python -m scripts.import_library_inventory ../data/inventory/drive_batch_01.json --dry-run
+      - name: Test real import and idempotent re-import on disposable SQLite database
+        run: |
+          python -m scripts.import_library_inventory ../data/inventory/drive_batch_01.json --apply
+          python -m scripts.import_library_inventory ../data/inventory/drive_batch_01.json --apply
+          python - <<'PY'
+          from sqlalchemy import create_engine, func, select
+          from sqlalchemy.orm import Session
+          from app.models.library_catalog import LibraryAsset
+          engine = create_engine("sqlite:///./legal_library_ci.db")
+          with Session(engine) as db:
+              total = db.scalar(select(func.count()).select_from(LibraryAsset))
+              assert total > 0, "No inventory rows imported"
+              assert db.scalar(select(func.count()).select_from(LibraryAsset).where(LibraryAsset.provider == "google_drive", LibraryAsset.review_status != "unverified")) == 0
+              print("Idempotent catalog import verified:", total, "unverified files")
+          PY
+
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: catalog
+          POSTGRES_PASSWORD: catalog_ci_only
+          POSTGRES_DB: catalog_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U catalog -d catalog_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql+psycopg://catalog:catalog_ci_only@localhost:5432/catalog_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m alembic upgrade head
+      - run: python -m pytest tests/test_library_inventory.py tests/test_library_search.py tests/test_library_extraction.py tests/test_stage_library_text.py tests/test_chat.py tests/test_audit_library_inventory.py -q
+      - name: Import all staged manifests into disposable PostgreSQL and reconcile
+        run: |
+          for manifest in ../data/inventory/drive_batch_*.json ../data/inventory/egypt_laws_nested_*.json; do
+            python -m scripts.import_library_inventory "$manifest" --dry-run
+            python -m scripts.import_library_inventory "$manifest" --apply
+          done
+          python -m scripts.audit_library_inventory ../data/inventory
+          python - <<'PY'
+          from pathlib import Path
+          from scripts.audit_library_inventory import inventory_files
+          from app.database import SessionLocal
+          from app.models.library_catalog import LibraryAsset
+          _, items, _, _ = inventory_files(Path("../data/inventory"))
+          with SessionLocal() as db:
+              ids = {row.external_file_id for row in db.query(LibraryAsset).filter_by(provider="google_drive")}
+              assert set(items) <= ids, "Staged inventory missing from PostgreSQL"
+              print("Verified staged source IDs:", len(items))
+          PY

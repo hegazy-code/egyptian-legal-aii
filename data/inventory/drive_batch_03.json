@@ -1,0 +1,1829 @@
+{
+  "scope": "first-level direct children only",
+  "root_id": "1mjq843adg4qIgQeHgS5GRi_-4F3zoPY0",
+  "folders": [
+    {
+      "folder_id": "1WJO_JTzTB-dtdwXYA1wQau9iY8pG5mBh",
+      "folder_title": "التشريعات",
+      "returned_count": 1,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1eChXM0ZYIANaWkpWnPQudUc7FLoFvcQg",
+          "title": "موسوعة سن وصياغة التشريعات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1eChXM0ZYIANaWkpWnPQudUc7FLoFvcQg",
+          "parent_id": "1WJO_JTzTB-dtdwXYA1wQau9iY8pG5mBh",
+          "path": "التشريعات/موسوعة سن وصياغة التشريعات",
+          "category": "unclassified",
+          "is_folder": true
+        }
+      ]
+    },
+    {
+      "folder_id": "19vz2vBunWmwx9SqGVWY8KX7v15I0aU6i",
+      "folder_title": "هيئة قضايا الدولة",
+      "returned_count": 2,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1s-1xgWhmKRkP2OO-4c_fZJARKnDPINPq",
+          "title": "قانونــــ هيئة قضايا الدولة (1).doc",
+          "mime_type": "application/msword",
+          "size": "57344",
+          "url": "https://docs.google.com/document/d/1s-1xgWhmKRkP2OO-4c_fZJARKnDPINPq/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "19vz2vBunWmwx9SqGVWY8KX7v15I0aU6i",
+          "path": "هيئة قضايا الدولة/قانونــــ هيئة قضايا الدولة (1).doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1yc75ZWHIu4FdrFwYcHg2OamWJIC8BueZ",
+          "title": "قانون هيئة قضايا الدولة.doc",
+          "mime_type": "application/msword",
+          "size": "102912",
+          "url": "https://docs.google.com/document/d/1yc75ZWHIu4FdrFwYcHg2OamWJIC8BueZ/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "19vz2vBunWmwx9SqGVWY8KX7v15I0aU6i",
+          "path": "هيئة قضايا الدولة/قانون هيئة قضايا الدولة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+      "folder_title": "موسوعة دائرة المعارف القانونية",
+      "returned_count": 22,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1r3kt5wb7QHICUa-qlY2yDNc5ooTriU5_",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب السادس مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "11635426",
+          "url": "https://drive.google.com/file/d/1r3kt5wb7QHICUa-qlY2yDNc5ooTriU5_/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب السادس مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1KKss7dzZBHV3sizRrHllWjysPPtz_6ea",
+          "title": "موسوعة دائرة المعارف القانونية فهرس الاصدار المدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "1515946",
+          "url": "https://drive.google.com/file/d/1KKss7dzZBHV3sizRrHllWjysPPtz_6ea/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية فهرس الاصدار المدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "13Dm1oltEX7F9brgYHdml40dQT46X2rHn",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب السادس جنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "11615284",
+          "url": "https://drive.google.com/file/d/13Dm1oltEX7F9brgYHdml40dQT46X2rHn/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب السادس جنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1whA4sCJnYuk2qoRGi6hzunhEuhbo6fqL",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب السابع.pdf",
+          "mime_type": "application/pdf",
+          "size": "10886408",
+          "url": "https://drive.google.com/file/d/1whA4sCJnYuk2qoRGi6hzunhEuhbo6fqL/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب السابع.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1BZQuJNBaBNREXSIshWCrrdHY5VhclKDA",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الرابع مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "10871002",
+          "url": "https://drive.google.com/file/d/1BZQuJNBaBNREXSIshWCrrdHY5VhclKDA/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الرابع مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1_I1AdCFf4GKCH2_l98crlGnWHRgubjiY",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب السابع مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "10970083",
+          "url": "https://drive.google.com/file/d/1_I1AdCFf4GKCH2_l98crlGnWHRgubjiY/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب السابع مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "10YI6jNGs2chworEFQs7UiCBW4mUAX2r6",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الخامس مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "10078619",
+          "url": "https://drive.google.com/file/d/10YI6jNGs2chworEFQs7UiCBW4mUAX2r6/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الخامس مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1UkxyfyvXYI3sIeTu1Ve4KYoGivOmBvIC",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الرابع جنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "10921180",
+          "url": "https://drive.google.com/file/d/1UkxyfyvXYI3sIeTu1Ve4KYoGivOmBvIC/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الرابع جنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "18kkyYVmXEuF_FZUVUrwTo9H-0RbYORNO",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الخامس جنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "12718604",
+          "url": "https://drive.google.com/file/d/18kkyYVmXEuF_FZUVUrwTo9H-0RbYORNO/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الخامس جنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1nJ-wv-tXkIEK6dcqsUGK3_GM2FesuJm6",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الثاني.pdf",
+          "mime_type": "application/pdf",
+          "size": "11022351",
+          "url": "https://drive.google.com/file/d/1nJ-wv-tXkIEK6dcqsUGK3_GM2FesuJm6/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الثاني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "15z7E__iU9YW5mgnmfM8Q39mgmJjbeH4B",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الثاني جنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "12568794",
+          "url": "https://drive.google.com/file/d/15z7E__iU9YW5mgnmfM8Q39mgmJjbeH4B/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الثاني جنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1zh0aL9wfGJsZlJrf2OfnPPe08qYjismn",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الثامن مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "10831545",
+          "url": "https://drive.google.com/file/d/1zh0aL9wfGJsZlJrf2OfnPPe08qYjismn/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الثامن مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "16Vtyq1lvzy9nKlobxyNLkt73_boadfcP",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب التاسع مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "11117287",
+          "url": "https://drive.google.com/file/d/16Vtyq1lvzy9nKlobxyNLkt73_boadfcP/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب التاسع مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1vqRh9qQ-Dvffd8SYxyrHQ0O5kUSpXPox",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الأول - الجنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "12150611",
+          "url": "https://drive.google.com/file/d/1vqRh9qQ-Dvffd8SYxyrHQ0O5kUSpXPox/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الأول - الجنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "13o8lSnqsPPmiUtyEKt61z7zKGlSO3V4l",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الثامن جنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "12037778",
+          "url": "https://drive.google.com/file/d/13o8lSnqsPPmiUtyEKt61z7zKGlSO3V4l/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الثامن جنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "13lpaeVTih063-jAHaRTKSVoZiVu1fyJS",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الأول مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "13440280",
+          "url": "https://drive.google.com/file/d/13lpaeVTih063-jAHaRTKSVoZiVu1fyJS/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الأول مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "145RdRQpJFAP6UY9nCSXuqyRrgUVEYwNq",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب التاسع جنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "11713666",
+          "url": "https://drive.google.com/file/d/145RdRQpJFAP6UY9nCSXuqyRrgUVEYwNq/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب التاسع جنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1fhP8hVmSVm15KyDM4sik2pOGlKi8IksT",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب الثالث مدني.pdf",
+          "mime_type": "application/pdf",
+          "size": "10898850",
+          "url": "https://drive.google.com/file/d/1fhP8hVmSVm15KyDM4sik2pOGlKi8IksT/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب الثالث مدني.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1kyuPp1CVBVm6-33crgyxni1VJpiJ-ZUA",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب 11.pdf",
+          "mime_type": "application/pdf",
+          "size": "12786157",
+          "url": "https://drive.google.com/file/d/1kyuPp1CVBVm6-33crgyxni1VJpiJ-ZUA/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب 11.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Ntz-R0x3fGNxd24XgHGYlekNMkRrVENv",
+          "title": "موسوعة دائرة المعارف القانونية الكتاب 11 جنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "10798397",
+          "url": "https://drive.google.com/file/d/1Ntz-R0x3fGNxd24XgHGYlekNMkRrVENv/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الكتاب 11 جنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1263IqMQf-abDEQZNKl9bUee1HRoPdna6",
+          "title": "موسوعة دائرة المعارف القانونية الدستورية العليا.pdf",
+          "mime_type": "application/pdf",
+          "size": "7841999",
+          "url": "https://drive.google.com/file/d/1263IqMQf-abDEQZNKl9bUee1HRoPdna6/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الدستورية العليا.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1t4LkzlnMsDFVVt3-hkwAM2ClHXZRCfW1",
+          "title": "موسوعة دائرة المعارف القانونية الفهرس الجنائي.pdf",
+          "mime_type": "application/pdf",
+          "size": "839660",
+          "url": "https://drive.google.com/file/d/1t4LkzlnMsDFVVt3-hkwAM2ClHXZRCfW1/view?usp=drivesdk",
+          "parent_id": "1ETrEH-tAPe7Zy1_AlK8p7NRgjWYYilSy",
+          "path": "موسوعة دائرة المعارف القانونية/موسوعة دائرة المعارف القانونية الفهرس الجنائي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1iafXPDb199IHauO5wHhNtmayVg1h7Lh0",
+      "folder_title": "حماية البيئة",
+      "returned_count": 4,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1BOobv4ckEslMyPKVUzaiqqrZ21h-s5d7",
+          "title": "قانون البيئة.doc",
+          "mime_type": "application/msword",
+          "size": "1017344",
+          "url": "https://docs.google.com/document/d/1BOobv4ckEslMyPKVUzaiqqrZ21h-s5d7/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1iafXPDb199IHauO5wHhNtmayVg1h7Lh0",
+          "path": "حماية البيئة/قانون البيئة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1GZrQiAM0v5dRmso5NynWULcqCIEMckLa",
+          "title": "law4_arb.doc",
+          "mime_type": "application/msword",
+          "size": "1017344",
+          "url": "https://docs.google.com/document/d/1GZrQiAM0v5dRmso5NynWULcqCIEMckLa/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1iafXPDb199IHauO5wHhNtmayVg1h7Lh0",
+          "path": "حماية البيئة/law4_arb.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1GIYHKtoDkT85tTp31llhDYJc7vZAUQ2B",
+          "title": "اللأئحة التنفيذية لقانون حماية البيئة.doc",
+          "mime_type": "application/msword",
+          "size": "221184",
+          "url": "https://docs.google.com/document/d/1GIYHKtoDkT85tTp31llhDYJc7vZAUQ2B/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1iafXPDb199IHauO5wHhNtmayVg1h7Lh0",
+          "path": "حماية البيئة/اللأئحة التنفيذية لقانون حماية البيئة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1VI379a0yNBtDEz1rIcpm_k-9zs3CnXCy",
+          "title": "قانون حماية البيئة.doc",
+          "mime_type": "application/msword",
+          "size": "264192",
+          "url": "https://docs.google.com/document/d/1VI379a0yNBtDEz1rIcpm_k-9zs3CnXCy/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1iafXPDb199IHauO5wHhNtmayVg1h7Lh0",
+          "path": "حماية البيئة/قانون حماية البيئة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1m-yEp-YGHK1TcvE5LLmfsDKe9aAR6zVk",
+      "folder_title": "قانون السجل العيني",
+      "returned_count": 1,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1JlCbcXr3Ba4jiZSlwsOQJs3mZguMorGO",
+          "title": "محكمة-النقض-المكتب-الفني-قانون-السجل-العيني-معلقاً-عليه-بأحكام-محكمة-النقض-إصدار-2020.pdf",
+          "mime_type": "application/pdf",
+          "size": "2206334",
+          "url": "https://drive.google.com/file/d/1JlCbcXr3Ba4jiZSlwsOQJs3mZguMorGO/view?usp=drivesdk",
+          "parent_id": "1m-yEp-YGHK1TcvE5LLmfsDKe9aAR6zVk",
+          "path": "قانون السجل العيني/محكمة-النقض-المكتب-الفني-قانون-السجل-العيني-معلقاً-عليه-بأحكام-محكمة-النقض-إصدار-2020.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+      "folder_title": "كتاب",
+      "returned_count": 8,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1MQiFyW7njMS5pvDKPGGiQ1K7GWGg9A_g",
+          "title": "كتاب فى قانون تاسيس الشركات والغش التجارى اعداد البسيونى عبده المحامى بالنقض (3).doc",
+          "mime_type": "application/msword",
+          "size": "4046848",
+          "url": "https://docs.google.com/document/d/1MQiFyW7njMS5pvDKPGGiQ1K7GWGg9A_g/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/كتاب فى قانون تاسيس الشركات والغش التجارى اعداد البسيونى عبده المحامى بالنقض (3).doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1t_2pKUwy-yZLtmbA0aXP64Ekk-SAAegt",
+          "title": "كتاب دوري رقم 5 لسنة 2013 بشأن الحقوق والحريات في الدستور الجديدكتاب دوري رقم 7 لس.doc",
+          "mime_type": "application/msword",
+          "size": "61440",
+          "url": "https://docs.google.com/document/d/1t_2pKUwy-yZLtmbA0aXP64Ekk-SAAegt/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/كتاب دوري رقم 5 لسنة 2013 بشأن الحقوق والحريات في الدستور الجديدكتاب دوري رقم 7 لس.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1K6AVuckXMCn2iMR8a1W2OwbFb5EWQGSM",
+          "title": "الكتاب الذهبى فى التعليمات القضائية للنيابات والتظلمات العملية من قرارات النيابه اعداد البسيونى عبده.doc",
+          "mime_type": "application/msword",
+          "size": "9169920",
+          "url": "https://docs.google.com/document/d/1K6AVuckXMCn2iMR8a1W2OwbFb5EWQGSM/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/الكتاب الذهبى فى التعليمات القضائية للنيابات والتظلمات العملية من قرارات النيابه اعداد البسيونى عبده.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1v8De68M5sZzYy_9aJkzoTsPqwFa2FZ58",
+          "title": "صحيفة طعن بالنقضمدنى مودعه قلم كتاب المحكمة.doc",
+          "mime_type": "application/msword",
+          "size": "142336",
+          "url": "https://docs.google.com/document/d/1v8De68M5sZzYy_9aJkzoTsPqwFa2FZ58/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/صحيفة طعن بالنقضمدنى مودعه قلم كتاب المحكمة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1fQRUTKwKW3jcqQbcufJFdVl7t5kqNyJZ",
+          "title": "تكليف المدين بالوفاء بموجب كتاب مسجل بعلم وصول.doc",
+          "mime_type": "application/msword",
+          "size": "20992",
+          "url": "https://docs.google.com/document/d/1fQRUTKwKW3jcqQbcufJFdVl7t5kqNyJZ/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/تكليف المدين بالوفاء بموجب كتاب مسجل بعلم وصول.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "16kYnEKCVCZD_pMFlxN-5gcS6Z3wrT870",
+          "title": "241لا يجوز أثبات عكس الثابت بالكتابه إلا بالكتابه.doc",
+          "mime_type": "application/msword",
+          "size": "22528",
+          "url": "https://docs.google.com/document/d/16kYnEKCVCZD_pMFlxN-5gcS6Z3wrT870/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/241لا يجوز أثبات عكس الثابت بالكتابه إلا بالكتابه.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1oQy7SQkZeDJQ3ZleJhbEDxpZ6xkegX7a",
+          "title": "333لا يجوز إثبات تسليم ما يجاوز نصاب البينةإلا بالكتابة ولا يجوز إثبات عكس الثابت بالكتابه إلا بالكتابة.doc",
+          "mime_type": "application/msword",
+          "size": "68096",
+          "url": "https://docs.google.com/document/d/1oQy7SQkZeDJQ3ZleJhbEDxpZ6xkegX7a/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/333لا يجوز إثبات تسليم ما يجاوز نصاب البينةإلا بالكتابة ولا يجوز إثبات عكس الثابت بالكتابه إلا بالكتابة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1pxoCanZrzSm_Bs4awjRdvde3Eh3MwicZ",
+          "title": "240لا يجوز إثبات عكس الثابت بالكتابه إلا بالكتابه.doc",
+          "mime_type": "application/msword",
+          "size": "27648",
+          "url": "https://docs.google.com/document/d/1pxoCanZrzSm_Bs4awjRdvde3Eh3MwicZ/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1YlYmwrfSbnQQptYUsLWRIxBZ3drn-l0y",
+          "path": "كتاب/240لا يجوز إثبات عكس الثابت بالكتابه إلا بالكتابه.doc",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1TKm9vVv_X3krGAE_ZZxQEAwyBOJTjGW2",
+      "folder_title": "موسوعة سمير تناغو",
+      "returned_count": 5,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1zrbD1irf6n8t5Gm-dXMPRUN8BncA_vCU",
+          "title": "عقد البيع - الدكتور سمير تناغو.pdf",
+          "mime_type": "application/pdf",
+          "size": "94069770",
+          "url": "https://drive.google.com/file/d/1zrbD1irf6n8t5Gm-dXMPRUN8BncA_vCU/view?usp=drivesdk",
+          "parent_id": "1TKm9vVv_X3krGAE_ZZxQEAwyBOJTjGW2",
+          "path": "موسوعة سمير تناغو/عقد البيع - الدكتور سمير تناغو.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "14UUcym8Dc5a0CcP7M-2r4LaCEKdPMITY",
+          "title": "النظرية العامة للقانون-سمير تناغو.pdf",
+          "mime_type": "application/pdf",
+          "size": "143619392",
+          "url": "https://drive.google.com/file/d/14UUcym8Dc5a0CcP7M-2r4LaCEKdPMITY/view?usp=drivesdk",
+          "parent_id": "1TKm9vVv_X3krGAE_ZZxQEAwyBOJTjGW2",
+          "path": "موسوعة سمير تناغو/النظرية العامة للقانون-سمير تناغو.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "19aqdcNy3U5OftVYvVWv_rDRDmBXoYIva",
+          "title": "احكام الالتزام و الاثبات للدكتور سمير عبد السيد تناغو.pdf",
+          "mime_type": "application/pdf",
+          "size": "67381561",
+          "url": "https://drive.google.com/file/d/19aqdcNy3U5OftVYvVWv_rDRDmBXoYIva/view?usp=drivesdk",
+          "parent_id": "1TKm9vVv_X3krGAE_ZZxQEAwyBOJTjGW2",
+          "path": "موسوعة سمير تناغو/احكام الالتزام و الاثبات للدكتور سمير عبد السيد تناغو.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1ZoxZkU8K5nK_GAmJpIbmDLu8yjU6XgSd",
+          "title": "مصادر الالتزام -سمير عبد السيد تناغو.pdf",
+          "mime_type": "application/pdf",
+          "size": "65419860",
+          "url": "https://drive.google.com/file/d/1ZoxZkU8K5nK_GAmJpIbmDLu8yjU6XgSd/view?usp=drivesdk",
+          "parent_id": "1TKm9vVv_X3krGAE_ZZxQEAwyBOJTjGW2",
+          "path": "موسوعة سمير تناغو/مصادر الالتزام -سمير عبد السيد تناغو.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1PC2pFpzDQsgvcTCMf2H1oOtS0Uzq07PD",
+          "title": "التأمينات الشخصية و العينية.pdf",
+          "mime_type": "application/pdf",
+          "size": "63686965",
+          "url": "https://drive.google.com/file/d/1PC2pFpzDQsgvcTCMf2H1oOtS0Uzq07PD/view?usp=drivesdk",
+          "parent_id": "1TKm9vVv_X3krGAE_ZZxQEAwyBOJTjGW2",
+          "path": "موسوعة سمير تناغو/التأمينات الشخصية و العينية.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+      "folder_title": "الموسوعة الجنائية",
+      "returned_count": 11,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1-6s6jdFPP7JqtYCZMmOh263bpKNJHw87",
+          "title": "مكافحة غسيل الأموال",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1-6s6jdFPP7JqtYCZMmOh263bpKNJHw87",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/مكافحة غسيل الأموال",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1Crqv5lbrksW7MveJg7Sl9WeSCcokAEH0",
+          "title": "قانون مكافحة المخدرات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1Crqv5lbrksW7MveJg7Sl9WeSCcokAEH0",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/قانون مكافحة المخدرات",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1Pm2XK7AjhhsxGNUFup5bxzskWma1q-pm",
+          "title": "قانون العقوبات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1Pm2XK7AjhhsxGNUFup5bxzskWma1q-pm",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/قانون العقوبات",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1xB1izv5P0z3uYO6zcxyej1RlGZVK0XCk",
+          "title": "قانون العسكري",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1xB1izv5P0z3uYO6zcxyej1RlGZVK0XCk",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/قانون العسكري",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1yOE_j4X3P12dL1wZO5n0vshpZ4PJxeYa",
+          "title": "الخدمة العسكرية",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1yOE_j4X3P12dL1wZO5n0vshpZ4PJxeYa",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/الخدمة العسكرية",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "173qtJCURAM2kszfhCfPFTTBuQD9QtOhA",
+          "title": "قانون الطفل",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/173qtJCURAM2kszfhCfPFTTBuQD9QtOhA",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/قانون الطفل",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1JGPPJdoZCoG6vG6ghSpRXxaOcvKbOVks",
+          "title": "قانون الجنائي",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1JGPPJdoZCoG6vG6ghSpRXxaOcvKbOVks",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/قانون الجنائي",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1yEPmPX_ah9g_WZpJm0xIkvQwVOERNyr9",
+          "title": "سلسلة الطب الشرعي",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1yEPmPX_ah9g_WZpJm0xIkvQwVOERNyr9",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/سلسلة الطب الشرعي",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "15Qmdu1vz5TXnHRWsNcUXSWI9Rp8MPpmf",
+          "title": "المبانى",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/15Qmdu1vz5TXnHRWsNcUXSWI9Rp8MPpmf",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/المبانى",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1YCvmHbWhaQ3YuI_7xDvGwAMNXdglitMb",
+          "title": "الجمارك",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1YCvmHbWhaQ3YuI_7xDvGwAMNXdglitMb",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/الجمارك",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1esQhY06gnrEuW_ZkRtlmGzaAIugLZMq6",
+          "title": "اجراءات جنائية",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1esQhY06gnrEuW_ZkRtlmGzaAIugLZMq6",
+          "parent_id": "1Rr3gH0C2dfqMkFLPaztt90LATtjv6JgL",
+          "path": "الموسوعة الجنائية/اجراءات جنائية",
+          "category": "unclassified",
+          "is_folder": true
+        }
+      ]
+    },
+    {
+      "folder_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+      "folder_title": "جميع الصيغ ",
+      "returned_count": 28,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "1D-cXPOUCPr_pjEpOfQNVT9ryNtiP8lZr",
+          "title": "توكيلات ",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1D-cXPOUCPr_pjEpOfQNVT9ryNtiP8lZr",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /توكيلات ",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1xhygd00xoXrjoFase96n56LB3n67Cf47",
+          "title": "Copy of جميع صيغ الدعاوي القانونية.pdf",
+          "mime_type": "application/pdf",
+          "size": "12040708",
+          "url": "https://drive.google.com/file/d/1xhygd00xoXrjoFase96n56LB3n67Cf47/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /Copy of جميع صيغ الدعاوي القانونية.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1TtLp0wXHPN_jGZ3FWAeZp-CM93PN8gk4",
+          "title": "Copy of صرف فروق اجور متغيرة.doc",
+          "mime_type": "application/msword",
+          "size": "62464",
+          "url": "https://docs.google.com/document/d/1TtLp0wXHPN_jGZ3FWAeZp-CM93PN8gk4/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /Copy of صرف فروق اجور متغيرة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1G4O6lk7xryqqYWh6dkSelsTcjEMn7vuG",
+          "title": "Copy of صيغ العقود إعداد المستشار أحمد عصام السيد.docx",
+          "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "size": "480612",
+          "url": "https://docs.google.com/document/d/1G4O6lk7xryqqYWh6dkSelsTcjEMn7vuG/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /Copy of صيغ العقود إعداد المستشار أحمد عصام السيد.docx",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1ZsrliuVlPqEw6Xjt0EHW0wOl6URJ4zef",
+          "title": "Copy of صيغة إعلان بإعادة الدعوى للمرافعة.doc",
+          "mime_type": "application/msword",
+          "size": "26624",
+          "url": "https://docs.google.com/document/d/1ZsrliuVlPqEw6Xjt0EHW0wOl6URJ4zef/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /Copy of صيغة إعلان بإعادة الدعوى للمرافعة.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1c69MwLpQnqnD8prD80Kf4XfLPWx-XCu2",
+          "title": "Copy of صيغة دعوي بطلب صرف مقابل رصيد إجازات سنوية.doc",
+          "mime_type": "application/msword",
+          "size": "23552",
+          "url": "https://docs.google.com/document/d/1c69MwLpQnqnD8prD80Kf4XfLPWx-XCu2/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /Copy of صيغة دعوي بطلب صرف مقابل رصيد إجازات سنوية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1bf6xxoDvnLn28-j6d4hOpc_dbQJN0Hq4",
+          "title": "Copy of كتاب جميع صيغ العقود والطلبات بعد التعديل.doc",
+          "mime_type": "application/msword",
+          "size": "3144704",
+          "url": "https://docs.google.com/document/d/1bf6xxoDvnLn28-j6d4hOpc_dbQJN0Hq4/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /Copy of كتاب جميع صيغ العقود والطلبات بعد التعديل.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1alxaRbW8HSHLsCruyxakK_-TN3wvnB8W",
+          "title": "Copy of صيغ الدعاوى القضائية-محول.docx",
+          "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "size": "1687782",
+          "url": "https://docs.google.com/document/d/1alxaRbW8HSHLsCruyxakK_-TN3wvnB8W/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /Copy of صيغ الدعاوى القضائية-محول.docx",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1hn6BkX-PDDcq-TRD6VYiSO9dRntn1YJI",
+          "title": "صيغ عمالية",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1hn6BkX-PDDcq-TRD6VYiSO9dRntn1YJI",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /صيغ عمالية",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "19_v0vXxtP3F_zuNL7k1E2Ko0tQ6an7YO",
+          "title": "متنوع",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/19_v0vXxtP3F_zuNL7k1E2Ko0tQ6an7YO",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /متنوع",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1I6cMqt4Smrm7m2Qx3JcQw_jPA-1z00Pi",
+          "title": "طلبات ونماذج هامة لكل محامي",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1I6cMqt4Smrm7m2Qx3JcQw_jPA-1z00Pi",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /طلبات ونماذج هامة لكل محامي",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1yUjrA2FsByUrXtOCnjyU5Ku1faTD-x99",
+          "title": "شهر عقاري",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1yUjrA2FsByUrXtOCnjyU5Ku1faTD-x99",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /شهر عقاري",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "12SMXqGj-ziEQHy5AvjY-OP3BFxD_SU-F",
+          "title": "صيغ الدعاوي",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/12SMXqGj-ziEQHy5AvjY-OP3BFxD_SU-F",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /صيغ الدعاوي",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1RYgO7maj9oHCcCAM9nokNqJEw9JZwaB1",
+          "title": "الدفوع القانونية",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1RYgO7maj9oHCcCAM9nokNqJEw9JZwaB1",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /الدفوع القانونية",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1dxVZl5JciiBypDZ8caWmGi8lJMGztjCx",
+          "title": "المذكرات القانونية",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1dxVZl5JciiBypDZ8caWmGi8lJMGztjCx",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /المذكرات القانونية",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1DMvrxnKKglXFlPiG_wsvwd3J8RHe0AhM",
+          "title": "استئنافات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1DMvrxnKKglXFlPiG_wsvwd3J8RHe0AhM",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /استئنافات",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "10MCGZ3QD57pQGQNNHUjEhlrOs7JVory8",
+          "title": "اعلانات وانذرات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/10MCGZ3QD57pQGQNNHUjEhlrOs7JVory8",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /اعلانات وانذرات",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1-160-pmGm1gtClLkO7S0osxpDi6pNhL6",
+          "title": "تظلمات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1-160-pmGm1gtClLkO7S0osxpDi6pNhL6",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /تظلمات",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1E50QO0k3pI2kvi_XwuXwoV8_3BFgXclF",
+          "title": "كتاب الصيغ القانونية للدعاوى والعقود .pdf",
+          "mime_type": "application/pdf",
+          "size": "2259673",
+          "url": "https://drive.google.com/file/d/1E50QO0k3pI2kvi_XwuXwoV8_3BFgXclF/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /كتاب الصيغ القانونية للدعاوى والعقود .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1idez--J0y_t6Y3EAIpPg4x23DH-oJTE9",
+          "title": "صيغ العقود .pdf",
+          "mime_type": "application/pdf",
+          "size": "23032273",
+          "url": "https://drive.google.com/file/d/1idez--J0y_t6Y3EAIpPg4x23DH-oJTE9/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /صيغ العقود .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1FOaC0URXqLJvaIdq198yOmwUmhk9BXcV",
+          "title": "صيغ الدعاوى القضائية .pdf",
+          "mime_type": "application/pdf",
+          "size": "1492427",
+          "url": "https://drive.google.com/file/d/1FOaC0URXqLJvaIdq198yOmwUmhk9BXcV/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /صيغ الدعاوى القضائية .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1M1FhA7_UqDiLgrqikL-gS7may8WDBAuX",
+          "title": "الوجيز في صياغة العقود .pdf",
+          "mime_type": "application/pdf",
+          "size": "596480",
+          "url": "https://drive.google.com/file/d/1M1FhA7_UqDiLgrqikL-gS7may8WDBAuX/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /الوجيز في صياغة العقود .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1fQFj1WTcxCDnqLXOx00uloiI1QsgdmRz",
+          "title": "المرشد في الدعاوي القضائية  .pdf",
+          "mime_type": "application/pdf",
+          "size": "1644458",
+          "url": "https://drive.google.com/file/d/1fQFj1WTcxCDnqLXOx00uloiI1QsgdmRz/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /المرشد في الدعاوي القضائية  .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1aPBWTLI_2QOTlegMZt6OU5yYinJfWGmU",
+          "title": "الإجراءات العملية لإعداد المذكرات القانونية  .pdf",
+          "mime_type": "application/pdf",
+          "size": "3207391",
+          "url": "https://drive.google.com/file/d/1aPBWTLI_2QOTlegMZt6OU5yYinJfWGmU/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /الإجراءات العملية لإعداد المذكرات القانونية  .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "10W4WXQeJUfjh7m2zuapza83dqvbaYLgt",
+          "title": "إعداد وصياغة العقود الحكومية .pdf",
+          "mime_type": "application/pdf",
+          "size": "28710937",
+          "url": "https://drive.google.com/file/d/10W4WXQeJUfjh7m2zuapza83dqvbaYLgt/view?usp=drivesdk",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /إعداد وصياغة العقود الحكومية .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1DxZIl3w54zL62aRMSE5Elhht0hGqDUM0",
+          "title": "صيغ طلبات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1DxZIl3w54zL62aRMSE5Elhht0hGqDUM0",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /صيغ طلبات",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1uu0agGDtitH4AUWc2PRquKZ0hpStumog",
+          "title": "صيغ",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1uu0agGDtitH4AUWc2PRquKZ0hpStumog",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /صيغ",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1KteDwQRt9qFck8FjogWyaSH8DR8HsT6q",
+          "title": "صيغ عقود واقرارات هامه ورد ",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1KteDwQRt9qFck8FjogWyaSH8DR8HsT6q",
+          "parent_id": "1JxOAxJMDwF39rFZNSEZ0YcQxj3gMkdtK",
+          "path": "جميع الصيغ /صيغ عقود واقرارات هامه ورد ",
+          "category": "unclassified",
+          "is_folder": true
+        }
+      ]
+    },
+    {
+      "folder_id": "16RTFBBOOpKvHhss0m5-YTlXQZrKm1uhm",
+      "folder_title": "المشرع الدستوري ",
+      "returned_count": 5,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "13LHu8is1BTNwKGzsFEcQsk9em6clBCig",
+          "title": "النيابات",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/13LHu8is1BTNwKGzsFEcQsk9em6clBCig",
+          "parent_id": "16RTFBBOOpKvHhss0m5-YTlXQZrKm1uhm",
+          "path": "المشرع الدستوري /النيابات",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1SQNe187hrxK8Bi9_prRSWcz22WyBkQw8",
+          "title": "تعليمات النيابة العامة",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1SQNe187hrxK8Bi9_prRSWcz22WyBkQw8",
+          "parent_id": "16RTFBBOOpKvHhss0m5-YTlXQZrKm1uhm",
+          "path": "المشرع الدستوري /تعليمات النيابة العامة",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1kBB2RxIAgDa3vQ53-xnHRiSWHXLnu3L7",
+          "title": "تنظيم النيابة العامة طبقا للقانون المصرى",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1kBB2RxIAgDa3vQ53-xnHRiSWHXLnu3L7",
+          "parent_id": "16RTFBBOOpKvHhss0m5-YTlXQZrKm1uhm",
+          "path": "المشرع الدستوري /تنظيم النيابة العامة طبقا للقانون المصرى",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "10J0zqjFHsVibmJerhfXOogda_FlaDquW",
+          "title": "دليل خدمات وزارة الداخليه",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/10J0zqjFHsVibmJerhfXOogda_FlaDquW",
+          "parent_id": "16RTFBBOOpKvHhss0m5-YTlXQZrKm1uhm",
+          "path": "المشرع الدستوري /دليل خدمات وزارة الداخليه",
+          "category": "unclassified",
+          "is_folder": true
+        },
+        {
+          "id": "1nQOKGcyRgZgvpBoex9rnVKhTGp7NKBwY",
+          "title": "مشروع الدستور",
+          "mime_type": "application/vnd.google-apps.folder",
+          "size": null,
+          "url": "https://drive.google.com/drive/folders/1nQOKGcyRgZgvpBoex9rnVKhTGp7NKBwY",
+          "parent_id": "16RTFBBOOpKvHhss0m5-YTlXQZrKm1uhm",
+          "path": "المشرع الدستوري /مشروع الدستور",
+          "category": "unclassified",
+          "is_folder": true
+        }
+      ]
+    },
+    {
+      "folder_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+      "folder_title": "أحكام المحكمة الدستورية العليا ",
+      "returned_count": 9,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "14YB3cDnZA86JP_r3Trg_2qqDkDEhL3Tq",
+          "title": "Copy of المواعيد والمدد القانونية فى الدستور المصرى.docx",
+          "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "size": "41386",
+          "url": "https://docs.google.com/document/d/14YB3cDnZA86JP_r3Trg_2qqDkDEhL3Tq/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /Copy of المواعيد والمدد القانونية فى الدستور المصرى.docx",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1yOpsFUPx5XpZFnt8nHI-vCY2GnPLOy-M",
+          "title": "Copy of 3 أحكام قضائية ضرائب.docx",
+          "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "size": "19940",
+          "url": "https://docs.google.com/document/d/1yOpsFUPx5XpZFnt8nHI-vCY2GnPLOy-M/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /Copy of 3 أحكام قضائية ضرائب.docx",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1DVqTcvtR-Qw3WhFKGAC4_Y5-XFm7akpk",
+          "title": "Copy of ahkam-adm-dstoria-2007.doc",
+          "mime_type": "application/msword",
+          "size": "111104",
+          "url": "https://docs.google.com/document/d/1DVqTcvtR-Qw3WhFKGAC4_Y5-XFm7akpk/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /Copy of ahkam-adm-dstoria-2007.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Zba1FOJIxuWJKGONIHab_cT6t6j9KANm",
+          "title": "Copy of قانون المحكمة الدستورية العليا.doc",
+          "mime_type": "application/msword",
+          "size": "84992",
+          "url": "https://docs.google.com/document/d/1Zba1FOJIxuWJKGONIHab_cT6t6j9KANm/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /Copy of قانون المحكمة الدستورية العليا.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1dcyI9ISAGzO9eAu4kPW1E1qGLw5CJbOy",
+          "title": "Copy of حكم المحكمة الدستورية العليا رقم 8 لسنة 22 قضائية.doc",
+          "mime_type": "application/msword",
+          "size": "35328",
+          "url": "https://docs.google.com/document/d/1dcyI9ISAGzO9eAu4kPW1E1qGLw5CJbOy/edit?usp=drivesdk&ouid=111727709921409805755&rtpof=true&sd=true",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /Copy of حكم المحكمة الدستورية العليا رقم 8 لسنة 22 قضائية.doc",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1h1yH-pxdrmuWwqgUyrdgGY4ulqMrm6F6",
+          "title": "الموسوعة الذهبية للقضاء الدستوري مجموعة الخمسين) 1969 - 2019).pdf",
+          "mime_type": "application/pdf",
+          "size": "31505324",
+          "url": "https://drive.google.com/file/d/1h1yH-pxdrmuWwqgUyrdgGY4ulqMrm6F6/view?usp=drivesdk",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /الموسوعة الذهبية للقضاء الدستوري مجموعة الخمسين) 1969 - 2019).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1zZw2NKBynqmD6sZtEBTfIRmX5loPQbGI",
+          "title": "المحكمة الدستورية سنة المكتب الفني 11 (من أكتوبر 2003 حتى أغسطس 2006).pdf",
+          "mime_type": "application/pdf",
+          "size": "20041456",
+          "url": "https://drive.google.com/file/d/1zZw2NKBynqmD6sZtEBTfIRmX5loPQbGI/view?usp=drivesdk",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /المحكمة الدستورية سنة المكتب الفني 11 (من أكتوبر 2003 حتى أغسطس 2006).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1cZVBF3XbcyZk59Zd6cJEXVCyppBI54Le",
+          "title": "المحكمة الدستورية سنة المكتب الفني 10 (من أكتوبر 2001 حتى أغسطس 2003).pdf",
+          "mime_type": "application/pdf",
+          "size": "8804136",
+          "url": "https://drive.google.com/file/d/1cZVBF3XbcyZk59Zd6cJEXVCyppBI54Le/view?usp=drivesdk",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /المحكمة الدستورية سنة المكتب الفني 10 (من أكتوبر 2001 حتى أغسطس 2003).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1GaYsOOjUmwzOjKFyuext9c8u6vFE9Acv",
+          "title": "المحكمة الدستورية العليا سنة المكتب الفني 12 (من أغسطس 2006 حتى يونيو2009).pdf",
+          "mime_type": "application/pdf",
+          "size": "17872891",
+          "url": "https://drive.google.com/file/d/1GaYsOOjUmwzOjKFyuext9c8u6vFE9Acv/view?usp=drivesdk",
+          "parent_id": "1TM1s0mYUIRA3zXavBOkPShOApmfH2z0b",
+          "path": "أحكام المحكمة الدستورية العليا /المحكمة الدستورية العليا سنة المكتب الفني 12 (من أغسطس 2006 حتى يونيو2009).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    },
+    {
+      "folder_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+      "folder_title": "تحديثات وتعديلات",
+      "returned_count": 61,
+      "possibly_truncated": false,
+      "items": [
+        {
+          "id": "18jjHezgvwkWICBGH7nPqtzWMkQqm6g-H",
+          "title": "تعديل بعض أحكام قانون إنشاء هيئة المحطات النووية لتوليد الكهرباء بالقانون رقم 162 لسنة 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "580345",
+          "url": "https://drive.google.com/file/d/18jjHezgvwkWICBGH7nPqtzWMkQqm6g-H/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون إنشاء هيئة المحطات النووية لتوليد الكهرباء بالقانون رقم 162 لسنة 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "10a4LqCZF6Y6QaHCuG3VxLrwXvpa9_LsI",
+          "title": "تعديل بعض أحكام قانون الضريبة على الدخل بالقانون رقم 7 لسنة 2024 (1).pdf",
+          "mime_type": "application/pdf",
+          "size": "376980",
+          "url": "https://drive.google.com/file/d/10a4LqCZF6Y6QaHCuG3VxLrwXvpa9_LsI/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الضريبة على الدخل بالقانون رقم 7 لسنة 2024 (1).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1SML3qYyF3YKDA9W8SKpQHWHaG4XRNnM_",
+          "title": "إصدار قانون التصالح فى بعض مخالفات البناء وتقنين أوضاعها 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "717706",
+          "url": "https://drive.google.com/file/d/1SML3qYyF3YKDA9W8SKpQHWHaG4XRNnM_/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون التصالح فى بعض مخالفات البناء وتقنين أوضاعها 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1WXt4U54AO_vGWCSRcbfB57SU7mNUhrTt",
+          "title": "القانون رقم  14 لسنة-2025 قانون العمل.pdf",
+          "mime_type": "application/pdf",
+          "size": "600272",
+          "url": "https://drive.google.com/file/d/1WXt4U54AO_vGWCSRcbfB57SU7mNUhrTt/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/القانون رقم  14 لسنة-2025 قانون العمل.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1A7VY07SiUkpkebckccNnz5xAKx6u3eXt",
+          "title": "حوافز مشروعات إنتاج الهيدروجين الأخضر ومشتقاته.pdf",
+          "mime_type": "application/pdf",
+          "size": "110498",
+          "url": "https://drive.google.com/file/d/1A7VY07SiUkpkebckccNnz5xAKx6u3eXt/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/حوافز مشروعات إنتاج الهيدروجين الأخضر ومشتقاته.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1msr0Dex58Jg6Hy4hghxDzrJZ_85qkevM",
+          "title": "إلغاء فقرة بالمادة 52 مكرر باللائحة التنفيذية لقانون الإجراءات الضريبية الموحد (1).pdf",
+          "mime_type": "application/pdf",
+          "size": "346864",
+          "url": "https://drive.google.com/file/d/1msr0Dex58Jg6Hy4hghxDzrJZ_85qkevM/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إلغاء فقرة بالمادة 52 مكرر باللائحة التنفيذية لقانون الإجراءات الضريبية الموحد (1).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1dq75alcOpGygrKqjbEeRTV1NMz2-epsj",
+          "title": "إصدار قانون إنشاء جهاز إدارة التصرف في الأموال المستردة والمتحفظ عليها (2).pdf",
+          "mime_type": "application/pdf",
+          "size": "370043",
+          "url": "https://drive.google.com/file/d/1dq75alcOpGygrKqjbEeRTV1NMz2-epsj/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون إنشاء جهاز إدارة التصرف في الأموال المستردة والمتحفظ عليها (2).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1mcmCBpM4F62Yh_k2jtKfk3fSIJDlvoxw",
+          "title": "إصدار قانون التأمين الموحد.pdf",
+          "mime_type": "application/pdf",
+          "size": "977394",
+          "url": "https://drive.google.com/file/d/1mcmCBpM4F62Yh_k2jtKfk3fSIJDlvoxw/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون التأمين الموحد.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "112oUC9Y1pvo6nwtE4TbJP36b9kQMfMsb",
+          "title": "استثناء قيد بعض الشركات غير المملوكة للمصريين أو المملوكة لهم بنسبة 51- من بعض أحكام قانون سجل المستوردين.pdf",
+          "mime_type": "application/pdf",
+          "size": "167577",
+          "url": "https://drive.google.com/file/d/112oUC9Y1pvo6nwtE4TbJP36b9kQMfMsb/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/استثناء قيد بعض الشركات غير المملوكة للمصريين أو المملوكة لهم بنسبة 51- من بعض أحكام قانون سجل المستوردين.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1OgQbdFyVHgMZXR2IaS_QocPB_-qX6bep",
+          "title": "تعديل بعض أحكام قانون التأمينات الاجتماعية والمعاشات بالقانون رقم 8 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "372225",
+          "url": "https://drive.google.com/file/d/1OgQbdFyVHgMZXR2IaS_QocPB_-qX6bep/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون التأمينات الاجتماعية والمعاشات بالقانون رقم 8 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1C0RulTL4diiguT1Z95eCDOvfDhwxM3YB",
+          "title": "تعديل بعض أحكام قانون الإجراءات الجنائية بشأن استئناف الجنايات على درجتين.pdf",
+          "mime_type": "application/pdf",
+          "size": "121768",
+          "url": "https://drive.google.com/file/d/1C0RulTL4diiguT1Z95eCDOvfDhwxM3YB/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الإجراءات الجنائية بشأن استئناف الجنايات على درجتين.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "172xm5vGVvQ8U4qP1FA3Id75JiqLQ4Bnk",
+          "title": "تعديل بعض أحكام قانون جائزة الدولة للمبدع الصغير بالقانون رقم 183 لسنة 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "600446",
+          "url": "https://drive.google.com/file/d/172xm5vGVvQ8U4qP1FA3Id75JiqLQ4Bnk/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون جائزة الدولة للمبدع الصغير بالقانون رقم 183 لسنة 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1t5CkrIqQheRDhIK4N2gwSt5EYyMIGRBl",
+          "title": "تعديل بعض أحكام قانون إنشاء صندوق مواجهة الطوارئ الطبية بالقانون رقم 5 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "329719",
+          "url": "https://drive.google.com/file/d/1t5CkrIqQheRDhIK4N2gwSt5EYyMIGRBl/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون إنشاء صندوق مواجهة الطوارئ الطبية بالقانون رقم 5 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Ga1n4RlaftaGOVBmsqxbfPlkmLZeP3mD",
+          "title": "تعديل بعض أحكام قانون الأراضي الصحراوية بالقانون رقم 11 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "151276",
+          "url": "https://drive.google.com/file/d/1Ga1n4RlaftaGOVBmsqxbfPlkmLZeP3mD/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الأراضي الصحراوية بالقانون رقم 11 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1xJvWhQnI0LS_IIKqxVsuAB4ONsB7vwkR",
+          "title": "إلغاء بعض القوانين الخاصة بإنشاء بعض البنوك.pdf",
+          "mime_type": "application/pdf",
+          "size": "615196",
+          "url": "https://drive.google.com/file/d/1xJvWhQnI0LS_IIKqxVsuAB4ONsB7vwkR/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إلغاء بعض القوانين الخاصة بإنشاء بعض البنوك.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1iAFcTMQIt-OWElDjBfVy8vn8VpIUqn5m",
+          "title": "تعديل بعض أحكام قانون جوازات السفر بالقانون رقم 16 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "868094",
+          "url": "https://drive.google.com/file/d/1iAFcTMQIt-OWElDjBfVy8vn8VpIUqn5m/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون جوازات السفر بالقانون رقم 16 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1PC8WCE3sqlK9GbmNBTNNVdkXTIvCfFfB",
+          "title": "تعديل بعض أحكام قانون الضريبة على الدخل بالقانون رقم 7 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "376980",
+          "url": "https://drive.google.com/file/d/1PC8WCE3sqlK9GbmNBTNNVdkXTIvCfFfB/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الضريبة على الدخل بالقانون رقم 7 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1CY_FtKN-BDeQgTlwacl9gckMtxLzkDLG",
+          "title": "إصدار قانون إنشاء وتنظيم نقابة التكنولوجيين (1).pdf",
+          "mime_type": "application/pdf",
+          "size": "264881",
+          "url": "https://drive.google.com/file/d/1CY_FtKN-BDeQgTlwacl9gckMtxLzkDLG/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون إنشاء وتنظيم نقابة التكنولوجيين (1).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1-Xs8XXbj2UfWKiFSl8XS9Fa5u1K4X4kP",
+          "title": "تعديل بعض أحكام قانون المحاكم الاقتصادية بالقانون رقم 156 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "179019",
+          "url": "https://drive.google.com/file/d/1-Xs8XXbj2UfWKiFSl8XS9Fa5u1K4X4kP/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون المحاكم الاقتصادية بالقانون رقم 156 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1cior6Avq1dcuGr5IoJ-QCj2bVRYVO9nG",
+          "title": "تقرير اللجنة المشتركة في مجلس النواب عن مشروع قانون التصالح في مخالفات البناء 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "1192592",
+          "url": "https://drive.google.com/file/d/1cior6Avq1dcuGr5IoJ-QCj2bVRYVO9nG/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تقرير اللجنة المشتركة في مجلس النواب عن مشروع قانون التصالح في مخالفات البناء 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1glDVLzBBRJxSSMBswQGTCl5Zpmax6hqf",
+          "title": "تعديل بعض أحكام قانون الضريبة على الدخل بالقانون رقم 175 لسنة 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "186368",
+          "url": "https://drive.google.com/file/d/1glDVLzBBRJxSSMBswQGTCl5Zpmax6hqf/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الضريبة على الدخل بالقانون رقم 175 لسنة 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1aGiWs1_pva8F60pUcFShavzfYNvK5nue",
+          "title": "تعديل بعض أحكام قانون المالية العامة الموحد بالقانون رقم 18 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "198973",
+          "url": "https://drive.google.com/file/d/1aGiWs1_pva8F60pUcFShavzfYNvK5nue/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون المالية العامة الموحد بالقانون رقم 18 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1E8U3TLGwkc3r8iuw_q-AiccB3qk_xklD",
+          "title": "قانون الايجار الجديد بموجب القانون رقم 164 لسنة 2025.pdf",
+          "mime_type": "application/pdf",
+          "size": "414507",
+          "url": "https://drive.google.com/file/d/1E8U3TLGwkc3r8iuw_q-AiccB3qk_xklD/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/قانون الايجار الجديد بموجب القانون رقم 164 لسنة 2025.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "12x6aSVYnuvJJBLKLe5ID-fKuXtcjI5ZW",
+          "title": "تعديل بعض أحكام قانون تنظيم شئون أعضاء المهن الطبية العاملين بالجها~ة الصحة من غير المخاطبين بقوانين أو لوائح خاصة بالقانون .pdf",
+          "mime_type": "application/pdf",
+          "size": "158961",
+          "url": "https://drive.google.com/file/d/12x6aSVYnuvJJBLKLe5ID-fKuXtcjI5ZW/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون تنظيم شئون أعضاء المهن الطبية العاملين بالجها~ة الصحة من غير المخاطبين بقوانين أو لوائح خاصة بالقانون .pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Ui6r9GjMUTKEJMHNouz3HII3iiDictv2",
+          "title": "تعديل بعض أحكام قانون الضريبة على القيمة المضافة بالقانون 177 لسنة 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "186724",
+          "url": "https://drive.google.com/file/d/1Ui6r9GjMUTKEJMHNouz3HII3iiDictv2/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الضريبة على القيمة المضافة بالقانون 177 لسنة 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1FZpMzWD-bis8p1jZ832GA7yGdbwXNlHu",
+          "title": "اللائحة التنفيذية لقانون إلغاء إعفاءات الضرائب والرسوم المقررة لجهات الدولة في الأنشطة الاستثمارية والاقتصادية.pdf",
+          "mime_type": "application/pdf",
+          "size": "201775",
+          "url": "https://drive.google.com/file/d/1FZpMzWD-bis8p1jZ832GA7yGdbwXNlHu/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/اللائحة التنفيذية لقانون إلغاء إعفاءات الضرائب والرسوم المقررة لجهات الدولة في الأنشطة الاستثمارية والاقتصادية.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1YVGqWWxyhdtNt72i1hDkvPfDRCeLhOE4",
+          "title": "تعديل اللائحة التنفيذية لقانون الإجراءات الضريبية الموحد بشأن أداء ضريبة القيمة المضافة بالعملة الأجنبية.pdf",
+          "mime_type": "application/pdf",
+          "size": "426006",
+          "url": "https://drive.google.com/file/d/1YVGqWWxyhdtNt72i1hDkvPfDRCeLhOE4/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل اللائحة التنفيذية لقانون الإجراءات الضريبية الموحد بشأن أداء ضريبة القيمة المضافة بالعملة الأجنبية.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1d3DfDUelgY4Vg7-tn4I8Hk8VZLhMnB46",
+          "title": "إحالة قضايا التموين والتعدي على المنشآت العامة للقضاء العسكري.pdf",
+          "mime_type": "application/pdf",
+          "size": "160002",
+          "url": "https://drive.google.com/file/d/1d3DfDUelgY4Vg7-tn4I8Hk8VZLhMnB46/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إحالة قضايا التموين والتعدي على المنشآت العامة للقضاء العسكري.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1QqSx7KHqqYhr0hsAzX2jZSwYWjfMlZKE",
+          "title": "إنشاء الجهاز المصرى للملكية الفكرية.pdf",
+          "mime_type": "application/pdf",
+          "size": "693390",
+          "url": "https://drive.google.com/file/d/1QqSx7KHqqYhr0hsAzX2jZSwYWjfMlZKE/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إنشاء الجهاز المصرى للملكية الفكرية.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1R8pr97ypvo3YUdlOcpxCesg1fn5B1HDq",
+          "title": "تعديل بعض أحكام قانون حماية المستهلك بالقانون رقم 20 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "605204",
+          "url": "https://drive.google.com/file/d/1R8pr97ypvo3YUdlOcpxCesg1fn5B1HDq/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون حماية المستهلك بالقانون رقم 20 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1LvlB4pH4dL7BciQwCmS1EvzFuGDnuPDC",
+          "title": "إصدار قانون إنشاء وتنظيم نقابة التكنولوجيين.pdf",
+          "mime_type": "application/pdf",
+          "size": "264881",
+          "url": "https://drive.google.com/file/d/1LvlB4pH4dL7BciQwCmS1EvzFuGDnuPDC/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون إنشاء وتنظيم نقابة التكنولوجيين.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "19iigEQRuhFGgxQApg003JzZoZNbjb9tX",
+          "title": "إصدار قانون الوكالة المصرية لضمان الصادرات والاستثمار.pdf",
+          "mime_type": "application/pdf",
+          "size": "593289",
+          "url": "https://drive.google.com/file/d/19iigEQRuhFGgxQApg003JzZoZNbjb9tX/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون الوكالة المصرية لضمان الصادرات والاستثمار.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "12PWoayInk8XRR3zYJOqmc7a4b9EEB2Pt",
+          "title": "تقرير اللجنة البرلمانية المختصة بمراجعة مشروع قانون اللاجئين وتنظيم اللجوء - نوفمبر 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "1162913",
+          "url": "https://drive.google.com/file/d/12PWoayInk8XRR3zYJOqmc7a4b9EEB2Pt/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تقرير اللجنة البرلمانية المختصة بمراجعة مشروع قانون اللاجئين وتنظيم اللجوء - نوفمبر 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1PJ_VsDcrtNSsMUPc5Re_cINTbR1117T_",
+          "title": "إلغاء فقرة بالمادة 52 مكرر باللائحة التنفيذية لقانون الإجراءات الضريبية الموحد.pdf",
+          "mime_type": "application/pdf",
+          "size": "346864",
+          "url": "https://drive.google.com/file/d/1PJ_VsDcrtNSsMUPc5Re_cINTbR1117T_/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إلغاء فقرة بالمادة 52 مكرر باللائحة التنفيذية لقانون الإجراءات الضريبية الموحد.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1kJUv0CDXSeRHUxgIccWcMSVdU4348-os",
+          "title": "تقرير اللجنة التشريعية في مجلس النواب عن مشروع تعديل قانون الإجراءات الجنائية لاستحداث نظام استئناف الجنايات.pdf",
+          "mime_type": "application/pdf",
+          "size": "2605698",
+          "url": "https://drive.google.com/file/d/1kJUv0CDXSeRHUxgIccWcMSVdU4348-os/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تقرير اللجنة التشريعية في مجلس النواب عن مشروع تعديل قانون الإجراءات الجنائية لاستحداث نظام استئناف الجنايات.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1I7fWjzXIY2N2yB-lCvpAxwklq_lNkveY",
+          "title": "تعديل بعض أحكام قانون إنشاء صندوق قادرون باختلاف بالقانون رقم 10 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "388838",
+          "url": "https://drive.google.com/file/d/1I7fWjzXIY2N2yB-lCvpAxwklq_lNkveY/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون إنشاء صندوق قادرون باختلاف بالقانون رقم 10 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1_f1jeosNctE7flPMNvH0_ECjLk2sWgYC",
+          "title": "مشروع قانون العمل الجديد وتقرير لجنة مجلس النواب المختصة - فبراير 2025.pdf",
+          "mime_type": "application/pdf",
+          "size": "3841863",
+          "url": "https://drive.google.com/file/d/1_f1jeosNctE7flPMNvH0_ECjLk2sWgYC/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/مشروع قانون العمل الجديد وتقرير لجنة مجلس النواب المختصة - فبراير 2025.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1KAx5UrjbbIYvhEJTZPX0IJh9PUoXK5DF",
+          "title": "تعديل بعض أحكام قانون هيئة الشرطة بالقانون رقم 4 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "429883",
+          "url": "https://drive.google.com/file/d/1KAx5UrjbbIYvhEJTZPX0IJh9PUoXK5DF/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون هيئة الشرطة بالقانون رقم 4 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1dT_mno59NvSXiJoNgObmSpg8EjueS3l7",
+          "title": "إصدار قانون رعاية حقوق المسنين.pdf",
+          "mime_type": "application/pdf",
+          "size": "710141",
+          "url": "https://drive.google.com/file/d/1dT_mno59NvSXiJoNgObmSpg8EjueS3l7/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون رعاية حقوق المسنين.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1J20bhDciI4eE0esMo2Yg1QZufxFs3ai6",
+          "title": "قانون رقم ١٦٥ لسنة ٢٠٢٥ بتعديل بعض احكام القانون رقم 4 لسنة 96.pdf",
+          "mime_type": "application/pdf",
+          "size": "402714",
+          "url": "https://drive.google.com/file/d/1J20bhDciI4eE0esMo2Yg1QZufxFs3ai6/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/قانون رقم ١٦٥ لسنة ٢٠٢٥ بتعديل بعض احكام القانون رقم 4 لسنة 96.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1pJuRPq0uDLG_9_i8Gri90au0GooUS3m7",
+          "title": "تعديل بعض أحكام قانون الطفل بالقانون رقم 186 لسنة 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "608196",
+          "url": "https://drive.google.com/file/d/1pJuRPq0uDLG_9_i8Gri90au0GooUS3m7/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الطفل بالقانون رقم 186 لسنة 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1pkyMk2svYc7WLyq-y0z1fg0WH_44vYqI",
+          "title": "تعديل بعض أحكام قانون الأوسمة والأونواط المدنية بالقانون رقم 12 لسنة 2024 وسام البناء العظيم.pdf",
+          "mime_type": "application/pdf",
+          "size": "153516",
+          "url": "https://drive.google.com/file/d/1pkyMk2svYc7WLyq-y0z1fg0WH_44vYqI/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون الأوسمة والأونواط المدنية بالقانون رقم 12 لسنة 2024 وسام البناء العظيم.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1FEUpNRrjKxfUaOKJAp9avivoB5FRUzxq",
+          "title": "تعديل بعض أحكام قانون العقوبات بالقانون رقم 185 لسنة 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "585361",
+          "url": "https://drive.google.com/file/d/1FEUpNRrjKxfUaOKJAp9avivoB5FRUzxq/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون العقوبات بالقانون رقم 185 لسنة 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1tZmYuQmPMfCic9fndiMyJmbScsfa_3Bz",
+          "title": "منح التزام تصميم وإنشاء وإدارة وتشغيل وصيانة واعادة تسليم محطة متعددة الأغراض بميناء شرق بورسعيد.pdf",
+          "mime_type": "application/pdf",
+          "size": "16201937",
+          "url": "https://drive.google.com/file/d/1tZmYuQmPMfCic9fndiMyJmbScsfa_3Bz/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/منح التزام تصميم وإنشاء وإدارة وتشغيل وصيانة واعادة تسليم محطة متعددة الأغراض بميناء شرق بورسعيد.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1uTRvuqbfEhOBOnQZ7HKA_NMhmW3edLtC",
+          "title": "تعديل بعض أحكام قانون تنمية المشروعات المتوسطة والصغيرة ومتناهية الصغر بالقانون رقم 184 لسنة 2023.pdf",
+          "mime_type": "application/pdf",
+          "size": "582286",
+          "url": "https://drive.google.com/file/d/1uTRvuqbfEhOBOnQZ7HKA_NMhmW3edLtC/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون تنمية المشروعات المتوسطة والصغيرة ومتناهية الصغر بالقانون رقم 184 لسنة 2023.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1DthIGNYW7wpbVEIF2xtWWLo5PIY_r7rq",
+          "title": "تعديل قانون التعليم pdf القانون رقم 169 لسنة 2025.pdf",
+          "mime_type": "application/pdf",
+          "size": "197547",
+          "url": "https://drive.google.com/file/d/1DthIGNYW7wpbVEIF2xtWWLo5PIY_r7rq/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل قانون التعليم pdf القانون رقم 169 لسنة 2025.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1IdM996rq1D6kIK4VmfIzRSp0cNs-Bp_g",
+          "title": "تعديل بعض أحكام قانون إعادة تنظيم الأزهر وقانون التعليم بالقانون رقم 15 لسنة 2024 المد للمعلمين بعد سن المعاش.pdf",
+          "mime_type": "application/pdf",
+          "size": "165594",
+          "url": "https://drive.google.com/file/d/1IdM996rq1D6kIK4VmfIzRSp0cNs-Bp_g/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون إعادة تنظيم الأزهر وقانون التعليم بالقانون رقم 15 لسنة 2024 المد للمعلمين بعد سن المعاش.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "12HPDoYwZERYw6SWPlh44RBcec1RLA2nn",
+          "title": "القانون-رقم-14-لسنة-2025-بإصدار-قانون-العمل_نسخة.pdf",
+          "mime_type": "application/pdf",
+          "size": "588429",
+          "url": "https://drive.google.com/file/d/12HPDoYwZERYw6SWPlh44RBcec1RLA2nn/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/القانون-رقم-14-لسنة-2025-بإصدار-قانون-العمل_نسخة.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1PX0e7M8dH50A_ffXJE9OEOaDvjI8Vc1N",
+          "title": "تعديل قانون المرور بالقانون رقم 17 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "191972",
+          "url": "https://drive.google.com/file/d/1PX0e7M8dH50A_ffXJE9OEOaDvjI8Vc1N/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل قانون المرور بالقانون رقم 17 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "16NCIOoknfhGJEtHVhhpENS92BeAjdfQ9",
+          "title": "إلغاء بعض القوانين الخاصة بإنشاء بعض البنوك (1).pdf",
+          "mime_type": "application/pdf",
+          "size": "615196",
+          "url": "https://drive.google.com/file/d/16NCIOoknfhGJEtHVhhpENS92BeAjdfQ9/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إلغاء بعض القوانين الخاصة بإنشاء بعض البنوك (1).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "10akEfp5rvm4vJdUeMmCTzGoSWswfTzkw",
+          "title": "تعديل بعض أحكام قانون المرافعات المدنية والتجارية بالقانون 157 لسنة 2024.pdf",
+          "mime_type": "application/pdf",
+          "size": "167262",
+          "url": "https://drive.google.com/file/d/10akEfp5rvm4vJdUeMmCTzGoSWswfTzkw/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون المرافعات المدنية والتجارية بالقانون 157 لسنة 2024.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1atbHq8Y7LdvTkevY6ryejU2z-b29Eg1G",
+          "title": "إصدار قانون إعادة تنظيم المجلس القومى للطفولة والأمومة وتعديل بعض أحكام قانون الطفل.pdf",
+          "mime_type": "application/pdf",
+          "size": "625392",
+          "url": "https://drive.google.com/file/d/1atbHq8Y7LdvTkevY6ryejU2z-b29Eg1G/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون إعادة تنظيم المجلس القومى للطفولة والأمومة وتعديل بعض أحكام قانون الطفل.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1Aj_sV3Q920kkvO2-FLc_E8wf7jLlBSFs",
+          "title": "تعديل قانون الرياضة بموجب القانون رقم 171 لسنة 2025.pdf",
+          "mime_type": "application/pdf",
+          "size": "224018",
+          "url": "https://drive.google.com/file/d/1Aj_sV3Q920kkvO2-FLc_E8wf7jLlBSFs/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل قانون الرياضة بموجب القانون رقم 171 لسنة 2025.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1ie0nXXKAzxjcB7Z25IinEkDNsQuzFMEx",
+          "title": "منح التزام تصميم وإنشاء وإدارة وتشغيل وصيانة واعادة تسليم محطة متعددة الأغراض بميناء شرق بورسعيد (1).pdf",
+          "mime_type": "application/pdf",
+          "size": "16201937",
+          "url": "https://drive.google.com/file/d/1ie0nXXKAzxjcB7Z25IinEkDNsQuzFMEx/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/منح التزام تصميم وإنشاء وإدارة وتشغيل وصيانة واعادة تسليم محطة متعددة الأغراض بميناء شرق بورسعيد (1).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1o747t1ZztY-4zw0m2r5WBIBNf25fhqZl",
+          "title": "قانون التصرف في املاك الدولة الخاصة pdf القانون رقم 168 لسنة 2025.pdf",
+          "mime_type": "application/pdf",
+          "size": "177231",
+          "url": "https://drive.google.com/file/d/1o747t1ZztY-4zw0m2r5WBIBNf25fhqZl/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/قانون التصرف في املاك الدولة الخاصة pdf القانون رقم 168 لسنة 2025.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1zsyzV4rCXM7hR8SA6hjMyCrUkx2jQY9u",
+          "title": "دعم صندوق قادرون باختلاف.pdf",
+          "mime_type": "application/pdf",
+          "size": "555851",
+          "url": "https://drive.google.com/file/d/1zsyzV4rCXM7hR8SA6hjMyCrUkx2jQY9u/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/دعم صندوق قادرون باختلاف.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1dCSGlSB2Uvqj4lg1XgCMPO9sODk9aezx",
+          "title": "تقرير بعض التيسيرات للمصريين المقيمين بالخارج.pdf",
+          "mime_type": "application/pdf",
+          "size": "179142",
+          "url": "https://drive.google.com/file/d/1dCSGlSB2Uvqj4lg1XgCMPO9sODk9aezx/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تقرير بعض التيسيرات للمصريين المقيمين بالخارج.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "11JPVBmb04IXNiitCwHLWkzqX60aibYUQ",
+          "title": "إصدار قانون إنشاء جهاز إدارة التصرف في الأموال المستردة والمتحفظ عليها.pdf",
+          "mime_type": "application/pdf",
+          "size": "370043",
+          "url": "https://drive.google.com/file/d/11JPVBmb04IXNiitCwHLWkzqX60aibYUQ/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/إصدار قانون إنشاء جهاز إدارة التصرف في الأموال المستردة والمتحفظ عليها.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1l_trZbFJqRkSqaX431h3puzJfVQpN3OW",
+          "title": "تعديل اللائحة التنفيذية لقانون حماية المنافسة ومنع الممارسات الاحتكارية لتنظيم التركز الاقتصادي.pdf",
+          "mime_type": "application/pdf",
+          "size": "699130",
+          "url": "https://drive.google.com/file/d/1l_trZbFJqRkSqaX431h3puzJfVQpN3OW/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل اللائحة التنفيذية لقانون حماية المنافسة ومنع الممارسات الاحتكارية لتنظيم التركز الاقتصادي.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1fqmGwwwstdUNgZ38NeOpGqcwTfodd4F3",
+          "title": "تعديل بعض أحكام قانون التأمينات الاجتماعية والمعاشات بالقانون رقم 8 لسنة 2024 (1).pdf",
+          "mime_type": "application/pdf",
+          "size": "372225",
+          "url": "https://drive.google.com/file/d/1fqmGwwwstdUNgZ38NeOpGqcwTfodd4F3/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/تعديل بعض أحكام قانون التأمينات الاجتماعية والمعاشات بالقانون رقم 8 لسنة 2024 (1).pdf",
+          "category": "unclassified",
+          "is_folder": false
+        },
+        {
+          "id": "1yIXkmWd1AUf0nHfb2B0II-xH00Sin7-k",
+          "title": "قانون تنظيم بعض الأحكام الخاصة بملكية الدولة فى الشركات المملوكة لها أو التي تساهم فيها.pdf",
+          "mime_type": "application/pdf",
+          "size": "191648",
+          "url": "https://drive.google.com/file/d/1yIXkmWd1AUf0nHfb2B0II-xH00Sin7-k/view?usp=drivesdk",
+          "parent_id": "1MAgFSolq5SO_eqKStezif5Y2PH4LzGZy",
+          "path": "تحديثات وتعديلات/قانون تنظيم بعض الأحكام الخاصة بملكية الدولة فى الشركات المملوكة لها أو التي تساهم فيها.pdf",
+          "category": "unclassified",
+          "is_folder": false
+        }
+      ]
+    }
+  ]
+}

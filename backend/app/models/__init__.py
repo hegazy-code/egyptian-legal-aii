@@ -27,6 +27,8 @@ from app.models.judgments import (  # noqa: F401
     LegalRelationship,
 )
 
+from app.models.library_catalog import LibraryAsset, LibraryTextChunk, LegalCommentary, AppealRecord, LegalTemplate  # noqa: F401
+
 from app.models.judgment_evidence import JudgmentEvidence  # noqa: F401
 
 # users.py
@@ -61,6 +63,11 @@ __all__ = [
     "Court",
     "Judgment",
     "JudgmentEvidence",
+    "LibraryAsset",
+    "LibraryTextChunk",
+    "LegalCommentary",
+    "AppealRecord",
+    "LegalTemplate",
     "LegalTopic",
     "ArticleTopic",
     "JudgmentTopic",

@@ -1,46 +1,69 @@
-"""
-Chat pipeline tests. GEMINI_API_KEY is intentionally unset in tests (see
-conftest.py), so these exercise the real no-hallucination fallback path
-(app.rag.answer_builder.build_fallback_answer) rather than calling the real
-Gemini API -- no network calls, no key required.
-"""
+"""Regression tests for the current public /chat API contract.
 
-
-def _register_and_login(client, email="chatuser@example.com"):
-    client.post("/auth/register", json={"email": email, "password": "strongpass123"})
-    login = client.post("/auth/login", json={"email": email, "password": "strongpass123"})
-    token = login.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
+POST /chat accepts question/conversationId and is intentionally available to guests.
+Authenticated conversation-history endpoints remain private.
+"""
 
 
 def test_chat_without_gemini_key_returns_grounded_fallback(client):
-    headers = _register_and_login(client)
-    resp = client.post("/chat", json={"message": "ما حكم المادة 1 من القانون المدني؟"}, headers=headers)
-    assert resp.status_code == 200
+    resp = client.post("/chat", json={"question": "ما حكم المادة 1 من القانون المدني؟"})
+    assert resp.status_code == 200, resp.text
     body = resp.json()
-    assert body["conversation_id"]
-    assert body["message_id"]
-    assert "تنبيه" in body["answer"]  # disclaimer section always present
-    # Never fabricates a citation when nothing was retrieved.
-    assert "لا توجد مصادر" in body["answer"] or isinstance(body["citations"], list)
+    assert body["conversationId"]
+    assert isinstance(body["answer"], dict)
+    assert body["answer"]["disclaimer"]
 
 
-def test_chat_creates_and_reuses_conversation(client):
-    headers = _register_and_login(client, email="chatuser2@example.com")
-    first = client.post("/chat", json={"message": "ما هو نظام الإيجار في مصر؟"}, headers=headers)
-    conv_id = first.json()["conversation_id"]
+def test_chat_creates_and_reuses_guest_conversation(client):
+    first = client.post("/chat", json={"question": "ما هو نظام الإيجار في مصر؟"})
+    assert first.status_code == 200, first.text
+    conv_id = first.json()["conversationId"]
+    assert conv_id
 
     second = client.post(
-        "/chat", json={"message": "وما هي المدة القانونية؟", "conversation_id": conv_id}, headers=headers
+        "/chat",
+        json={"question": "وما هي المدة القانونية؟", "conversationId": conv_id},
     )
-    assert second.json()["conversation_id"] == conv_id
-
-    convo_resp = client.get(f"/conversations/{conv_id}", headers=headers)
-    assert convo_resp.status_code == 200
-    messages = convo_resp.json()["messages"]
-    assert len(messages) == 4  # 2 user + 2 assistant
+    assert second.status_code == 200, second.text
+    assert second.json()["conversationId"] == conv_id
 
 
-def test_chat_requires_auth(client):
+def test_chat_rejects_missing_question(client):
     resp = client.post("/chat", json={"message": "test"})
+    assert resp.status_code == 422
+
+
+def test_conversation_history_requires_auth(client):
+    resp = client.get("/conversations")
     assert resp.status_code == 401
+
+
+def test_chat_includes_reviewed_library_source_in_fallback(client):
+    from app.database import SessionLocal
+    from app.models.library_catalog import LibraryAsset, LibraryTextChunk
+
+    with SessionLocal.begin() as db:
+        asset = LibraryAsset(
+            provider="google_drive",
+            external_file_id="chat-citation-example",
+            title="قانون العمل رقم ١٤ لسنة ٢٠٢٥",
+            source_url="https://example.org/gazette.pdf",
+            category="legislation",
+            review_status="verified",
+            rights_status="cleared",
+        )
+        db.add(asset)
+        db.flush()
+        db.add(LibraryTextChunk(
+            asset_id=asset.id,
+            chunk_index=0,
+            page_start=5,
+            text="مقتطف تجريبي عن تاريخ تطبيق قانون العمل",
+            verified=True,
+        ))
+    resp = client.post("/chat", json={"question": "متى بدأ تطبيق قانون العمل رقم 14 لسنة 2025؟"})
+    assert resp.status_code == 200, resp.text
+    sources = resp.json()["answer"]["answerSources"]
+    source = next(s for s in sources if s["sourceUrl"] == "https://example.org/gazette.pdf")
+    assert source["status"] == "verified"
+    assert source["lawName"].endswith("(ص. 5)")

@@ -7,6 +7,7 @@ const STATUS_LABEL: Record<SourceCitation["status"], string> = {
 
 const BASIS_LABEL: Record<NonNullable<SourceCitation["basis"]>, string> = {
   from_law: "من القانون مباشرة",
+  reviewed_library: "ملخص مراجع من المصدر الرسمي",
   ai_inference: "استنتاج الذكاء الاصطناعي",
 };
 
