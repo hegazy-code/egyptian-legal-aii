@@ -125,15 +125,19 @@ def _get_client():
     """Lazily construct a genai client so import doesn't fail without a key."""
     if not settings.GEMINI_API_KEY:
         raise GeminiUnavailableError("GEMINI_API_KEY is not configured.")
+    import httpx
     from google import genai
 
     # Use v1beta: Render previously returned 404 for the configured models on v1.
     from google.genai import types
+    def apply_transport_timeout(request: httpx.Request) -> None:
+        request.extensions["timeout"] = httpx.Timeout(20.0).as_dict()
+
     return genai.Client(
         api_key=settings.GEMINI_API_KEY,
         http_options=types.HttpOptions(
             api_version="v1beta",
-            timeout=8000,
+            client_args={"event_hooks": {"request": [apply_transport_timeout]}},
             retry_options=types.HttpRetryOptions(attempts=1),
         ),
     )
@@ -170,8 +174,17 @@ def call_gemini_with_retry(
                     return response.text
                 last_error = "empty response"
             except genai_errors.APIError as exc:
-                last_error = f"HTTP {exc.code}"
-                if exc.code not in {404, 429, 500, 502, 503, 504}:
+                message = str(getattr(exc, "message", "")).lower()
+                reason = next((
+                    label for label, phrases in (
+                        ("api_key_rejected", ("api key not valid", "api_key_invalid", "leaked")),
+                        ("invalid_timeout", ("timeout", "deadline")),
+                        ("invalid_request", ("invalid argument", "invalid_argument")),
+                        ("quota_exhausted", ("quota", "resource_exhausted")),
+                    ) if any(phrase in message for phrase in phrases)
+                ), "provider_error")
+                last_error = f"HTTP {exc.code} ({reason})"
+                if reason == "api_key_rejected" or exc.code not in {400, 404, 429, 500, 502, 503, 504}:
                     raise GeminiUnavailableError(last_error) from exc
                 logger.warning("Gemini %s on %s", last_error, model_name)
             except httpx.TransportError as exc:
@@ -283,7 +296,7 @@ def generate_answer(
 - الجهة المختصة بالاسم (مكتب العمل / المحكمة العمالية الابتدائية / النيابة / الشهر العقاري).
 - المستندات المطلوبة بالاسم.
 - الميعاد القانوني بالأيام أو الشهور.
-- خطوة عن الاستئناف (٣٠ يوماً) وخطوة عن الطعن بالنقض (٦٠ يوماً).
+- اذكر الطعن أو الاستئناف فقط إذا انطبق على الموقف وسند المصدر الإجراء والميعاد.
 
 "missingInformation": ٣ عناصر على الأقل — ما الذي يغيّر النتيجة لو عرفناه.
 
