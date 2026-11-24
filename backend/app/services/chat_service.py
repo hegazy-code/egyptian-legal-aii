@@ -127,12 +127,42 @@ class ChatService:
                     ),
                 )
 
+                normalized = simple_normalize(question)
+                fixed_lease = any(
+                    item["source_url"] == "https://www.eta.gov.eg/sites/default/files/2024-10/law-131-1948.pdf"
+                    and "المادتان 147 و598" in item["title"]
+                    for item in excerpts
+                )
+                if fixed_lease and re.search(r"يطرد|طرد|اخلاء|فسخ", normalized) and re.search(
+                    r"قبل.*(?:العقد|المدة)|العقد.*(?:لسه|ما خلص)", normalized
+                ):
+                    excerpts = [item for item in excerpts if item["article_number"] in (None, "598")]
+                    answer_dict.update(
+                        legalDomain="قانون مدني — إيجار",
+                        preliminaryApplication=(
+                            "لو عقدك محدد المدة وخاضع للقانون المدني، فطلب المالك وحده لا ينهيه قبل الموعد. "
+                            "راجع سبب طلب الإخلاء وأي بند للفسخ ينطبق على الواقعة."
+                        ),
+                        missingInformation=[
+                            "إمتى اتكتب العقد وإمتى تنتهي مدته؟",
+                            "هل المالك قال سبب الإخلاء أو بعت إنذار؟",
+                            "هل فيه خلاف على دفع الأجرة أو التزام مكتوب في العقد؟",
+                        ],
+                        possibleProcedures=[
+                            "راجع نسخة العقد وحدد تاريخ انتهائه وبنود الفسخ أو الإنهاء المبكر.",
+                            "اجمع إيصالات الأجرة والرسائل وأي إنذار وصلك عشان تقدر تثبت الوقائع.",
+                            "لو وصلك إنذار أو ورقة من المحكمة، اعرضها مع العقد والإيصالات على محامٍ عشان يحدد الرد والإجراء المناسب للورقة.",
+                        ],
+                    )
+
+        # Keep the statute text visible even if the model is unavailable.
+        verified_texts = []
         # Render source links from reviewed database rows rather than Gemini output.
         if excerpts:
             sources = answer_dict.setdefault("answerSources", [])
             for item in excerpts:
                 page = item["page_start"]
-                sources.append({
+                citation = {
                     "id": item["id"],
                     "lawName": f"{item['title']} (ص. {page})" if page else item["title"],
                     "kind": "judgment" if item["category"] != "legislation" else "law",
@@ -141,7 +171,17 @@ class ChatService:
                     "sourceUrl": item["source_url"],
                     "articleNumber": item["article_number"],
                     "excerpt": item["text"][:600],
-                })
+                }
+                sources.append(citation)
+                if item["article_number"]:
+                    verified_texts.append(citation)
+
+        if verified_texts:
+            authoritative_ids = {source["id"] for source in verified_texts}
+            answer_dict["relevantLegalTexts"] = verified_texts + [
+                source for source in (answer_dict.get("relevantLegalTexts") or [])
+                if source.get("id") not in authoritative_ids
+            ]
 
         # Store structured answer as JSON string in the DB for history retrieval.
         answer_json = json.dumps(answer_dict, ensure_ascii=False)
