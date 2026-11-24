@@ -64,6 +64,7 @@ def test_chat_includes_reviewed_library_source_in_fallback(client):
     resp = client.post("/chat", json={"question": "متى بدأ تطبيق قانون العمل رقم 14 لسنة 2025؟"})
     assert resp.status_code == 200, resp.text
     sources = resp.json()["answer"]["answerSources"]
+    assert "مقتطف تجريبي" in resp.json()["answer"]["explanation"]
     source = next(s for s in sources if s["sourceUrl"] == "https://example.org/gazette.pdf")
     assert source["status"] == "verified"
     assert source["lawName"].endswith("(ص. 5)")

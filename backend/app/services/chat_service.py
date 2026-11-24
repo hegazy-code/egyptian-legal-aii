@@ -110,7 +110,11 @@ class ChatService:
                 question=question,
                 analysis=analysis,
                 context_results=search_results,
-                note="خدمة الذكاء الاصطناعي (Gemini) غير مُهيأة حالياً على هذا الخادم.",
+                note=(
+                    "ملخص من المصادر الرسمية المراجعة:\n\n"
+                    + "\n\n".join(item["text"][:600] for item in excerpts)
+                    if excerpts else "خدمة الذكاء الاصطناعي (Gemini) غير مُهيأة حالياً على هذا الخادم."
+                ),
             )
 
         # Render source links from reviewed database rows rather than Gemini output.
