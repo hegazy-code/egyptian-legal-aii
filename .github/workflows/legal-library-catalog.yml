@@ -12,6 +12,8 @@ on:
       - 'data/inventory/**'
       - 'backend/tests/test_library_search.py'
       - 'backend/app/services/library_search.py'
+      - 'backend/scripts/import_reviewed_legislation.py'
+      - 'backend/migrations/versions/c8da12ea019b_reviewed_library_seed.py'
       - 'backend/app/services/library_extraction.py'
       - 'backend/tests/test_library_extraction.py'
       - 'backend/scripts/stage_library_text.py'
@@ -62,7 +64,7 @@ jobs:
           with Session(engine) as db:
               total = db.scalar(select(func.count()).select_from(LibraryAsset))
               assert total > 0, "No inventory rows imported"
-              assert db.scalar(select(func.count()).select_from(LibraryAsset).where(LibraryAsset.review_status != "unverified")) == 0
+              assert db.scalar(select(func.count()).select_from(LibraryAsset).where(LibraryAsset.provider == "google_drive", LibraryAsset.review_status != "unverified")) == 0
               print("Idempotent catalog import verified:", total, "unverified files")
           PY
 

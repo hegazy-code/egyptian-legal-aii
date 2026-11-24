@@ -58,7 +58,7 @@ def test_reviewed_amendment_import_is_idempotent_and_matches_arabic_question():
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
     with Session(engine) as db:
-        assert import_records(db) == 2
+        assert import_records(db) == 3
         db.commit()
         assert import_records(db) == 0
         results = search_verified_library(
