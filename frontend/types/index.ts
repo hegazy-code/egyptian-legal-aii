@@ -18,7 +18,7 @@ export type SourceStatus = "current" | "historical";
  * (spec section 52: no-hallucination policy -- the UI should visually
  * distinguish these when the backend provides the distinction.)
  */
-export type AnswerBasis = "from_law" | "ai_inference";
+export type AnswerBasis = "reviewed_library" | "from_law" | "ai_inference";
 
 export type SourceKind = "law" | "judgment" | "procedure" | "other";
 

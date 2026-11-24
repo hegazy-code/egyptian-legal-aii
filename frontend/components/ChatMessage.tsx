@@ -127,6 +127,9 @@ export default function ChatMessage({ turn, pending }: { turn: ChatTurn; pending
                     ) : (
                       <span>{s.lawName}{s.articleNumber ? ` — مادة ${String(s.articleNumber).replace(/^~/, "")}` : ""}</span>
                     )}
+                    {s.basis === "reviewed_library" && s.excerpt && (
+                      <p className="mt-1 text-sm text-muted">{s.excerpt}</p>
+                    )}
                   </li>
                 ))}
               </ul>

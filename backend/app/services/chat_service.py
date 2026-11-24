@@ -120,7 +120,7 @@ class ChatService:
                 page = item["page_start"]
                 sources.append({
                     "id": item["id"],
-                    "lawName": f"{item['title']} (ص. {page})",
+                    "lawName": f"{item['title']} (ص. {page})" if page else item["title"],
                     "kind": "judgment" if item["category"] != "legislation" else "law",
                     "status": "verified",
                     "basis": "reviewed_library",

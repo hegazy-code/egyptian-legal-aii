@@ -1,7 +1,7 @@
 """Retrieve reviewed library excerpts and their source pages for Ask."""
 import re
 
-from sqlalchemy import case, func, or_
+from sqlalchemy import and_, case, func, or_
 from sqlalchemy.orm import Session
 
 from app.models.library_catalog import LibraryAsset, LibraryTextChunk
@@ -40,7 +40,13 @@ def search_verified_library(db: Session, query: str, limit: int = 10) -> list[di
             LibraryAsset.review_status == "verified",
             LibraryAsset.rights_status == "cleared",
             LibraryTextChunk.verified.is_(True),
-            LibraryTextChunk.page_start >= 1,
+            or_(
+                LibraryTextChunk.page_start >= 1,
+                and_(
+                    LibraryAsset.provider == "official",
+                    LibraryTextChunk.extraction_method == "reviewed_summary",
+                ),
+            ),
             LibraryAsset.source_url.like("https://_%"),
             matched >= min(2, len(tokens)),
         )

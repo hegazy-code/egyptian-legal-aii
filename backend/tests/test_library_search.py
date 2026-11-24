@@ -50,3 +50,22 @@ def test_catalog_identity_constraint_is_enforced():
             assert False, "Expected duplicate identity to be rejected"
         except IntegrityError:
             db.rollback()
+
+
+def test_reviewed_amendment_import_is_idempotent_and_matches_arabic_question():
+    from scripts.import_reviewed_legislation import import_records
+
+    engine = create_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    with Session(engine) as db:
+        assert import_records(db) == 2
+        db.commit()
+        assert import_records(db) == 0
+        results = search_verified_library(
+            db, "هل بدأ تطبيق قانون الإجراءات الجنائية رقم ١٧٤ لسنة ٢٠٢٥ ومتى يسري؟",
+        )
+        assert "1 أكتوبر 2027" in results[0]["text"]
+        assert "1 أكتوبر 2026" in results[0]["text"]
+        assert results[0]["page_start"] is None
+        assert results[0]["source_url"].startswith("https://www.alamiria.com/")
+        assert search_verified_library(db, "كيف أحسب نفقة الطفل؟") == []
