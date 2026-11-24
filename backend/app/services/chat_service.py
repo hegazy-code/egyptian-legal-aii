@@ -125,6 +125,7 @@ class ChatService:
                     "status": "verified",
                     "basis": "reviewed_library",
                     "sourceUrl": item["source_url"],
+                    "articleNumber": item["article_number"],
                     "excerpt": item["text"][:600],
                 })
 

@@ -35,7 +35,7 @@ def search_verified_library(db: Session, query: str, limit: int = 10) -> list[di
     text_matches = [body.ilike(f"%{token}%") for token in tokens]
     matched = sum(case((or_(t, b), 1), else_=0) for t, b in zip(title_matches, text_matches))
     title_rank = sum(case((match, 1), else_=0) for match in title_matches)
-    matches = (
+    reviewed = (
         db.query(LibraryTextChunk, LibraryAsset)
         .join(LibraryAsset, LibraryTextChunk.asset_id == LibraryAsset.id)
         .filter(
@@ -51,13 +51,25 @@ def search_verified_library(db: Session, query: str, limit: int = 10) -> list[di
                 ),
             ),
             LibraryAsset.source_url.like("https://_%"),
-            matched >= min(2, len(tokens)),
+
         )
-        .order_by(matched.desc(), title_rank.desc(), LibraryAsset.title,
-                  LibraryTextChunk.chunk_index, LibraryAsset.id)
-        .limit(max(1, min(limit, 25)))
-        .all()
     )
+    reference = re.search(r"(?:المادة|مادة)\s*([0-9]+)\b", query)
+    matches = []
+    if reference and re.search(r"المدني|مدني|131\s+لسنة\s+1948", query):
+        identity = f"egypt-civil-131-1948-article-{reference.group(1)}"
+        matches = reviewed.filter(
+            LibraryAsset.provider == "official",
+            LibraryAsset.external_file_id == identity,
+        ).order_by(LibraryTextChunk.chunk_index).all()
+    if not matches:
+        matches = (
+            reviewed.filter(matched >= min(2, len(tokens)))
+            .order_by(matched.desc(), title_rank.desc(), LibraryAsset.title,
+                      LibraryTextChunk.chunk_index, LibraryAsset.id)
+            .limit(max(1, min(limit, 25)))
+            .all()
+        )
 
     return [
         {
@@ -68,6 +80,10 @@ def search_verified_library(db: Session, query: str, limit: int = 10) -> list[di
             "page_start": chunk.page_start,
             "page_end": chunk.page_end,
             "text": chunk.text,
+            "article_number": asset.external_file_id.rsplit("-", 1)[-1]
+                if asset.provider == "official"
+                and asset.external_file_id.startswith("egypt-civil-131-1948-article-")
+                else None,
         }
         for chunk, asset in matches
     ]

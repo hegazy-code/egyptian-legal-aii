@@ -38,7 +38,7 @@ RECORDS = (
 )
 
 
-def import_records(db, records=RECORDS) -> int:
+def import_records(db, records=RECORDS, *, extraction_method="reviewed_summary") -> int:
     inserted = 0
     for external_id, title, url, page, page_end, category, summary in records:
         existing = db.scalar(select(LibraryAsset.id).filter_by(
@@ -64,7 +64,7 @@ def import_records(db, records=RECORDS) -> int:
             page_start=page,
             page_end=page_end,
             text=summary,
-            extraction_method="reviewed_summary",
+            extraction_method=extraction_method,
             verified=True,
         ))
         inserted += 1
