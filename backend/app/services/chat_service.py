@@ -68,7 +68,8 @@ class ChatService:
         The structured_answer_dict matches LegalAnswerOut and is ready for the API response.
         """
         conversation = self._get_or_create_conversation(user_id, conversation_id, question)
-        self.conversations.add_message(conversation.id, role="user", content=question)
+        chat_id = conversation.id
+        self.conversations.add_message(chat_id, role="user", content=question)
 
         # 4. Only reviewed and rights-cleared library excerpts may enrich answers.
         # Keep these separate from legacy article/judgment citation IDs.
@@ -97,7 +98,7 @@ class ChatService:
             }
         else:
             analysis = {}
-            history = self._get_history(conversation.id)
+            history = self._get_history(chat_id)
             search_results = hybrid_search(self.db, expand_query(question), limit=40)
             search_results = rerank_for_question(search_results, question, limit=8)
             reviewed_library_context = ""
@@ -108,6 +109,10 @@ class ChatService:
                     f"| النوع: {item['category']}\nالنص: {item['text'][:1200]}"
                     for item in excerpts
                 )
+
+            # The user's message is already committed and retrieval returned plain
+            # data. Return the connection to the pool during the network call.
+            self.db.rollback()
 
             # 5. RAG engine: call Gemini with grounded context, or fall back.
             try:
@@ -186,7 +191,7 @@ class ChatService:
         # Store structured answer as JSON string in the DB for history retrieval.
         answer_json = json.dumps(answer_dict, ensure_ascii=False)
         assistant_message = self.conversations.add_message(
-            conversation.id, role="assistant", content=answer_json
+            chat_id, role="assistant", content=answer_json
         )
 
         # 5. Persist citations for traceability (answer_citations table).

@@ -97,3 +97,26 @@ def test_literal_civil_article_does_not_call_gemini(client, monkeypatch):
     answer = result.json()["answer"]
     assert answer["explanation"] == "الفقرة الأولى\nالفقرة الثانية"
     assert [source["articleNumber"] for source in answer["answerSources"]] == ["599"]
+
+
+def test_chat_releases_database_transaction_before_gemini(client, monkeypatch):
+    from app.services import chat_service
+
+    original_search = chat_service.hybrid_search
+    db_session = None
+
+    def capture_session(db, *args, **kwargs):
+        nonlocal db_session
+        db_session = db
+        return original_search(db, *args, **kwargs)
+
+    def generate(*args, **kwargs):
+        assert db_session is not None
+        assert not db_session.in_transaction()
+        return '{"explanation":"رد تجريبي"}'
+
+    monkeypatch.setattr(chat_service, "hybrid_search", capture_session)
+    monkeypatch.setattr(chat_service, "generate_answer", generate)
+    result = client.post("/chat", json={"question": "تم فصلي من عملي، ماذا أفعل؟"})
+    assert result.status_code == 200
+    assert result.json()["answer"]["explanation"] == "رد تجريبي"
