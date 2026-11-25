@@ -95,16 +95,12 @@ def finalize_answer(answer: Dict[str, Any], results: List[Any]) -> Dict[str, Any
                     continue
                 num = _num(c.get("articleNumber"))
                 hit = next((e for e in index if e[0] == num and (_words(c.get("lawName")) & _words(e[1]))), None)
-                if hit:
-                    if key == "relevantLegalTexts":
-                        c["excerpt"] = hit[2][:600]
-                    c["status"] = "unverified" if hit[3] else "verified"
-                    c["basis"] = "from_law"
-                else:
-                    c["status"] = "unverified"
-                    c["basis"] = "ai_inference"
-                    if key == "relevantLegalTexts":
-                        c["excerpt"] = None
+                # Legacy retrieval has no authoritative URL or version identity.
+                # Reviewed citations are added separately from the catalog.
+                c["status"] = "unverified"
+                c["basis"] = "ai_inference"
+                c["sourceUrl"] = None
+                c["excerpt"] = hit[2][:600] if hit and key == "relevantLegalTexts" else None
                 fixed.append(c)
             answer[key] = fixed
 

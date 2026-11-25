@@ -120,3 +120,19 @@ def test_chat_releases_database_transaction_before_gemini(client, monkeypatch):
     result = client.post("/chat", json={"question": "تم فصلي من عملي، ماذا أفعل؟"})
     assert result.status_code == 200
     assert result.json()["answer"]["explanation"] == "رد تجريبي"
+
+
+def test_model_reference_without_source_is_not_marked_verified():
+    from types import SimpleNamespace
+
+    from app.rag.postprocess import finalize_answer
+
+    article = SimpleNamespace(title="المادة 69 - قانون العمل", snippet="مرجع من الفهرس القديم")
+    answer = finalize_answer({
+        "relevantLegalTexts": [{
+            "articleNumber": "69", "lawName": "قانون العمل",
+            "sourceUrl": "https://example.org/unconfirmed", "status": "verified",
+        }],
+    }, [article])
+    assert answer["relevantLegalTexts"][0]["status"] == "unverified"
+    assert answer["relevantLegalTexts"][0]["sourceUrl"] is None

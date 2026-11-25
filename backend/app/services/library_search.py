@@ -18,6 +18,8 @@ def search_verified_library(db: Session, query: str, limit: int = 10) -> list[di
     query = simple_normalize(query[:2000])
     if re.search(r"شقة|شقه|مسكن|ايجار", query) and re.search(r"يطرد|طرد|اخلاء|يخليني|فسخ|ينهي", query):
         query = "ايجار اخلاء " + query
+    if re.search(r"فصل|رفد", query) and re.search(r"شغل|عمل|مدير|وظيفة", query):
+        query = "فصل عمل " + query
     tokens = list(dict.fromkeys(
         word for word in re.findall(r"[^\W_]+", query)
         if (len(word) >= 3 or word.isdecimal()) and word not in _STOP_WORDS
@@ -82,7 +84,7 @@ def search_verified_library(db: Session, query: str, limit: int = 10) -> list[di
             "text": chunk.text,
             "article_number": asset.external_file_id.rsplit("-", 1)[-1]
                 if asset.provider == "official"
-                and asset.external_file_id.startswith("egypt-civil-131-1948-article-")
+                and asset.external_file_id.startswith(("egypt-civil-131-1948-article-", "egypt-labor-14-2025-article-"))
                 else None,
         }
         for chunk, asset in matches
